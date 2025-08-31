@@ -8,6 +8,8 @@ import connectDB from "./config/mongodb.js";
 import authRouter from './routes/authRoutes.js';
 import userRouter from "./routes/userRoutes.js";
 
+import productRoutes from "./routes/productsRoutes.js"
+
 const app = express();
 const port = process.env.PORT || 4000
 connectDB();
@@ -24,5 +26,8 @@ app.use(cors({origin: allowedOrigins, credentials: true}))
 app.get('/',(req,res)=>res.send("API Working "));
 app.use('/api/auth',authRouter);
 app.use('/api/user',userRouter);
+
+app.use("/api/products",productRoutes);
+
 
 app.listen(port, ()=>console.log(`Server started on PORT:${port}`));
