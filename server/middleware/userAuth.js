@@ -1,27 +1,58 @@
 import jwt from "jsonwebtoken";
 
-const userAuth = async (req,res,next) =>{
-    const {token} = req.cookies;
 
-    if (!token){
-        return res.json({success: false, message: 'Not Authorized.'})
+export const authUser = (req, res, next) => {
+  try {
+    const bearer =
+      req.headers.authorization?.startsWith("Bearer ")
+        ? req.headers.authorization.split(" ")[1]
+        : null;
+    const token = req.cookies?.token || bearer;
+
+    if (!token) {
+      return res.status(401).json({ success: false, message: "Not Authorized" });
     }
 
-    try{
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        const tokenDecode =  jwt.verify(token,process.env.JWT_SECRET);
-
-        if(tokenDecode.id){
-            req.userId = tokenDecode.id;
-        }else{
-            return res. json ({success: false, message: 'Not Authorized. Login agian'});
-        }
-        next();
-
-    }catch(error){
-        res.json({success:false, message:error.message});
-
+    if (!decoded?.id && !decoded?._id) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Not Authorized. Login again" });
     }
-}
 
-export default userAuth;
+    req.userId = decoded.id || decoded._id;
+    req.userRole = decoded.role || "customer"; // allow role checks later
+    next();
+  } catch (error) {
+    return res
+      .status(401)
+      .json({ success: false, message: error.message || "Invalid token" });
+  }
+};
+
+
+
+
+export const authOptional = (req, _res, next) => {
+  try {
+    const bearer =
+      req.headers.authorization?.startsWith("Bearer ")
+        ? req.headers.authorization.split(" ")[1]
+        : null;
+    const token = req.cookies?.token || bearer;
+
+    if (token) {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      if (decoded?.id || decoded?._id) {
+        req.userId = decoded.id || decoded._id;
+        req.userRole = decoded.role || "customer";
+      }
+    }
+  } catch {
+    
+  }
+  next();
+};
+
+export default authUser;
