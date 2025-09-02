@@ -12,7 +12,22 @@ const userSchema = new mongoose.Schema({
   resetOtp: { type: String, default: "" },
   resetOtpExpireAt: { type: Number, default: 0 },
 
-  //  RBAC fields (non-breaking defaults)
+  // ✅ Staff specialization (job title)
+  jobTitle: {
+    type: String,
+    enum: [
+      "Facial Artist",
+      "Hairdresser",
+      "Nail Artist",
+      "Makeup Artist",
+      "Event Stylist",
+      "" // allow empty for non-staff/admin users
+    ],
+    default: "",
+    index: true,
+  },
+
+  // RBAC fields (non-breaking defaults)
   role: { type: String, enum: ["customer", "staff", "admin"], default: "customer", index: true },
   status: { type: String, enum: ["active", "suspended"], default: "active", index: true },
   permissions: { type: [String], default: [] },

@@ -6,12 +6,13 @@ import EmailVerify from './pages/EmailVerify';
 import ResetPassword from './pages/ResetPassword';
 import { ToastContainer } from 'react-toastify';
 
-//  new
+// new
 import RequireRole from './components/Protected.jsx';
 import AdminLayout from './pages/admin/AdminLayout.jsx';
 import AdminOverview from './pages/admin/AdminOverview.jsx';
 import StaffDirectory from './pages/admin/StaffDirectory.jsx';
 import AdminLogin from './pages/admin/AdminLogin.jsx';
+import StaffAuth from './pages/admin/StaffAuth.jsx'; //  staff register/login 
 
 const App = () => {
   return (
@@ -24,8 +25,9 @@ const App = () => {
         <Route path='/email-verify' element={<EmailVerify />} />
         <Route path='/reset-password' element={<ResetPassword />} />
 
-        {/* Admin/Staff login separate */}
+        {/* Staff/Admin auth */}
         <Route path='/admin/login' element={<AdminLogin />} />
+        <Route path='/staff-auth' element={<StaffAuth />} /> {/*  register/login for staff */}
 
         {/* Protected Admin area */}
         <Route
@@ -40,6 +42,9 @@ const App = () => {
           <Route path='staff' element={<StaffDirectory />} />
           {/* Add more admin pages here */}
         </Route>
+
+        {/* (optional) 404 */}
+        {/* <Route path='*' element={<div className="p-8">404 Not Found</div>} /> */}
       </Routes>
     </div>
   );

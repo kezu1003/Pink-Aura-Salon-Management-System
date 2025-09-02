@@ -16,6 +16,15 @@ const signAuthToken = (user) =>
     { expiresIn: '7d' }
   );
 
+// Allowed staff job titles for self-registration
+const ALLOWED_TITLES = [
+  "Facial Artist",
+  "Hairdresser",
+  "Nail Artist",
+  "Makeup Artist",
+  "Event Stylist",
+];
+
 // ---------------- Existing Handlers (slightly updated tokens) ----------------
 
 export const register = async (req, res) => {
@@ -53,6 +62,46 @@ export const register = async (req, res) => {
     return res.json({ success: true });
   } catch (error) {
     res.json({ success: false, message: error.message });
+  }
+};
+
+// ✅ NEW: Staff self-registration (like customers)
+export const staffRegister = async (req, res) => {
+  const { name, email, password, jobTitle } = req.body;
+
+  if (!name || !email || !password || !jobTitle) {
+    return res.json({ success: false, message: 'Missing details' });
+  }
+  if (!ALLOWED_TITLES.includes(jobTitle)) {
+    return res.json({ success: false, message: 'Invalid job title' });
+  }
+
+  try {
+    const exists = await userModel.findOne({ email });
+    if (exists) return res.json({ success: false, message: 'User already exists' });
+
+    const hashed = await bcrypt.hash(password, 10);
+    const user = await userModel.create({
+      name,
+      email,
+      password: hashed,
+      role: 'staff',          // force staff role
+      jobTitle,
+      isAccountVerified: true // optional: skip OTP for staff
+    });
+
+    // Make it behave like customer register: set cookie + logged in
+    const token = signAuthToken(user);
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return res.json({ success: true, message: 'Staff registered successfully' });
+  } catch (error) {
+    return res.json({ success: false, message: error.message });
   }
 };
 
@@ -96,7 +145,7 @@ export const logout = async (req, res) => {
     res.clearCookie('token', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_NODE_ENV === 'production' ? 'none' : 'strict',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict', // ✅ fixed typo
     });
     return res.json({ success: true, message: "Logged out" });
   } catch (error) {
