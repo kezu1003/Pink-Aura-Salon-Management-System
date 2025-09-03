@@ -1,27 +1,53 @@
 import jwt from "jsonwebtoken";
 
-const userAuth = async (req,res,next) =>{
-    const {token} = req.cookies;
 
-    if (!token){
-        return res.json({success: false, message: 'Not Authorized.'})
+export const requireAuth = (req, res, next) => {
+  try {
+    // 1) Try header
+    const bearer = req.headers.authorization || "";
+    const headerToken = bearer.startsWith("Bearer ") ? bearer.slice(7) : null;
+
+    // 2) Try cookies
+    const cookieToken =
+      req.cookies?.token || req.cookies?.authToken || req.cookies?.jwt || null;
+
+    const token = headerToken || cookieToken;
+    if (!token) {
+      return res.status(401).json({ success: false, message: "Not Authorized." });
     }
 
-    try{
-
-        const tokenDecode =  jwt.verify(token,process.env.JWT_SECRET);
-
-        if(tokenDecode.id){
-            req.userId = tokenDecode.id;
-        }else{
-            return res. json ({success: false, message: 'Not Authorized. Login agian'});
-        }
-        next();
-
-    }catch(error){
-        res.json({success:false, message:error.message});
-
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (!decoded?.id) {
+      return res.status(401).json({ success: false, message: "Not Authorized. Login again" });
     }
-}
 
-export default userAuth;
+    // Attach to request (backwards compatible fields)
+    req.userId = decoded.id;
+    req.user = {
+      id: decoded.id,
+      role: decoded.role || "customer",
+      permissions: decoded.permissions || [],
+    };
+
+    return next();
+  } catch (err) {
+    return res.status(401).json({ success: false, message: "Invalid token" });
+  }
+};
+
+/**
+ * Role guard (RBAC)
+ */
+export const requireRole = (...roles) => (req, res, next) => {
+  const role = req?.user?.role || "customer";
+  if (!roles.includes(role)) {
+    return res.status(403).json({ success: false, message: "Forbidden" });
+  }
+  return next();
+};
+
+// Alias if you used it elsewhere
+export const requireAnyRole = (...roles) => requireRole(...roles);
+
+// Keep default export for any existing imports that expect "userAuth"
+export default requireAuth;
