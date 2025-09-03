@@ -1,3 +1,4 @@
+// src/components/AdminSidebar.jsx
 import { NavLink } from "react-router-dom";
 import { useState, useContext } from "react";
 import { AppContext } from "../context/AppContext";
@@ -36,6 +37,12 @@ export default function AdminSidebar() {
         <Item to="/admin" label="Overview" />
       </Group>
 
+      {/* ✅ NEW: Products */}
+      <Group title="Catalog">
+        <Item to="/admin/products" label="Products" />
+        <Item to="/admin/products/new" label="Add Product" />
+      </Group>
+
       <Group title="Appointments">
         <Item to="/admin/appointments" label="All Appointments" />
         <Item to="/admin/calendar" label="Calendar View" />
@@ -49,7 +56,6 @@ export default function AdminSidebar() {
       {hasRole("admin") && (
         <Group title="Staff">
           <Item to="/admin/staff" label="Staff Directory" />
-          {/* add more as you implement */}
         </Group>
       )}
 

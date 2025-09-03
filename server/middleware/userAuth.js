@@ -1,46 +1,53 @@
 import jwt from "jsonwebtoken";
 
-const userAuth = async (req, res, next) => {
-  const { token } = req.cookies || {};
-  if (!token) {
-    return res.json({ success: false, message: "Not Authorized." });
-  }
 
+export const requireAuth = (req, res, next) => {
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // 1) Try header
+    const bearer = req.headers.authorization || "";
+    const headerToken = bearer.startsWith("Bearer ") ? bearer.slice(7) : null;
 
-    if (!decoded?.id) {
-      return res.json({ success: false, message: "Not Authorized. Login again" });
+    // 2) Try cookies
+    const cookieToken =
+      req.cookies?.token || req.cookies?.authToken || req.cookies?.jwt || null;
+
+    const token = headerToken || cookieToken;
+    if (!token) {
+      return res.status(401).json({ success: false, message: "Not Authorized." });
     }
 
-    // Attach both id and (if present) role/permissions
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (!decoded?.id) {
+      return res.status(401).json({ success: false, message: "Not Authorized. Login again" });
+    }
+
+    // Attach to request (backwards compatible fields)
     req.userId = decoded.id;
     req.user = {
       id: decoded.id,
-      role: decoded.role || "customer",         // fallback for older tokens
+      role: decoded.role || "customer",
       permissions: decoded.permissions || [],
     };
-    next();
-  } catch (error) {
-    res.json({ success: false, message: error.message });
+
+    return next();
+  } catch (err) {
+    return res.status(401).json({ success: false, message: "Invalid token" });
   }
 };
 
-export default userAuth;
-
-//  Additional guards for RBAC
-export const requireAuth = (req, res, next) => {
-  if (!req.userId) return res.status(401).json({ success: false, message: "Not Authorized." });
-  next();
-};
-
+/**
+ * Role guard (RBAC)
+ */
 export const requireRole = (...roles) => (req, res, next) => {
   const role = req?.user?.role || "customer";
   if (!roles.includes(role)) {
     return res.status(403).json({ success: false, message: "Forbidden" });
   }
-  next();
+  return next();
 };
 
-// alias
+// Alias if you used it elsewhere
 export const requireAnyRole = (...roles) => requireRole(...roles);
+
+// Keep default export for any existing imports that expect "userAuth"
+export default requireAuth;
