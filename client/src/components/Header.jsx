@@ -7,8 +7,8 @@ const Header = () => {
     const {userData} = useContext(AppContext)
 
   return (
-    <div className='flex flex-col items-center mt-20 px-4 text-center text-gray-800 drop-shadow-[0_0_2px_white]'>
-      <img src={assets.header_img} alt='' className='w-36 h-36 rounded-full mb-6'/>
+    <div className='flex flex-col items-center mt-20 px-4 text-center text-gray-800 ]'>
+      <img src={assets.logo} alt='' className='w-36 h-36 rounded-full mb-6'/>
 
       <h1 className='flex items-center gap-2 text-xl sm:text-3xl font-medium mb-2'>Hey {userData ? userData.name :''}! <img className='w-8 aspect-square' src= {assets.hand_wave} alt=''/> </h1>
 

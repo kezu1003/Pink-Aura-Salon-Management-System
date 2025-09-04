@@ -124,7 +124,7 @@ const Login = () => {
           </p>
         )}
 
-        {/* ✅ Extra navigation to Staff/Admin login */}
+        
         <p className="text-center text-xs mt-3">
           Are you a staff member or admin?{' '}
           <span
