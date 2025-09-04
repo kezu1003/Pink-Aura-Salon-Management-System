@@ -1,3 +1,4 @@
+// client/src/pages/Login.jsx
 import React, { useState, useContext } from "react";
 import { assets } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
@@ -9,7 +10,7 @@ const Login = () => {
   const navigate = useNavigate();
   const { backendUrl, setIsLoggedin, getUserData } = useContext(AppContext);
 
-  const [state, setState] = useState("Sign Up");
+  const [state, setState] = useState("Login"); 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,7 +29,7 @@ const Login = () => {
         });
         if (data.success) {
           setIsLoggedin(true);
-          getUserData();
+          getUserData?.();
           navigate("/");
         } else {
           toast.error(data.message);
@@ -38,10 +39,16 @@ const Login = () => {
           email,
           password,
         });
+
         if (data.success) {
           setIsLoggedin(true);
-          getUserData();
-          navigate("/");
+          getUserData?.();
+
+          // redirect by role from server response 
+          const r = data?.user?.role;
+          if (r === "staff" || r === "supplier") navigate("/staff");
+          else if (r === "admin") navigate("/admin");
+          else navigate("/");
         } else {
           toast.error(data.message);
         }
@@ -53,7 +60,6 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-[url('/bg1.jpg')] bg-cover bg-center relative">
-      
       <header className="fixed top-0 left-0 right-0 z-50 flex h-25 items-center justify-between bg-white/70 backdrop-blur-md shadow px-4 sm:px-6">
         <img
           onClick={() => navigate("/")}
@@ -70,16 +76,10 @@ const Login = () => {
         </button>
       </header>
 
-     
       <main className="relative mx-auto max-w-7xl px-5 lg:px-10 pt-40 md:pt-44 pb-24 min-h-[calc(100vh-4rem)]">
-        
-        
-
-        {/* left aligned */}
         <div className="relative z-10 flex items-start justify-start">
           <div className="w-full max-w-md">
             <div className="relative rounded-3xl border border-white/40 bg-white/65 p-6 shadow-2xl backdrop-blur-xl sm:p-7">
-              {/* heading */}
               <div className="mb-5 text-center">
                 <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-rose-900">
                   {state === "Sign Up" ? "Create Account" : "Welcome Back"}
@@ -91,7 +91,6 @@ const Login = () => {
                 </p>
               </div>
 
-              {/* tabs */}
               <div className="mb-5 grid grid-cols-2 gap-2 rounded-full bg-white/70 p-1 shadow-sm">
                 <button
                   type="button"
@@ -117,7 +116,6 @@ const Login = () => {
                 </button>
               </div>
 
-              {/* form */}
               <form onSubmit={onSubmitHandler} className="space-y-3.5">
                 {state === "Sign Up" && (
                   <div className="group flex w-full items-center gap-3 rounded-2xl bg-white/80 px-4 py-3 ring-1 ring-rose-200/60 transition-all hover:ring-rose-300 focus-within:bg-white focus-within:ring-rose-400">
@@ -173,9 +171,7 @@ const Login = () => {
                   >
                     Forgot Password?
                   </button>
-                  <span className="text-xs text-rose-500">
-                    Secure • Private • Safe
-                  </span>
+                  <span className="text-xs text-rose-500">Secure • Private • Safe</span>
                 </div>
 
                 <button
@@ -187,7 +183,6 @@ const Login = () => {
                 </button>
               </form>
 
-              
               <div className="mt-5 text-center text-sm">
                 {state === "Sign Up" ? (
                   <p className="text-rose-700">
@@ -214,7 +209,6 @@ const Login = () => {
                 )}
               </div>
 
-              {/* staff/admin link */}
               <p className="mt-4 text-center text-xs text-rose-600">
                 Are you a staff member or admin?{" "}
                 <button
@@ -230,7 +224,6 @@ const Login = () => {
         </div>
       </main>
 
-      
       <p className="relative bottom-4 left-1/2 -translate-x-1/2 text-center text-[11px] text-rose-500/80 z-40">
         © {new Date().getFullYear()} Pink Aura Salon. All rights reserved.
       </p>

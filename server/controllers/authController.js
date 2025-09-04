@@ -3,14 +3,14 @@ import jwt from 'jsonwebtoken';
 import userModel from '../models/userModel.js';
 import transporter from '../config/nodemailer.js';
 import { EMAIL_VERIFY_TEMPLATE, PASSWORD_RESET_TEMPLATE } from '../config/emailTemplates.js';
+import { capsFor } from '../config/capabilities.js';
 
-// Helper: sign token with role/permissions
+//  sign token with role
 const signAuthToken = (user) =>
   jwt.sign(
     {
       id: user._id,
       role: user.role || "customer",
-      permissions: user.permissions || [],
     },
     process.env.JWT_SECRET,
     { expiresIn: '7d' }
@@ -25,8 +25,6 @@ const ALLOWED_TITLES = [
   "Event Stylist",
 ];
 
-
-
 export const register = async (req, res) => {
   const { name, email, password } = req.body;
   if (!name || !email || !password) {
@@ -40,8 +38,7 @@ export const register = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new userModel({ name, email, password: hashedPassword }); // role defaults to "customer"
-    await user.save();
+    const user = new userModel({ name, email, password: hashedPassword }); 
 
     const token = signAuthToken(user);
     res.cookie('token', token, {
@@ -59,13 +56,16 @@ export const register = async (req, res) => {
     };
     await transporter.sendMail(mailOptions);
 
-    return res.json({ success: true });
+    return res.json({ success: true, user: {
+      id: user._id, name: user.name, email: user.email, role: user.role,
+      jobTitle: user.jobTitle || "", permissions: []
+    }});
   } catch (error) {
     res.json({ success: false, message: error.message });
   }
 };
 
-//  Staff self-registration 
+// Staff self-registration
 export const staffRegister = async (req, res) => {
   const { name, email, password, jobTitle } = req.body;
 
@@ -85,12 +85,15 @@ export const staffRegister = async (req, res) => {
       name,
       email,
       password: hashed,
-      role: 'staff',         
+      role: 'staff',
       jobTitle,
-      isAccountVerified: true 
+      isAccountVerified: true
     });
 
-    
+    const perms = capsFor(user);
+    user.permissions = perms;
+    await user.save();
+
     const token = signAuthToken(user);
     res.cookie('token', token, {
       httpOnly: true,
@@ -99,7 +102,10 @@ export const staffRegister = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    return res.json({ success: true, message: 'Staff registered successfully' });
+    return res.json({ success: true, message: 'Staff registered successfully', user: {
+      id: user._id, name: user.name, email: user.email, role: user.role,
+      jobTitle: user.jobTitle || "", permissions: perms
+    }});
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }
@@ -118,11 +124,12 @@ export const login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.json({ success: false, message: 'Invalid password' });
 
-    // block suspended users
     if (user.status === "suspended") {
       return res.json({ success: false, message: "Account suspended. Contact admin." });
     }
 
+    const perms = capsFor(user);
+    user.permissions = perms;
     user.lastLoginAt = new Date();
     await user.save();
 
@@ -134,7 +141,19 @@ export const login = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    return res.json({ success: true });
+    return res.json({
+      success: true,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        jobTitle: user.jobTitle || "",
+        permissions: perms,
+        isAccountVerified: user.isAccountVerified,
+        status: user.status,
+      },
+    });
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }
@@ -145,14 +164,13 @@ export const logout = async (req, res) => {
     res.clearCookie('token', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict', // ✅ fixed typo
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
     });
     return res.json({ success: true, message: "Logged out" });
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }
 };
-
 
 export const sendVerifyOtp = async (req, res) => {
   try {
@@ -208,7 +226,7 @@ export const verifyEmail = async (req, res) => {
   }
 };
 
-export const isAuthenticated = async (req, res) => {
+export const isAuthenticated = async (_req, res) => {
   try {
     return res.json({ success: true });
   } catch (error) {
@@ -272,13 +290,12 @@ export const resetPassword = async (req, res) => {
   }
 };
 
-
-
 export const me = async (req, res) => {
   try {
     const user = await userModel.findById(req.userId).lean();
     if (!user) return res.json({ success: false, message: "User not found" });
 
+    const perms = capsFor(user);
     return res.json({
       success: true,
       user: {
@@ -286,7 +303,8 @@ export const me = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        permissions: user.permissions || [],
+        jobTitle: user.jobTitle || "",
+        permissions: perms,
         status: user.status,
         isAccountVerified: user.isAccountVerified,
         lastLoginAt: user.lastLoginAt || null,
@@ -299,7 +317,7 @@ export const me = async (req, res) => {
 
 // Admin/Staff specific login with role selection enforcement
 export const adminStaffLogin = async (req, res) => {
-  const { email, password, role } = req.body; // role must be "admin" or "staff"
+  const { email, password, role } = req.body; 
   if (!email || !password || !role) {
     return res.json({ success: false, message: "Email, password and role are required" });
   }
@@ -321,6 +339,8 @@ export const adminStaffLogin = async (req, res) => {
     const ok = await bcrypt.compare(password, user.password);
     if (!ok) return res.json({ success: false, message: "Invalid password" });
 
+    const perms = capsFor(user);
+    user.permissions = perms;
     user.lastLoginAt = new Date();
     await user.save();
 
@@ -332,7 +352,17 @@ export const adminStaffLogin = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    return res.json({ success: true });
+    return res.json({
+      success: true,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        jobTitle: user.jobTitle || "",
+        permissions: perms,
+      },
+    });
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }

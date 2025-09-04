@@ -1,11 +1,37 @@
+// server/routes/staffRoutes.js
 import express from "express";
 import userAuth, { requireAnyRole } from "../middleware/userAuth.js";
-import { me } from "../controllers/authController.js";
+import {
+  staffMe,
+  listSchedule,
+  startAppointment,
+  completeAppointment,
+  listAnnouncements,
+  createInventoryRequest,
+  listPOs,
+  fulfillPO,
+  listServices,
+} from "../controllers/staffDashController.js";
 
 const router = express.Router();
 
-router.use(userAuth, requireAnyRole("admin", "staff"));
+// must be logged in and be staff or supplier
+router.use(userAuth, requireAnyRole("staff", "supplier"));
 
-router.get("/me", me);
+router.get("/me", staffMe);
+
+// staff
+router.get("/schedule", listSchedule);
+router.get("/services", listServices);
+router.get("/announcements", listAnnouncements);
+router.post("/inventory/requests", createInventoryRequest);
+
+// appointments
+router.post("/appointments/:id/start", startAppointment);
+router.post("/appointments/:id/complete", completeAppointment);
+
+// supplier
+router.get("/suppliers/pos", listPOs);
+router.post("/suppliers/pos/:id/fulfill", fulfillPO);
 
 export default router;
