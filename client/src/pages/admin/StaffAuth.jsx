@@ -1,156 +1,293 @@
-import React, { useState, useContext } from "react";
-import { AppContext } from "../../context/AppContext";
-import { useNavigate } from "react-router-dom";
+import React, { useContext, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { AppContext } from "../../context/AppContext";
+import { assets } from "../../assets/assets";
+
+const JOB_TITLES = [
+  "Facial Artist",
+  "Hair dresser",
+  "Nail Artist",
+  "Makeup Artist",
+  "Event Stylist",
+];
 
 export default function StaffAuth() {
   const navigate = useNavigate();
-  const { backendUrl, setIsLoggedin, getUserData } = useContext(AppContext);
+  const ctx = useContext(AppContext) || {};
+  const { backendUrl, setIsLoggedin, getUserData } = ctx;
 
-  const [mode, setMode] = useState("Login"); // "Login" or "Register"
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [jobTitle, setJobTitle] = useState("Facial Artist");
-  const [role, setRole] = useState("staff"); // used only for login call
+  
+  const [tab, setTab] = useState("Login"); 
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    jobTitle: JOB_TITLES[0],
+  });
+  const [reveal, setReveal] = useState(false);
 
-  const submitHandler = async (e) => {
+  const onChange = (e) =>
+    setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
+
+  const submitLogin = async () => {
+    if (!backendUrl) throw new Error("Missing backendUrl in AppContext");
+    const { email, password } = form;
+    const payload = { email, password, role: "staff" };
+    const { data } = await axios.post(
+      `${backendUrl}/api/auth/admin-staff-login`,
+      payload,
+      { withCredentials: true }
+    );
+    if (!data.success) throw new Error(data.message || "Login failed");
+    setIsLoggedin && setIsLoggedin(true);
+    getUserData && getUserData();
+
+    const r = data.user?.role;
+    if (r === "staff" || r === "supplier") navigate("/staff");
+    else if (r === "admin") navigate("/admin");
+    else navigate("/");
+    toast.success("Welcome back!");
+  };
+
+  const submitSignup = async () => {
+    if (!backendUrl) throw new Error("Missing backendUrl in AppContext");
+    const { name, email, password, jobTitle } = form;
+    const { data } = await axios.post(
+      `${backendUrl}/api/auth/staff-register`,
+      { name, email, password, jobTitle },
+      { withCredentials: true }
+    );
+    if (!data.success) throw new Error(data.message || "Registration failed");
+    setIsLoggedin && setIsLoggedin(true);
+    getUserData && getUserData();
+
+    const r = data.user?.role;
+    if (r === "staff" || r === "supplier") navigate("/staff");
+    else if (r === "admin") navigate("/admin");
+    else navigate("/");
+    toast.success("Staff account created");
+  };
+
+  const onSubmit = async (e) => {
     e.preventDefault();
+    axios.defaults.withCredentials = true;
     try {
-      if (mode === "Register") {
-        // ✅ Staff self-register (cookie set on success, like customer register)
-        const { data } = await axios.post(
-          backendUrl + "/api/auth/staff-register",
-          { name, email, password, jobTitle },
-          { withCredentials: true }
-        );
-        if (data.success) {
-          toast.success("Registered! You're logged in.");
-          setIsLoggedin(true);
-          await getUserData();
-          navigate("/"); // mirror customer UX; change to '/admin' if you create a staff dashboard
-        } else {
-          toast.error(data.message);
-        }
-      } else {
-        // Staff/Admin Login (role-select)
-        const { data } = await axios.post(
-          backendUrl + "/api/auth/admin-login",
-          { email, password, role },
-          { withCredentials: true }
-        );
-        if (data.success) {
-          toast.success("Welcome!");
-          setIsLoggedin(true);
-          await getUserData();
-          // If role === 'admin', you likely want to go to /admin
-          // If role === 'staff' but you don't yet have a staff dashboard, go home:
-          navigate(role === "admin" ? "/admin" : "/");
-        } else {
-          toast.error(data.message);
-        }
-      }
+      if (tab === "Login") await submitLogin();
+      else await submitSignup();
     } catch (err) {
-      toast.error(err.message);
+      toast.error(err?.response?.data?.message || err.message);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-t from-[#FBAA99] to-[#FEF4F1]">
-      <div className="bg-pink-100 p-8 rounded-xl shadow w-full max-w-md">
-        <h1 className="text-2xl font-semibold mb-4">
-          {mode === "Register" ? "Register Staff" : "Staff Login"}
-        </h1>
+    <div className="min-h-screen bg-[url('/bg1.jpg')] bg-cover bg-center relative">
+      {/* Header (same as customer) */}
+      <header className="fixed top-0 left-0 right-0 z-50 flex h-25 items-center justify-between bg-white/70 backdrop-blur-md shadow px-4 sm:px-6">
+        <img
+          onClick={() => navigate("/")}
+          src={assets?.logo}
+          alt="Logo"
+          className="w-20 sm:w-24 cursor-pointer"
+        />
+        <button
+          type="button"
+          onClick={() => navigate("/")}
+          className="rounded-full bg-rose-50 px-5 py-2 text-sm sm:text-base font-semibold text-rose-700 shadow hover:bg-rose-100 hover:shadow-md transition"
+        >
+          Home
+        </button>
+      </header>
 
-        <form onSubmit={submitHandler}>
-          {mode === "Register" && (
-            <>
-              <input
-                type="text"
-                placeholder="Full Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                className="w-full border rounded px-3 py-2 mb-3 bg-white"
-              />
+      {/* Body */}
+      <main className="relative mx-auto max-w-7xl px-5 lg:px-10 pt-40 md:pt-44 pb-24 min-h-[calc(100vh-4rem)]">
+        <div className="relative z-10 flex items-start justify-start">
+          <div className="w-full max-w-md">
+            <div className="relative rounded-3xl border border-white/40 bg-white/65 p-6 shadow-2xl backdrop-blur-xl sm:p-7">
+              {/* Heading */}
+              <div className="mb-5 text-center">
+                <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-rose-900">
+                  {tab === "Sign Up" ? "Staff Registration" : "Staff Login"}
+                </h2>
+                <p className="mt-1.5 text-sm text-rose-700/80">
+                  {tab === "Sign Up"
+                    ? "Create your staff account to access the dashboard"
+                    : "Login to access the staff dashboard"}
+                </p>
+              </div>
 
-              <select
-                value={jobTitle}
-                onChange={(e) => setJobTitle(e.target.value)}
-                className="w-full border rounded px-3 py-2 mb-3 bg-white"
-              >
-                <option value="Facial Artist">Facial Artist</option>
-                <option value="Hairdresser">Hairdresser</option>
-                <option value="Nail Artist">Nail Artist</option>
-                <option value="Makeup Artist">Makeup Artist</option>
-                <option value="Event Stylist">Event Stylist</option>
-              </select>
-            </>
-          )}
+              {/* Tabs */}
+              <div className="mb-5 grid grid-cols-2 gap-2 rounded-full bg-white/70 p-1 shadow-sm">
+                <button
+                  type="button"
+                  onClick={() => setTab("Login")}
+                  className={`rounded-full py-2 text-sm font-medium transition-all ${
+                    tab === "Login"
+                      ? "bg-gradient-to-r from-rose-300 to-rose-200 text-rose-900 shadow"
+                      : "text-rose-600 hover:bg-white"
+                  }`}
+                >
+                  Login
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTab("Sign Up")}
+                  className={`rounded-full py-2 text-sm font-medium transition-all ${
+                    tab === "Sign Up"
+                      ? "bg-gradient-to-r from-rose-300 to-rose-200 text-rose-900 shadow"
+                      : "text-rose-600 hover:bg-white"
+                  }`}
+                >
+                  Sign Up
+                </button>
+              </div>
 
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full border rounded px-3 py-2 mb-3 bg-white"
-          />
+              {/* Form */}
+              <form onSubmit={onSubmit} className="space-y-3.5">
+                {tab === "Sign Up" && (
+                  <div className="group flex w-full items-center gap-3 rounded-2xl bg-white/80 px-4 py-3 ring-1 ring-rose-200/60 transition-all hover:ring-rose-300 focus-within:bg-white focus-within:ring-rose-400">
+                    <img src={assets?.person_icon} alt="" className="h-5 w-5" />
+                    <input
+                      name="name"
+                      onChange={onChange}
+                      value={form.name}
+                      className="w-full bg-transparent text-rose-900 placeholder-rose-400 outline-none"
+                      type="text"
+                      placeholder="Full Name"
+                      required
+                    />
+                  </div>
+                )}
 
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="w-full border rounded px-3 py-2 mb-3 bg-white"
-          />
+                <div className="group flex w-full items-center gap-3 rounded-2xl bg-white/80 px-4 py-3 ring-1 ring-rose-200/60 transition-all hover:ring-rose-300 focus-within:bg-white focus-within:ring-rose-400">
+                  <img src={assets?.mail_icon} alt="" className="h-5 w-5" />
+                  <input
+                    name="email"
+                    onChange={onChange}
+                    value={form.email}
+                    className="w-full bg-transparent text-rose-900 placeholder-rose-400 outline-none"
+                    type="email"
+                    placeholder="Email address"
+                    required
+                  />
+                </div>
 
-          {/* Role selector for Login only (Admin/Staff) */}
-          {mode === "Login" && (
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="w-full border rounded px-3 py-2 mb-4 bg-white"
-            >
-              <option value="staff">Staff</option>
-              <option value="admin">Admin</option>
-            </select>
-          )}
+                <div className="group flex w-full items-center gap-3 rounded-2xl bg-white/80 px-4 py-3 ring-1 ring-rose-200/60 transition-all hover:ring-rose-300 focus-within:bg-white focus-within:ring-rose-400">
+                  <img src={assets?.lock_icon} alt="" className="h-5 w-5" />
+                  <input
+                    name="password"
+                    onChange={onChange}
+                    value={form.password}
+                    className="w-full bg-transparent text-rose-900 placeholder-rose-400 outline-none"
+                    type={reveal ? "text" : "password"}
+                    placeholder="Password"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setReveal((v) => !v)}
+                    className="rounded-full px-2 py-1 text-[11px] font-medium text-rose-600 hover:bg-rose-50"
+                    aria-label={reveal ? "Hide password" : "Show password"}
+                  >
+                    {reveal ? "Hide" : "Show"}
+                  </button>
+                </div>
 
-          <button
-            type="submit"
-            className="w-full py-2 rounded bg-gradient-to-b from-[#FBAA99] to-[#FEF4F1] font-medium shadow"
-          >
-            {mode}
-          </button>
-        </form>
+                {tab === "Sign Up" && (
+                  <div className="group flex w-full items-center gap-3 rounded-2xl bg-white/80 px-4 py-3 ring-1 ring-rose-200/60 transition-all hover:ring-rose-300 focus-within:bg-white focus-within:ring-rose-400">
+                    <img src={assets?.person_icon} alt="" className="h-5 w-5" />
+                    <select
+                      name="jobTitle"
+                      onChange={onChange}
+                      value={form.jobTitle}
+                      className="w-full bg-transparent text-rose-900 outline-none"
+                    >
+                      {JOB_TITLES.map((t) => (
+                        <option key={t} value={t}>
+                          {t}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
 
-        <p className="text-center text-sm mt-4">
-          {mode === "Register" ? (
-            <>
-              Already have an account?{" "}
-              <span
-                onClick={() => setMode("Login")}
-                className="text-blue-500 cursor-pointer underline"
-              >
-                Login here
-              </span>
-            </>
-          ) : (
-            <>
-              Need to register as staff?{" "}
-              <span
-                onClick={() => setMode("Register")}
-                className="text-blue-500 cursor-pointer underline"
-              >
-                Register here
-              </span>
-            </>
-          )}
-        </p>
-      </div>
+                <div className="flex items-center justify-between">
+                  <button
+                    type="button"
+                    onClick={() => navigate("/reset-password")}
+                    className="text-sm font-medium text-rose-700 hover:text-rose-900"
+                  >
+                    Forgot Password?
+                  </button>
+                  <span className="text-xs text-rose-500">Secure • Private • Safe</span>
+                </div>
+
+                <button
+                  type="submit"
+                  className="group relative w-full overflow-hidden rounded-2xl bg-gradient-to-b from-[#FBAA99] to-[#FDE8E4] px-6 py-3 text-base font-semibold text-rose-900 shadow-lg transition-all hover:scale-[1.01] hover:shadow-rose-200/80 active:scale-[0.99]"
+                >
+                  <span className="relative z-10">{tab}</span>
+                  <span className="absolute inset-0 -translate-y-full bg-white/30 transition-all duration-500 group-hover:translate-y-0" />
+                </button>
+              </form>
+
+              {/* switch hint */}
+              <div className="mt-5 text-center text-sm">
+                {tab === "Sign Up" ? (
+                  <p className="text-rose-700">
+                    Already have an account?{" "}
+                    <button
+                      onClick={() => setTab("Login")}
+                      className="font-semibold text-rose-600 underline underline-offset-4 hover:text-rose-800"
+                      type="button"
+                    >
+                      Login here
+                    </button>
+                  </p>
+                ) : (
+                  <p className="text-rose-700">
+                    Don&apos;t have a staff account?{" "}
+                    <button
+                      onClick={() => setTab("Sign Up")}
+                      className="font-semibold text-rose-600 underline underline-offset-4 hover:text-rose-800"
+                      type="button"
+                    >
+                      Sign Up
+                    </button>
+                  </p>
+                )}
+              </div>
+
+              {/* cross-links */}
+              <p className="mt-4 text-center text-xs text-rose-600">
+                Are you a customer?{" "}
+                <button
+                  onClick={() => navigate("/login")}
+                  className="font-medium text-rose-700 underline underline-offset-4 hover:text-rose-900"
+                  type="button"
+                >
+                  Go to Customer Login
+                </button>
+              </p>
+              <p className="mt-1 text-center text-xs text-rose-600">
+                Are you an admin?{" "}
+                <button
+                  onClick={() => navigate("/admin/login")}
+                  className="font-medium text-rose-700 underline underline-offset-4 hover:text-rose-900"
+                  type="button"
+                >
+                  Go to Admin Login
+                </button>
+              </p>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <p className="relative bottom-4 left-1/2 -translate-x-1/2 text-center text-[11px] text-rose-500/80 z-40">
+        © {new Date().getFullYear()} Pink Aura Salon. All rights reserved.
+      </p>
     </div>
   );
 }
