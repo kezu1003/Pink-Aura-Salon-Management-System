@@ -19,13 +19,13 @@ const signAuthToken = (user) =>
 // Allowed staff job titles for self-registration
 const ALLOWED_TITLES = [
   "Facial Artist",
-  "Hairdresser",
+  "Hair dresser",
   "Nail Artist",
   "Makeup Artist",
   "Event Stylist",
 ];
 
-// ---------------- Existing Handlers (slightly updated tokens) ----------------
+
 
 export const register = async (req, res) => {
   const { name, email, password } = req.body;
@@ -65,7 +65,7 @@ export const register = async (req, res) => {
   }
 };
 
-// ✅ NEW: Staff self-registration (like customers)
+//  Staff self-registration 
 export const staffRegister = async (req, res) => {
   const { name, email, password, jobTitle } = req.body;
 
@@ -85,12 +85,12 @@ export const staffRegister = async (req, res) => {
       name,
       email,
       password: hashed,
-      role: 'staff',          // force staff role
+      role: 'staff',         
       jobTitle,
-      isAccountVerified: true // optional: skip OTP for staff
+      isAccountVerified: true 
     });
 
-    // Make it behave like customer register: set cookie + logged in
+    
     const token = signAuthToken(user);
     res.cookie('token', token, {
       httpOnly: true,
@@ -118,7 +118,7 @@ export const login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.json({ success: false, message: 'Invalid password' });
 
-    // Optional: block suspended users
+    // block suspended users
     if (user.status === "suspended") {
       return res.json({ success: false, message: "Account suspended. Contact admin." });
     }
@@ -153,7 +153,7 @@ export const logout = async (req, res) => {
   }
 };
 
-// ---------------- Email Verify / Password Reset (unchanged) ----------------
+
 export const sendVerifyOtp = async (req, res) => {
   try {
     const userId = req.userId;
@@ -272,7 +272,7 @@ export const resetPassword = async (req, res) => {
   }
 };
 
-// ---------------- New: Me & Admin/Staff Login ----------------
+
 
 export const me = async (req, res) => {
   try {
