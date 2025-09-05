@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import api from "../../api/axios.js";
 import ReviewCard from "../../components/ReviewCard.jsx";
+import { Plus, Search } from "lucide-react";
 
 export default function Reviews() {
   const navigate = useNavigate();
@@ -49,66 +50,57 @@ export default function Reviews() {
     }
   };
 
-  useEffect(() => {
-    fetchLists();
-    loadReviews();
-    
-  }, []);
-
-  // Refetch when filters change 
-
-  useEffect(() => {
-    loadReviews();
-    
-  }, [filter.category, filter.staffId, filter.mine, filter.sort]);
+  useEffect(() => { fetchLists(); loadReviews(); }, []);
+  useEffect(() => { loadReviews(); }, [filter.category, filter.staffId, filter.mine, filter.sort]);
 
   return (
-    <div className="max-w-5xl mx-auto p-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Reviews</h1>
-        <Link to="/reviews/add" className="px-4 py-2 rounded-xl bg-black text-white">
-          Add Review
+    <div className="mx-auto max-w-6xl p-4">
+
+      {/* Header */}
+
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900">Customer Reviews</h1>
+          <p className="text-sm text-slate-500">Share your experience and browse what others say.</p>
+        </div>
+        <Link
+          to="/reviews/add"
+          className="inline-flex items-center gap-2 rounded-full bg-black px-5 py-2.5 text-white shadow hover:opacity-90"
+        >
+          <Plus size={18} /> Add Review
         </Link>
       </div>
 
-      {/* Filters */}
-      
-      <div className="mt-4 grid grid-cols-1 md:grid-cols-5 gap-3">
+      {/* Filters bar */}
+
+      <div className="mt-5 flex flex-wrap items-center gap-2 rounded-2xl border border-rose-200 bg-rose-50/60 p-3">
+
+        {/* Category */}
+
         <select
-          className="rounded-xl border p-2"
+          className="rounded-full border border-rose-200 bg-white px-4 py-2 text-sm"
           value={filter.category}
           onChange={(e) => setFilter({ ...filter, category: e.target.value })}
         >
           <option value="">All Categories</option>
-          {categories.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
+          {categories.map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
 
+        {/* Staff */}
+
         <select
-          className="rounded-xl border p-2"
+          className="rounded-full border border-rose-200 bg-white px-4 py-2 text-sm"
           value={filter.staffId}
           onChange={(e) => setFilter({ ...filter, staffId: e.target.value })}
         >
           <option value="">All Staff</option>
-          {staff.map((s) => (
-            <option key={s._id} value={s._id}>
-              {s.name}
-            </option>
-          ))}
+          {staff.map((s) => <option key={s._id} value={s._id}>{s.name}</option>)}
         </select>
 
-        <input
-          className="rounded-xl border p-2"
-          placeholder="Search comment"
-          value={filter.search}
-          onChange={(e) => setFilter({ ...filter, search: e.target.value })}
-        />
+        {/* Sort */}
 
         <select
-          className="rounded-xl border p-2"
+          className="rounded-full border border-rose-200 bg-white px-4 py-2 text-sm"
           value={filter.sort}
           onChange={(e) => setFilter({ ...filter, sort: e.target.value })}
         >
@@ -116,23 +108,43 @@ export default function Reviews() {
           <option value="rating">Highest Rating</option>
         </select>
 
-        <label className="inline-flex items-center gap-2 text-sm">
+        {/* My reviews chip */}
+        
+        <button
+          onClick={() => setFilter({ ...filter, mine: !filter.mine })}
+          className={`rounded-full px-4 py-2 text-sm border ${
+            filter.mine ? "bg-rose-500 text-white border-rose-500" : "bg-white text-slate-700 border-rose-200"
+          }`}
+        >
+          My Reviews
+        </button>
+
+        {/* Search */}
+
+        <div className="ml-auto flex items-center gap-2 rounded-full border border-rose-200 bg-white px-3 py-2">
+          <Search size={16} className="text-slate-400" />
           <input
-            type="checkbox"
-            checked={filter.mine}
-            onChange={(e) => setFilter({ ...filter, mine: e.target.checked })}
+            value={filter.search}
+            onChange={(e) => setFilter({ ...filter, search: e.target.value })}
+            placeholder="Search comments"
+            className="w-40 bg-transparent text-sm outline-none placeholder:text-slate-400"
           />
-          My reviews
-        </label>
+          <button
+            onClick={loadReviews}
+            className="rounded-full bg-black px-3 py-1.5 text-xs text-white hover:opacity-90"
+          >
+            Apply
+          </button>
+        </div>
       </div>
 
-      <button onClick={loadReviews} className="mt-3 px-3 py-2 rounded-xl border">
-        Apply
-      </button>
-
-      <div className="mt-4 grid gap-3">
+      {/* Tiles */}
+      
+      <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {loading ? (
-          <p>Loading…</p>
+          Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="h-40 rounded-2xl border border-rose-100 bg-white/60 animate-pulse" />
+          ))
         ) : reviews.length ? (
           reviews.map((r) => (
             <ReviewCard
@@ -153,7 +165,9 @@ export default function Reviews() {
             />
           ))
         ) : (
-          <p>No reviews found.</p>
+          <p className="col-span-full rounded-2xl border border-slate-200 bg-white p-6 text-center text-slate-500">
+            No reviews found.
+          </p>
         )}
       </div>
     </div>

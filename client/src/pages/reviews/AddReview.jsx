@@ -55,72 +55,81 @@ export default function AddReview() {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">{editing ? "Edit Review" : "Add Review"}</h1>
-      <form onSubmit={submit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium">Category</label>
-          <select
-            className="mt-1 w-full rounded-xl border p-2"
-            value={form.category}
-            onChange={(e) => setForm({ ...form, category: e.target.value })}
-          >
-            <option value="">Select category</option>
-            {categories.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-        </div>
+    <div className="mx-auto max-w-2xl p-4">
+      <div className="rounded-3xl border border-rose-200 bg-white/90 p-6 shadow-sm">
+        <h1 className="text-2xl font-bold text-slate-900">
+          {editing ? "Edit Review" : "Add Review"}
+        </h1>
+        <p className="mt-1 text-sm text-slate-500">
+          Choose a category and the staff member who served you.
+        </p>
 
-        <div>
-          <label className="block text-sm font-medium">Staff Member</label>
-          <select
-            className="mt-1 w-full rounded-xl border p-2"
-            value={form.staff}
-            onChange={(e) => setForm({ ...form, staff: e.target.value })}
-          >
-            <option value="">Select staff</option>
-            {staff.map((s) => (
-              <option key={s._id} value={s._id}>
-                {s.name} ({s.role})
-              </option>
-            ))}
-          </select>
-        </div>
+        <form onSubmit={submit} className="mt-5 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-slate-800">Category</label>
+            <select
+              className="mt-1 w-full rounded-2xl border border-rose-200 bg-white px-3 py-2 focus:border-rose-400 focus:ring-rose-300"
+              value={form.category}
+              onChange={(e) => setForm({ ...form, category: e.target.value })}
+            >
+              <option value="">Select category</option>
+              {categories.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+          </div>
 
-        <div>
-          <label className="block text-sm font-medium">Rating</label>
-          <RatingStars
-            value={form.rating}
-            onChange={(v) => setForm({ ...form, rating: v })}
-          />
-        </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-800">Staff Member</label>
+            <select
+              className="mt-1 w-full rounded-2xl border border-rose-200 bg-white px-3 py-2 focus:border-rose-400 focus:ring-rose-300"
+              value={form.staff}
+              onChange={(e) => setForm({ ...form, staff: e.target.value })}
+            >
+              <option value="">Select staff</option>
+              {staff.map((s) => (
+                <option key={s._id} value={s._id}>{s.name} ({s.role})</option>
+              ))}
+            </select>
+          </div>
 
-        <div>
-          <label className="block text-sm font-medium">Comment (optional)</label>
-          <textarea
-            className="mt-1 w-full rounded-xl border p-2"
-            rows={4}
-            value={form.comment}
-            onChange={(e) => setForm({ ...form, comment: e.target.value })}
-          />
-        </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-800">Rating</label>
+            <div className="mt-1">
+              <RatingStars value={form.rating} onChange={(v) => setForm({ ...form, rating: v })} />
+            </div>
+          </div>
 
-        <div className="flex justify-end gap-2">
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            className="px-4 py-2 rounded-xl border"
-          >
-            Cancel
-          </button>
-          <button type="submit" className="px-4 py-2 rounded-xl bg-black text-white">
-            {editing ? "Save" : "Add"}
-          </button>
-        </div>
-      </form>
+          <div>
+            <label className="block text-sm font-medium text-slate-800">
+              Comment <span className="text-slate-400">(optional)</span>
+            </label>
+            <textarea
+              rows={4}
+              className="mt-1 w-full rounded-2xl border border-rose-200 bg-white px-3 py-2 focus:border-rose-400 focus:ring-rose-300"
+              value={form.comment}
+              onChange={(e) => setForm({ ...form, comment: e.target.value })}
+              placeholder="Tell us a bit about your experience…"
+            />
+          </div>
+
+          <div className="flex justify-end gap-2 pt-2">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="rounded-full border border-slate-200 bg-white px-5 py-2 text-slate-800 hover:bg-slate-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="rounded-full bg-black px-6 py-2 text-white shadow hover:opacity-90"
+            >
+              {editing ? "Save" : "Add"}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
