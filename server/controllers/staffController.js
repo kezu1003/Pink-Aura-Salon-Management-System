@@ -1,22 +1,22 @@
 import userModel from "../models/userModel.js";
 
-// Allowed job titles for staff specialization
+
 const ALLOWED_TITLES = [
   "Facial Artist",
   "Hairdresser",
   "Nail Artist",
   "Makeup Artist",
   "Event Stylist",
-  "" // allow empty to clear / leave unset
+  "" 
 ];
 
-// List staff (admin only). Supports q, role, status, jobTitle, pagination.
+
 export const listStaff = async (req, res) => {
   try {
     const { q = "", role, status, jobTitle, page = 1, limit = 10 } = req.query;
 
     const filter = {
-      role: { $in: ["staff", "admin"] }, // list both by default
+      role: { $in: ["staff", "admin"] }, 
       ...(role ? { role } : {}),
       ...(status ? { status } : {}),
       ...(jobTitle ? { jobTitle } : {}),
@@ -57,7 +57,7 @@ export const listStaff = async (req, res) => {
   }
 };
 
-// Create staff/admin user (admin only)
+
 export const createStaff = async (req, res) => {
   try {
     const { name, email, password, role = "staff", jobTitle = "" } = req.body;
@@ -75,7 +75,7 @@ export const createStaff = async (req, res) => {
     const exists = await userModel.findOne({ email });
     if (exists) return res.json({ success: false, message: "User already exists" });
 
-    // hash password using bcryptjs
+    
     const bcrypt = await import("bcryptjs");
     const hashed = await bcrypt.default.hash(password, 10);
 
@@ -84,8 +84,8 @@ export const createStaff = async (req, res) => {
       email,
       password: hashed,
       role,
-      jobTitle: role === "staff" ? jobTitle : "", // admins don't need jobTitle
-      isAccountVerified: true, // optional: skip verification for staff/admin
+      jobTitle: role === "staff" ? jobTitle : "", 
+      isAccountVerified: true, 
       status: "active",
     });
 
@@ -95,7 +95,7 @@ export const createStaff = async (req, res) => {
   }
 };
 
-// Update staff/admin user (name, role, status, jobTitle)
+
 export const updateStaff = async (req, res) => {
   try {
     const { id } = req.params;
@@ -109,7 +109,7 @@ export const updateStaff = async (req, res) => {
         return res.json({ success: false, message: "Invalid role" });
       }
       update.role = role;
-      // If promoting to admin, drop jobTitle automatically
+      
       if (role === "admin") update.jobTitle = "";
     }
 

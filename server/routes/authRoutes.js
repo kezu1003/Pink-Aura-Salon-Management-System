@@ -1,25 +1,38 @@
-import express from 'express';
-import userAuth from '../middleware/userAuth.js';
+import express from "express";
 import {
-  isAuthenticated, login, logout, register, resetPassword,
-  sendResetOtp, sendVerifyOtp, verifyEmail, me, adminStaffLogin,
-  staffRegister // ✅ NEW
-} from '../controllers/authController.js';
+  register,
+  login,
+  logout,
+  staffRegister,      
+  adminStaffLogin,     
+  me,
+  sendVerifyOtp,
+  verifyEmail,
+  sendResetOtp,
+  resetPassword,
+} from "../controllers/authController.js";
+import userAuth from "../middleware/userAuth.js";
 
-const authRouter = express.Router();
+const router = express.Router();
 
-authRouter.post('/register', register);
-authRouter.post('/staff-register', staffRegister); // staff self-register
-authRouter.post('/login', login);                  // customer login (unchanged)
-authRouter.post('/admin-login', adminStaffLogin);  // admin/staff login with role select
-authRouter.post('/logout', logout);
+// Public auth
+router.post("/register", register);
+router.post("/login", login);
+router.post("/logout", logout);
 
-authRouter.post('/send-verify-otp', userAuth, sendVerifyOtp);
-authRouter.post('/verify-account', userAuth, verifyEmail);
-authRouter.get('/is-auth', userAuth, isAuthenticated);
-authRouter.get('/me', userAuth, me);
+// Staff register (sets role="staff" and returns user)
+router.post("/staff-register", staffRegister);
 
-authRouter.post('/send-reset-otp', sendResetOtp);
-authRouter.post('/reset-password', resetPassword);
+// Admin/Staff login (enforces role)
+router.post("/admin-staff-login", adminStaffLogin);
 
-export default authRouter;
+// Me (needs logged-in user)
+router.get("/me", userAuth, me);
+
+// Email OTP / reset
+router.post("/send-verify-otp", userAuth, sendVerifyOtp);
+router.post("/verify-email", userAuth, verifyEmail);
+router.post("/send-reset-otp", sendResetOtp);
+router.post("/reset-password", resetPassword);
+
+export default router;
