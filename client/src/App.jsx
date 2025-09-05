@@ -1,4 +1,3 @@
-// client/src/App.jsx
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 
@@ -18,7 +17,7 @@ import AdminLayout from './pages/admin/AdminLayout.jsx';
 import AdminOverview from './pages/admin/AdminOverview.jsx';
 import StaffDirectory from './pages/admin/StaffDirectory.jsx';
 import AdminLogin from './pages/admin/AdminLogin.jsx';
-import StaffAuth from './pages/admin/StaffAuth.jsx'; 
+import StaffAuth from './pages/admin/StaffAuth.jsx';
 
 import Shop from './pages/Shop.jsx';
 import ProductDetails from './pages/ProductDetails.jsx';
@@ -29,8 +28,13 @@ import Checkout from './pages/Checkout.jsx';
 import ProductsAdmin from './pages/admin/ProductsAdmin.jsx';
 import ProductForm from './pages/admin/ProductForm.jsx';
 
-// NEW: Staff dashboard
+// Staff dashboard
 import StaffDashboard from './pages/StaffDashboard.jsx';
+
+// Reviews (public/customer) + Admin reviews
+import Reviews from './pages/reviews/Reviews.jsx';
+import AddReview from './pages/reviews/AddReview.jsx';
+import AdminReviews from './pages/admin/AdminReviews.jsx';
 
 const App = () => {
   return (
@@ -53,7 +57,7 @@ const App = () => {
         <Route path='/admin/login' element={<AdminLogin />} />
         <Route path='/staff-auth' element={<StaffAuth />} />
 
-        {/* Staff & Supplier dashboard  */}
+        {/* Staff & Supplier dashboard */}
         <Route
           path='/staff'
           element={
@@ -63,7 +67,11 @@ const App = () => {
           }
         />
 
-        {/* Protected Admin area */}
+        {/* Public/Customer reviews */}
+        <Route path='/reviews' element={<Reviews />} />
+        <Route path='/reviews/add' element={<AddReview />} />
+
+       
         <Route
           path='/admin'
           element={
@@ -77,9 +85,10 @@ const App = () => {
           <Route path='products' element={<ProductsAdmin />} />
           <Route path='products/new' element={<ProductForm />} />
           <Route path='products/:id/edit' element={<ProductForm />} />
-        </Route>
 
-        
+          
+          <Route path='reviews' element={<AdminReviews />} />
+        </Route>
       </Routes>
     </div>
   );

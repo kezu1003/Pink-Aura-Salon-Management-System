@@ -66,7 +66,7 @@ const Navbar = () => {
         {/* Links */}
         <div className="flex items-center gap-5">
 
-          {/* Show Shop/Cart only when logged in */}
+          {/* Show  only when logged in */}
 
           {userData && (
             <>
@@ -95,6 +95,17 @@ const Navbar = () => {
               >
                 Cart
               </NavLink>
+
+              <NavLink
+              
+                to="/reviews"
+                className={({ isActive }) =>
+                  `text-lg ${isActive ? 'text-slate-900 font-medium' : 'text-slate-700 hover:text-slate-900'}`
+                }
+              >
+                Reviews
+              </NavLink>  
+
             </>
           )}
 

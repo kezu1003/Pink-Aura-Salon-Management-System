@@ -37,7 +37,7 @@ export default function AdminSidebar() {
         <Item to="/admin" label="Overview" />
       </Group>
 
-      {/* ✅ NEW: Products */}
+      {/* Products */}
       <Group title="Catalog">
         <Item to="/admin/products" label="Products" />
         <Item to="/admin/products/new" label="Add Product" />
@@ -51,6 +51,10 @@ export default function AdminSidebar() {
       <Group title="Services & Packages">
         <Item to="/admin/services" label="Services" />
         <Item to="/admin/packages" label="Packages" />
+      </Group>
+
+      <Group title="Reviews & Feedback">
+        <Item to="/admin/reviews" label="Manage Reviews" />
       </Group>
 
       {hasRole("admin") && (
