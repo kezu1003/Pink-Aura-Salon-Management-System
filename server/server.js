@@ -8,20 +8,23 @@ import authRouter from "./routes/authRoutes.js";
 import userRouter from "./routes/userRoutes.js";
 import productRoutes from "./routes/productsRoutes.js";
 
-// new/existing
+
 import adminRoutes from "./routes/adminRoutes.js";
 import staffRoutes from "./routes/staffRoutes.js";
 
-// orders (checkout)
+
 import orderRoutes from "./routes/ordersRoutes.js";
+
+import reviewsRoutes from "./routes/reviewsRoutes.js";
+import publicRoutes from "./routes/publicRoutes.js";
 
 const app = express();
 const port = process.env.PORT || 4000;
 
-// DB
+
 connectDB();
 
-// CORS (allow Vite and optional env CLIENT_URL)
+
 const allowedOrigins = [
   process.env.CLIENT_URL || "http://localhost:5173",
 ];
@@ -33,7 +36,7 @@ app.use(cookieParser());
 app.use(
   cors({
     origin: function (origin, callback) {
-      // allow requests with no origin (e.g. mobile apps, curl)
+      
       if (!origin) return callback(null, true);
       return allowedOrigins.includes(origin)
         ? callback(null, true)
@@ -43,7 +46,7 @@ app.use(
   })
 );
 
-// Health check
+
 app.get("/", (req, res) => res.send("API Working"));
 
 // Routes
@@ -54,12 +57,15 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/staff", staffRoutes);
 
+app.use("/api/reviews", reviewsRoutes);
+app.use("/api/public", publicRoutes);
+
 // 404
 app.use((req, res) => {
   res.status(404).json({ success: false, message: "Route not found" });
 });
 
-// Error handler (basic)
+// Error handler 
 app.use((err, req, res, next) => {
   console.error(err?.stack || err);
   res
