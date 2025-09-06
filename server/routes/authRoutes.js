@@ -20,13 +20,9 @@ router.post("/register", register);
 router.post("/login", login);
 router.post("/logout", logout);
 
-// Staff register (sets role="staff" and returns user)
+
 router.post("/staff-register", staffRegister);
-
-// Admin/Staff login (enforces role)
 router.post("/admin-staff-login", adminStaffLogin);
-
-// Me (needs logged-in user)
 router.get("/me", userAuth, me);
 
 // Email OTP / reset
