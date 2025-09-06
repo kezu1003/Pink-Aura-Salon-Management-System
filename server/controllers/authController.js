@@ -38,7 +38,13 @@ export const register = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new userModel({ name, email, password: hashedPassword }); 
+
+    
+    const user = await userModel.create({
+      name,
+      email,
+      password: hashedPassword, // role defaults to "customer"
+    });
 
     const token = signAuthToken(user);
     res.cookie('token', token, {
@@ -48,24 +54,37 @@ export const register = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    const mailOptions = {
-      from: process.env.SENDER_EMAIL,
-      to: email,
-      subject: 'Welcome to Pink Aura',
-      text: `Welcome to Pink Aura. Your account has been created with email id: ${email}`,
-    };
-    await transporter.sendMail(mailOptions);
+    // Send welcome email 
+    try {
+      const mailOptions = {
+        from: process.env.SENDER_EMAIL,
+        to: email,
+        subject: 'Welcome to Pink Aura',
+        text: `Welcome to Pink Aura. Your account has been created with email id: ${email}`,
+      };
+      await transporter.sendMail(mailOptions);
+    } catch (e) {
+      console.error('Welcome email failed:', e.message);
+    }
 
-    return res.json({ success: true, user: {
-      id: user._id, name: user.name, email: user.email, role: user.role,
-      jobTitle: user.jobTitle || "", permissions: []
-    }});
+    return res.json({
+      success: true,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        jobTitle: user.jobTitle || "",
+        permissions: [],
+      },
+    });
   } catch (error) {
-    res.json({ success: false, message: error.message });
+    return res.json({ success: false, message: error.message });
   }
 };
 
 // Staff self-registration
+
 export const staffRegister = async (req, res) => {
   const { name, email, password, jobTitle } = req.body;
 
@@ -316,6 +335,7 @@ export const me = async (req, res) => {
 };
 
 // Admin/Staff specific login with role selection enforcement
+
 export const adminStaffLogin = async (req, res) => {
   const { email, password, role } = req.body; 
   if (!email || !password || !role) {
