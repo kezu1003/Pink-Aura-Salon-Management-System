@@ -36,6 +36,11 @@ import Reviews from './pages/reviews/Reviews.jsx';
 import AddReview from './pages/reviews/AddReview.jsx';
 import AdminReviews from './pages/admin/AdminReviews.jsx';
 
+//services
+import Services from './pages/Services.jsx';
+import ServicesAdmin from './pages/admin/ServicesAdmin.jsx';
+import ServiceReport from './pages/admin/ServiceReport.jsx';
+
 const App = () => {
   return (
     <div>
@@ -52,6 +57,8 @@ const App = () => {
         <Route path='/product/:id' element={<ProductDetails />} />
         <Route path='/cart' element={<Cart />} />
         <Route path='/checkout' element={<Checkout />} />
+
+        <Route path='/services' element={<Services />} />
 
         {/* Staff/Admin auth */}
         <Route path='/admin/login' element={<AdminLogin />} />
@@ -85,9 +92,10 @@ const App = () => {
           <Route path='products' element={<ProductsAdmin />} />
           <Route path='products/new' element={<ProductForm />} />
           <Route path='products/:id/edit' element={<ProductForm />} />
-
-          
           <Route path='reviews' element={<AdminReviews />} />
+          <Route path='services' element={<ServicesAdmin />} />
+          <Route path='services/report' element={<ServiceReport />} />
+
         </Route>
       </Routes>
     </div>

@@ -106,6 +106,16 @@ const Navbar = () => {
                 Reviews
               </NavLink>  
 
+
+              <NavLink
+                 to="/services"
+                  className={({ isActive }) =>
+                    `text-lg ${isActive ? 'text-slate-900 font-medium' : 'text-slate-700 hover:text-slate-900'}`
+                  }
+              >
+                Services
+              </NavLink>
+
             </>
           )}
 
