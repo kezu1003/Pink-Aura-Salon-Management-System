@@ -3,11 +3,11 @@ import jwt from "jsonwebtoken";
 
 export const requireAuth = (req, res, next) => {
   try {
-    // 1) Try header
+  
     const bearer = req.headers.authorization || "";
     const headerToken = bearer.startsWith("Bearer ") ? bearer.slice(7) : null;
 
-    // 2) Try cookies
+  
     const cookieToken =
       req.cookies?.token || req.cookies?.authToken || req.cookies?.jwt || null;
 
@@ -21,7 +21,7 @@ export const requireAuth = (req, res, next) => {
       return res.status(401).json({ success: false, message: "Not Authorized. Login again" });
     }
 
-    // Attach to request (backwards compatible fields)
+    // Attach to request 
     req.userId = decoded.id;
     req.user = {
       id: decoded.id,
