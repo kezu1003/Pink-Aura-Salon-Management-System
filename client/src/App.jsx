@@ -41,6 +41,13 @@ import Services from './pages/Services.jsx';
 import ServicesAdmin from './pages/admin/ServicesAdmin.jsx';
 import ServiceReport from './pages/admin/ServiceReport.jsx';
 
+// appointments 
+import AppointmentsAdmin from './pages/admin/AppointmentsAdmin.jsx';
+import CalendarView from './pages/admin/CalendarView.jsx';
+import BookAppointment from './pages/appointments/Book.jsx';
+import MyAppointments from './pages/appointments/MyAppointments.jsx';
+import AppointmentsReport from "./pages/admin/AppointmentsReport.jsx";
+
 const App = () => {
   return (
     <div>
@@ -59,6 +66,10 @@ const App = () => {
         <Route path='/checkout' element={<Checkout />} />
 
         <Route path='/services' element={<Services />} />
+
+        <Route path='/appointments/book' element={<BookAppointment />} />
+        <Route path='/appointments/me' element={<MyAppointments />} />
+
 
         {/* Staff/Admin auth */}
         <Route path='/admin/login' element={<AdminLogin />} />
@@ -88,6 +99,8 @@ const App = () => {
           }
         >
           <Route index element={<AdminOverview />} />
+          <Route path='appointments' element={<AppointmentsAdmin />} />
+          <Route path='calendar' element={<CalendarView />} />
           <Route path='staff' element={<StaffDirectory />} />
           <Route path='products' element={<ProductsAdmin />} />
           <Route path='products/new' element={<ProductForm />} />
@@ -95,6 +108,7 @@ const App = () => {
           <Route path='reviews' element={<AdminReviews />} />
           <Route path='services' element={<ServicesAdmin />} />
           <Route path='services/report' element={<ServiceReport />} />
+          <Route path="/admin/appointments-report" element={<AppointmentsReport />} />
 
         </Route>
       </Routes>

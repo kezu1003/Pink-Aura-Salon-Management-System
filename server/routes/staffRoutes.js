@@ -1,4 +1,3 @@
-// server/routes/staffRoutes.js
 import express from "express";
 import userAuth, { requireAnyRole } from "../middleware/userAuth.js";
 import {
@@ -13,6 +12,8 @@ import {
   listServices,
 } from "../controllers/staffDashController.js";
 
+import { addUnavailability } from "../controllers/appointmentsController.js";
+
 const router = express.Router();
 
 // must be logged in and be staff or supplier
@@ -25,6 +26,9 @@ router.get("/schedule", listSchedule);
 router.get("/services", listServices);
 router.get("/announcements", listAnnouncements);
 router.post("/inventory/requests", createInventoryRequest);
+
+// mark unavailable (staff)
+router.post("/unavailability", addUnavailability);
 
 // appointments
 router.post("/appointments/:id/start", startAppointment);
