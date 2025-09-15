@@ -12,6 +12,7 @@ import {
   fulfillPO,
   listServices,
 } from "../controllers/staffDashController.js";
+import { addTimeOff, removeTimeOff, listTimeOff } from "../controllers/staffTimeOffController.js";
 
 const router = express.Router();
 
@@ -33,5 +34,9 @@ router.post("/appointments/:id/complete", completeAppointment);
 // supplier
 router.get("/suppliers/pos", listPOs);
 router.post("/suppliers/pos/:id/fulfill", fulfillPO);
+
+router.get("/time-off", listTimeOff);
+router.post("/time-off", addTimeOff);
+router.delete("/time-off/:id", removeTimeOff);
 
 export default router;

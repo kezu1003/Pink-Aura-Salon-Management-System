@@ -41,6 +41,11 @@ import Services from './pages/Services.jsx';
 import ServicesAdmin from './pages/admin/ServicesAdmin.jsx';
 import ServiceReport from './pages/admin/ServiceReport.jsx';
 
+// appointments
+ import Book from './pages/appointments/Book.jsx';
+ import MyAppointments from './pages/appointments/MyAppointments.jsx';
+ import AdminCalendar from './pages/admin/AdminCalendar.jsx';
+
 const App = () => {
   return (
     <div>
@@ -59,6 +64,9 @@ const App = () => {
         <Route path='/checkout' element={<Checkout />} />
 
         <Route path='/services' element={<Services />} />
+
+        <Route path='/book' element={<Book />} />
++       <Route path='/appointments/mine' element={<MyAppointments />} />
 
         {/* Staff/Admin auth */}
         <Route path='/admin/login' element={<AdminLogin />} />
@@ -95,6 +103,7 @@ const App = () => {
           <Route path='reviews' element={<AdminReviews />} />
           <Route path='services' element={<ServicesAdmin />} />
           <Route path='services/report' element={<ServiceReport />} />
+          <Route path='calendar' element={<AdminCalendar />} />
 
         </Route>
       </Routes>
