@@ -1,25 +1,59 @@
-import axios from "axios";
+export function makeApi(baseUrl) {
+  const root = `${baseUrl}/api/appointments`;
 
-export function makeApi(backendUrl) {
-  const api = axios.create({ baseURL: backendUrl, withCredentials: true });
+  const get = async (url) => {
+    const res = await fetch(url, { credentials: "include" });
+    return res.json();
+  };
 
-  const ok = (p) =>
-    p.then(r => r.data)
-     .catch(err => {
-       const message =
-         err?.response?.data?.message ||
-         err?.message ||
-         "Request failed";
-       return { success: false, message, _error: err };
-     });
+  const post = async (url, body) => {
+    const res = await fetch(url, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body || {}),
+    });
+    return res.json();
+  };
+
+  const patch = async (url, body) => {
+    const res = await fetch(url, {
+      method: "PATCH",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body || {}),
+    });
+    return res.json();
+  };
+
+  const del = async (url) => {
+    const res = await fetch(url, { method: "DELETE", credentials: "include" });
+    return res.json();
+  };
 
   return {
-    slots: (params) => ok(api.get("/api/appointments/slots", { params })),
-    create: (payload) => ok(api.post("/api/appointments", payload)),
-    mine:   (params) => ok(api.get("/api/appointments/mine", { params })),
-    adminList: (params) => ok(api.get("/api/appointments", { params })),
-    update: (id, payload) => ok(api.patch(`/api/appointments/${id}`, payload)),
-    cancel: (id) => ok(api.delete(`/api/appointments/${id}`)),
-    markPaid: (id) => ok(api.post(`/api/appointments/${id}/mark-paid`)),
+    // slots for a day
+    slots: ({ serviceId, date, staffId }) =>
+      get(`${root}/slots?${new URLSearchParams({ serviceId, date, ...(staffId ? { staffId } : {}) }).toString()}`),
+
+    // create appointment
+    create: (body) => post(root, body),
+
+    // customer
+    mine: () => get(`${root}/mine`),
+    update: (id, body) => patch(`${root}/${id}`, body),
+    cancel: (id) => del(`${root}/${id}`),
+
+    // admin
+    listAdmin: (qs = {}) =>
+      get(`${root}?${new URLSearchParams(qs).toString()}`),
+    adminGrouped: (by = "date") =>
+      get(`${root}/grouped?by=${encodeURIComponent(by)}`),
+    markPaid: (id) => post(`${root}/${id}/mark-paid`),
+
+    // staff
+    staffSchedule: () => get(`${baseUrl}/api/staff/schedule`),
+    staffStart: (id) => post(`${baseUrl}/api/staff/appointments/${id}/start`),
+    staffComplete: (id) => post(`${baseUrl}/api/staff/appointments/${id}/complete`),
   };
 }

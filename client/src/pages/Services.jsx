@@ -1,6 +1,7 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { AppContext } from "../context/AppContext";
+import { useNavigate } from "react-router-dom"; 
 
 const FALLBACK_CATEGORIES = ["All", "Hair", "Nails", "Makeup", "Facials", "Other"];
 
@@ -12,12 +13,17 @@ export default function Services() {
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const navigate = useNavigate();  
+
   async function load() {
+
     try {
+
       setLoading(true);
       const params = new URLSearchParams();
       params.set("activeOnly", "true");
       params.set("group", "true");
+
       if (activeCat !== "All") params.set("category", activeCat);
       if (q) params.set("q", q);
       const { data } = await axios.get(`${backendUrl}/api/services?${params.toString()}`);
@@ -39,17 +45,23 @@ export default function Services() {
       {/* Breadcrumb strip */}
 
       <div className="bg-pink-50/70 border-y border-pink-100">
+
         <div className="max-w-6xl mx-auto px-4 py-6 text-sm text-gray-600">
+
           <span className="opacity-70">Home</span> <span className="mx-2">|</span> <span className="font-medium">Services</span>
+
         </div>
+
       </div>
 
       {/* Hero */}
 
       <section className="max-w-4xl mx-auto px-4 text-center py-10 md:py-14">
+
         <h1 className="text-4xl md:text-5xl font-serif tracking-tight text-slate-900">
           Beauty Redefined at Sri Lanka’s Favourite Ladies Salon
         </h1>
+
         <p className="mt-6 text-gray-600">
           Treat yourself with a self-care experience like never before — book your appointment today,
           and discover why we’re the best ladies salon in Colombo!
@@ -100,7 +112,7 @@ export default function Services() {
       </div>
 
       {/* Groups */}
-      
+
       <div className="max-w-6xl mx-auto px-4 py-10">
         {loading ? (
           <div className="text-center text-gray-500">Loading…</div>
@@ -123,7 +135,10 @@ export default function Services() {
                     <p className="text-sm text-gray-600 line-clamp-2 mt-1">{s.description}</p>
                     <div className="mt-3 text-sm text-gray-700">{s.durationMins} mins</div>
                     <div className="mt-4">
-                      <button className="w-full px-4 py-2 rounded-lg bg-pink-500 text-white hover:opacity-90">
+                      <button
+                        onClick={() => navigate(`/appointments/book?service=${s._id}`)}  // ✅ wired to booking page
+                        className="w-full px-4 py-2 rounded-lg bg-pink-500 text-white hover:opacity-90"
+                      >
                         Book now
                       </button>
                     </div>

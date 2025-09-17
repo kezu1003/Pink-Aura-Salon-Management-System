@@ -4,8 +4,9 @@ import axios from "axios";
 import { makeApi } from "../../api/appointments";
 import { format } from "date-fns";
 import SlotGrid from "../../components/appointments/SlotGrid";
+import Calendar from "../../components/appointments/Calendar";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 export default function Book() {
   const { backendUrl, userData } = useContext(AppContext);
@@ -19,32 +20,33 @@ export default function Book() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const serviceFromQuery = searchParams.get("service"); 
 
-  // guard: must be logged in to book
-  useEffect(() => {
-    if (userData === false) return; // still loading auth state
-    if (!userData) {
-      toast.info("Please login to book an appointment.");
-      navigate("/login");
-    }
-  }, [userData, navigate]);
+  // Load services once, then auto-select from query if present
 
-  // load services
   useEffect(() => {
     (async () => {
       try {
         const { data } = await axios.get(`${backendUrl}/api/services?activeOnly=true`);
         const list = data?.services || [];
         setServices(list);
-        if (list.length) setServiceId(list[0]._id);
-      } catch (err) {
-        const msg = err?.response?.data?.message || err.message || "Failed to load services";
-        toast.error(msg);
+
+        if (list.length) {
+          // If a valid ?service=id is provided, prefer it
+          if (serviceFromQuery && list.some(s => s._id === serviceFromQuery)) {
+            setServiceId(serviceFromQuery);
+          } else {
+            setServiceId(list[0]._id);
+          }
+        }
+      } catch (e) {
+        toast.error(e?.response?.data?.message || e.message || "Failed to load services");
       }
     })();
-  }, [backendUrl]);
+  }, [backendUrl, serviceFromQuery]);
 
-  // load slots for selected service/date
+  // Load slots whenever service/date changes
   useEffect(() => {
     if (!serviceId || !date) return;
     setLoading(true);
@@ -57,72 +59,63 @@ export default function Book() {
           return;
         }
         setSlots(slots || []);
-      })
-      .catch((err) => {
-        const msg = err?.response?.data?.message || err.message || "Failed to load slots";
-        toast.error(msg);
-        setSlots([]);
+        setPicked(null); // reset selected time when inputs change
       })
       .finally(() => setLoading(false));
   }, [serviceId, date, api]);
 
   const onConfirm = async () => {
-    if (!picked) return toast.info("Pick a time");
-    try {
-      const body = {
-        serviceIds: [serviceId],
-        date,
-        start: picked.start,
-        paymentMode: "online", // stays PENDING until payment done
-      };
-      const { success, appointment, message } = await api.create(body);
-      if (!success) {
-        return toast.error(message || "Failed to create appointment");
-      }
-      toast.success("Appointment created. Complete payment to confirm.");
-      navigate("/appointments/mine");
-    } catch (err) {
-      const msg = err?.response?.data?.message || err.message || "Failed to create appointment";
-      toast.error(msg);
+    if (!userData) {
+      toast.info("Please login to book an appointment.");
+      return navigate("/login");
     }
+    if (!picked) return toast.info("Pick a time");
+
+    const body = {
+      serviceIds: [serviceId],
+      date,
+      start: picked.start,
+      paymentMode: "online", // stays PENDING until paid
+    };
+
+    const { success, appointment, message } = await api.create(body);
+    if (!success) return toast.error(message || "Failed to create appointment");
+
+    toast.success("Appointment created. Complete payment to confirm.");
+    navigate("/appointments/mine");
   };
 
   return (
-    <div className="max-w-5xl mx-auto pt-28 px-4 pb-16">
-      <h1 className="text-3xl font-serif mb-6">Book an Appointment</h1>
+    <div className="max-w-6xl mx-auto pt-28 px-4 pb-16">
+      <h1 className="text-3xl md:text-4xl font-serif text-center mb-10">
+        Book Your Appointment
+      </h1>
 
-      {/* Select service */}
-      <div className="p-4 rounded-2xl border mb-6">
-        <div className="font-semibold mb-2">Select service</div>
-        <select
-          value={serviceId}
-          onChange={(e) => setServiceId(e.target.value)}
-          className="border rounded-lg px-3 py-2"
-        >
-          {services.map((s) => (
-            <option key={s._id} value={s._id}>
-              {s.name} — Rs.{s.price} • {s.durationMins} mins
-            </option>
-          ))}
-        </select>
-        {!services.length && (
-          <div className="mt-2 text-sm text-gray-500">No active services available.</div>
-        )}
-      </div>
-
-      {/* Date & time */}
-      <div className="grid md:grid-cols-2 gap-6">
-        <div className="p-4 rounded-2xl border">
-          <div className="font-semibold mb-3">Pick a date</div>
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="border rounded-lg px-3 py-2"
-          />
+    
+      {services.length > 0 && (
+        <div className="max-w-md mx-auto mb-6">
+          <label className="block text-sm font-medium mb-1">Select Service</label>
+          <select
+            value={serviceId}
+            onChange={(e) => setServiceId(e.target.value)}
+            className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-pink-400"
+          >
+            {services.map((s) => (
+              <option key={s._id} value={s._id}>
+                {s.name} — Rs.{s.price} • {s.durationMins} mins
+              </option>
+            ))}
+          </select>
         </div>
-        <div className="p-4 rounded-2xl border">
-          <div className="font-semibold mb-3">Pick a time</div>
+      )}
+
+      <div className="grid md:grid-cols-2 gap-8">
+        {/* Left: calendar */}
+        <Calendar value={date} onChange={setDate} />
+
+        {/* Right: time slots */}
+        <div className="p-6 bg-white rounded-2xl shadow border">
+          <div className="font-semibold mb-3">Select your time</div>
           {loading ? (
             <div className="text-sm text-gray-500">Loading…</div>
           ) : (
@@ -131,33 +124,23 @@ export default function Book() {
         </div>
       </div>
 
-      {/* Summary */}
-      <div className="mt-8 p-4 rounded-2xl border">
-        <div className="font-semibold">Summary</div>
-        <div className="text-sm text-gray-600 mt-1">
-          {picked ? (
-            <>
-              Date: {date} &middot; Time: {format(new Date(picked.start), "p")}
-            </>
-          ) : (
-            "Select a slot to continue"
-          )}
-        </div>
-        <div className="mt-4">
-          <button
-            onClick={onConfirm}
-            disabled={!picked}
-            className={`px-5 py-2 rounded-xl text-white ${
-              picked ? "bg-pink-500 hover:opacity-90" : "bg-gray-300"
-            }`}
-          >
-            Confirm & Continue
-          </button>
-        </div>
-        <p className="text-xs text-gray-500 mt-2">
-          Appointment status will show <b>Pending</b> until payment is completed.
-        </p>
+      <div className="mt-10 flex justify-end">
+        <button
+          onClick={onConfirm}
+          disabled={!picked}
+          className={`px-8 py-3 text-base font-medium rounded-full transition ${
+            picked
+              ? "bg-pink-600 text-white hover:bg-pink-700"
+              : "bg-gray-300 text-gray-500 cursor-not-allowed"
+          }`}
+        >
+          Confirm & Continue
+        </button>
       </div>
+
+      <p className="text-xs text-gray-500 mt-3">
+        Appointment status will show <b>Pending</b> until payment is completed.
+      </p>
     </div>
   );
 }

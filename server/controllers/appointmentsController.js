@@ -301,3 +301,68 @@ export async function markPaidAndConfirm(req, res) {
     res.status(500).json({ success: false, message: e.message });
   }
 }
+
+// admin grouped list 
+export async function listAdminGrouped(req, res) {
+  try {
+    const { by = "date" } = req.query; 
+
+    const groupExpr =
+      by === "type"
+        ? "$serviceCategory"
+        : by === "assignment"
+        ? { $cond: [{ $ifNull: ["$staff", false] }, "Assigned", "Unassigned"] }
+        : { $dateToString: { date: "$startTime", format: "%Y-%m-%d" } };
+
+    const pipeline = [
+
+      // Services for names + category
+      { $lookup: { from: "services", localField: "services", foreignField: "_id", as: "servicesPop" } },
+      {
+        $addFields: {
+          serviceNames: { $map: { input: "$servicesPop", as: "s", in: "$$s.name" } },
+          serviceCategory: {
+            $cond: [
+              { $gt: [{ $size: "$servicesPop" }, 0] },
+              { $arrayElemAt: ["$servicesPop.category", 0] },
+              "Other",
+            ],
+          },
+        },
+      },
+
+      // Customer
+      { $lookup: { from: "users", localField: "customer", foreignField: "_id", as: "customerPop" } },
+      { $unwind: { path: "$customerPop", preserveNullAndEmptyArrays: true } },
+
+      // Staff
+      { $lookup: { from: "users", localField: "staff", foreignField: "_id", as: "staffPop" } },
+      { $unwind: { path: "$staffPop", preserveNullAndEmptyArrays: true } },
+
+      {
+        $project: {
+          _id: 1,
+          date: 1,
+          startTime: 1,
+          endTime: 1,
+          status: 1,
+          paymentStatus: 1,
+          serviceCategory: 1,
+          serviceNames: 1,
+          customer: { _id: "$customerPop._id", name: "$customerPop.name", email: "$customerPop.email" },
+          staff: { _id: "$staffPop._id", name: "$staffPop.name", jobTitle: "$staffPop.jobTitle" },
+        },
+      },
+      { $sort: { startTime: 1 } },
+      { $group: { _id: groupExpr, items: { $push: "$$ROOT" }, count: { $sum: 1 } } },
+      { $sort: { _id: 1 } },
+    ];
+
+    const apptCol = mongoose.connection.collection("appointments");
+    const groups = await apptCol.aggregate(pipeline).toArray();
+
+    res.json({ success: true, by, groups });
+  } catch (e) {
+    res.status(500).json({ success: false, message: e.message });
+  }
+}

@@ -18,6 +18,7 @@ import AdminOverview from './pages/admin/AdminOverview.jsx';
 import StaffDirectory from './pages/admin/StaffDirectory.jsx';
 import AdminLogin from './pages/admin/AdminLogin.jsx';
 import StaffAuth from './pages/admin/StaffAuth.jsx';
+import AppointmentsAdmin from './pages/admin/AppointmentsAdmin.jsx';
 
 import Shop from './pages/Shop.jsx';
 import ProductDetails from './pages/ProductDetails.jsx';
@@ -67,6 +68,7 @@ const App = () => {
 
         <Route path='/book' element={<Book />} />
 +       <Route path='/appointments/mine' element={<MyAppointments />} />
+        <Route path='/appointments/book' element={<Book />} />
 
         {/* Staff/Admin auth */}
         <Route path='/admin/login' element={<AdminLogin />} />
@@ -104,6 +106,7 @@ const App = () => {
           <Route path='services' element={<ServicesAdmin />} />
           <Route path='services/report' element={<ServiceReport />} />
           <Route path='calendar' element={<AdminCalendar />} />
+          <Route path='appointments' element={<AppointmentsAdmin />} />
 
         </Route>
       </Routes>
