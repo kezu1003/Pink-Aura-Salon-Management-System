@@ -31,7 +31,7 @@ export default function Home() {
           </p>
           <div className="mt-5 flex items-center justify-center gap-3">
             <a
-              href="/appointments"
+              href="/appointments/book"
               className="rounded-full bg-rose-500 px-6 py-3 text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-rose-600"
             >
               Book Now
