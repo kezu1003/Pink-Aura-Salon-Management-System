@@ -18,6 +18,10 @@ import orderRoutes from "./routes/ordersRoutes.js";
 import reviewsRoutes from "./routes/reviewsRoutes.js";
 import publicRoutes from "./routes/publicRoutes.js";
 
+import servicesRoutes from "./routes/servicesRoutes.js";
+
+import appointmentsRoutes from "./routes/appointmentsRoutes.js";
+
 const app = express();
 const port = process.env.PORT || 4000;
 
@@ -59,6 +63,10 @@ app.use("/api/staff", staffRoutes);
 
 app.use("/api/reviews", reviewsRoutes);
 app.use("/api/public", publicRoutes);
+
+app.use("/api/services", servicesRoutes);
+
+app.use("/api/appointments", appointmentsRoutes);
 
 // 404
 app.use((req, res) => {

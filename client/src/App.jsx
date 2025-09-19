@@ -18,6 +18,7 @@ import AdminOverview from './pages/admin/AdminOverview.jsx';
 import StaffDirectory from './pages/admin/StaffDirectory.jsx';
 import AdminLogin from './pages/admin/AdminLogin.jsx';
 import StaffAuth from './pages/admin/StaffAuth.jsx';
+import AppointmentsAdmin from './pages/admin/AppointmentsAdmin.jsx';
 
 import Shop from './pages/Shop.jsx';
 import ProductDetails from './pages/ProductDetails.jsx';
@@ -36,6 +37,16 @@ import Reviews from './pages/reviews/Reviews.jsx';
 import AddReview from './pages/reviews/AddReview.jsx';
 import AdminReviews from './pages/admin/AdminReviews.jsx';
 
+//services
+import Services from './pages/Services.jsx';
+import ServicesAdmin from './pages/admin/ServicesAdmin.jsx';
+import ServiceReport from './pages/admin/ServiceReport.jsx';
+
+// appointments
+ import Book from './pages/appointments/Book.jsx';
+ import MyAppointments from './pages/appointments/MyAppointments.jsx';
+ import AdminCalendar from './pages/admin/AdminCalendar.jsx';
+
 const App = () => {
   return (
     <div>
@@ -52,6 +63,12 @@ const App = () => {
         <Route path='/product/:id' element={<ProductDetails />} />
         <Route path='/cart' element={<Cart />} />
         <Route path='/checkout' element={<Checkout />} />
+
+        <Route path='/services' element={<Services />} />
+
+        <Route path='/book' element={<Book />} />
++       <Route path='/appointments/mine' element={<MyAppointments />} />
+        <Route path='/appointments/book' element={<Book />} />
 
         {/* Staff/Admin auth */}
         <Route path='/admin/login' element={<AdminLogin />} />
@@ -85,9 +102,12 @@ const App = () => {
           <Route path='products' element={<ProductsAdmin />} />
           <Route path='products/new' element={<ProductForm />} />
           <Route path='products/:id/edit' element={<ProductForm />} />
-
-          
           <Route path='reviews' element={<AdminReviews />} />
+          <Route path='services' element={<ServicesAdmin />} />
+          <Route path='services/report' element={<ServiceReport />} />
+          <Route path='calendar' element={<AdminCalendar />} />
+          <Route path='appointments' element={<AppointmentsAdmin />} />
+
         </Route>
       </Routes>
     </div>

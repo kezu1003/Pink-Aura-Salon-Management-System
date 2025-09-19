@@ -41,7 +41,6 @@ const Navbar = () => {
   };
 
   return (
-    
     <div
       className="
         fixed top-0 inset-x-0 z-50
@@ -57,27 +56,23 @@ const Navbar = () => {
         {/* Brand */}
         <Link to="/" className="flex items-center gap-2">
           <img src={assets.logo} alt="logo" className="w-17 h-17 rounded-full" />
-          <span className="text-lg sm:text-2xl font-serif text-slate-900 tracking-wide"
-    style={{ fontFamily: "'Dancing Script', cursive" }}>
+          <span
+            className="text-lg sm:text-2xl font-serif text-slate-900 tracking-wide"
+            style={{ fontFamily: "'Dancing Script', cursive" }}
+          >
             Pink Aura
           </span>
         </Link>
 
         {/* Links */}
         <div className="flex items-center gap-5">
-
-          {/* Show  only when logged in */}
-
+          {/* Show only when logged in */}
           {userData && (
             <>
               <NavLink
                 to="/shop"
                 className={({ isActive }) =>
-                  `text-lg ${
-                    isActive
-                      ? 'text-slate-900 font-medium'
-                      : 'text-slate-700 hover:text-slate-900'
-                  }`
+                  `text-lg ${isActive ? 'text-slate-900 font-medium' : 'text-slate-700 hover:text-slate-900'}`
                 }
               >
                 Shop
@@ -86,26 +81,47 @@ const Navbar = () => {
               <NavLink
                 to="/cart"
                 className={({ isActive }) =>
-                  `text-lg ${
-                    isActive
-                      ? 'text-slate-900 font-medium'
-                      : 'text-slate-700 hover:text-slate-900'
-                  }`
+                  `text-lg ${isActive ? 'text-slate-900 font-medium' : 'text-slate-700 hover:text-slate-900'}`
                 }
               >
                 Cart
               </NavLink>
 
               <NavLink
-              
                 to="/reviews"
                 className={({ isActive }) =>
                   `text-lg ${isActive ? 'text-slate-900 font-medium' : 'text-slate-700 hover:text-slate-900'}`
                 }
               >
                 Reviews
-              </NavLink>  
+              </NavLink>
 
+              <NavLink
+                to="/services"
+                className={({ isActive }) =>
+                  `text-lg ${isActive ? 'text-slate-900 font-medium' : 'text-slate-700 hover:text-slate-900'}`
+                }
+              >
+                Services
+              </NavLink>
+
+              
+              <button
+                onClick={() => navigate('/book')}
+                className="
+                  hidden sm:inline-flex
+                  items-center
+                  px-5 py-2.5 rounded-full
+                  bg-pink-500 text-white
+                  shadow-sm
+                  hover:opacity-90 active:opacity-95
+                  transition
+                  border border-pink-500
+                "
+                aria-label="Book an appointment"
+              >
+                Book Appointment
+              </button>
             </>
           )}
 
