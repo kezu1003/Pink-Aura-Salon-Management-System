@@ -106,6 +106,15 @@ const Navbar = () => {
               </NavLink>
 
               
+              <NavLink
+                to="/packages"
+                className={({ isActive }) =>
+                  `text-lg ${isActive ? 'text-slate-900 font-medium' : 'text-slate-700 hover:text-slate-900'}`
+                }
+              >
+                Packages
+              </NavLink>
+
               <button
                 onClick={() => navigate('/book')}
                 className="
