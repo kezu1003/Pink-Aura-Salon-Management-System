@@ -47,6 +47,11 @@ import ServiceReport from './pages/admin/ServiceReport.jsx';
  import MyAppointments from './pages/appointments/MyAppointments.jsx';
  import AdminCalendar from './pages/admin/AdminCalendar.jsx';
 
+ // package
+import Packages from './pages/Packages.jsx';
+import PackagesAdmin from './pages/admin/PackagesAdmin.jsx';
+import PackageForm from './pages/admin/PackageForm.jsx';
+
 const App = () => {
   return (
     <div>
@@ -69,6 +74,8 @@ const App = () => {
         <Route path='/book' element={<Book />} />
 +       <Route path='/appointments/mine' element={<MyAppointments />} />
         <Route path='/appointments/book' element={<Book />} />
+
+        <Route path='/packages' element={<Packages />} />
 
         {/* Staff/Admin auth */}
         <Route path='/admin/login' element={<AdminLogin />} />
@@ -107,6 +114,9 @@ const App = () => {
           <Route path='services/report' element={<ServiceReport />} />
           <Route path='calendar' element={<AdminCalendar />} />
           <Route path='appointments' element={<AppointmentsAdmin />} />
+          <Route path='packages' element={<PackagesAdmin />} />
+          <Route path='packages/new' element={<PackageForm />} />
+          <Route path='packages/:id/edit' element={<PackageForm />} />
 
         </Route>
       </Routes>
