@@ -57,7 +57,7 @@ export default function PackageForm() {
         price: Number(form.price),
         discountPrice: form.discountPrice === "" ? null : Number(form.discountPrice),
         estimatedTimeMins: Number(form.estimatedTimeMins || 60),
-        
+
       };
 
       const fn = isEdit ? api.update.bind(null, id) : api.create;
@@ -65,8 +65,8 @@ export default function PackageForm() {
       if (!success) return toast.error(message || "Save failed");
       toast.success(isEdit ? "Package updated" : "Package created");
       navigate("/admin/packages");
-    } catch (e2) {
-      toast.error(e2.message);
+    }  catch (e2) {
+      toast.error(e2?.response?.data?.message || e2.message || "Save failed");
     } finally {
       setSaving(false);
     }
