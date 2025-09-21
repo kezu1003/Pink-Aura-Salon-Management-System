@@ -1,53 +1,52 @@
-// models/orderModel.js (Updated to include transaction fields)
 import mongoose from 'mongoose';
 
 const orderSchema = new mongoose.Schema({
-  // Basic order information
+
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
   },
-  
+
   // Payment information
   paymentIntentId: {
     type: String,
     unique: true,
     sparse: true // Allows null values but ensures uniqueness when present
   },
-  
+
   amount: {
     type: Number,
     required: true,
     min: 0
   },
-  
+
   currency: {
     type: String,
     default: 'LKR',
     uppercase: true
   },
-  
+
   status: {
     type: String,
     enum: ['pending','placed', 'succeeded', 'failed', 'refunded', 'cancelled'],
     default: 'pending',
-    index: true
+    index: true // keep path-level index
   },
-  
+
   // Payment method details
   paymentMethod: {
     type: String,
     enum: ['card', 'cash', 'bank_transfer', 'mobile_payment'],
     default: 'card'
   },
-  
+
   cardBrand: {
     type: String,
     enum: ['visa', 'mastercard', 'amex', 'discover', 'jcb', 'diners', 'unionpay', 'unknown'],
     lowercase: true
   },
-  
+
   last4: {
     type: String,
     validate: {
@@ -57,7 +56,7 @@ const orderSchema = new mongoose.Schema({
       message: 'Last 4 digits must be exactly 4 numbers'
     }
   },
-  
+
   // Order items
   items: [{
     productId: {
@@ -81,7 +80,7 @@ const orderSchema = new mongoose.Schema({
     },
     image: String
   }],
-  
+
   // Billing details
   billingDetails: {
     name: String,
@@ -95,13 +94,13 @@ const orderSchema = new mongoose.Schema({
       country: { type: String, default: 'LK' }
     }
   },
-  
+
   // Order tracking
   orderNumber: {
     type: String,
-    unique: true
+    unique: true // keep unique at path level
   },
-  
+
   // Admin notes
   adminNotes: [{
     note: {
@@ -118,14 +117,14 @@ const orderSchema = new mongoose.Schema({
       default: Date.now
     }
   }],
-  
+
   // Fulfillment
   fulfillmentStatus: {
     type: String,
     enum: ['unfulfilled', 'partial', 'fulfilled', 'cancelled'],
     default: 'unfulfilled'
   },
-  
+
   shippingAddress: {
     name: String,
     line1: String,
@@ -135,26 +134,24 @@ const orderSchema = new mongoose.Schema({
     postal_code: String,
     country: { type: String, default: 'LK' }
   },
-  
+
   // Timestamps
   paidAt: Date,
   shippedAt: Date,
   deliveredAt: Date,
-  
+
 }, {
   timestamps: true,
   toJSON: { virtuals: true },
   toObject: { virtuals: true }
 });
 
-// Indexes for better query performance
-orderSchema.index({ user: 1 });
-orderSchema.index({ status: 1 });
-orderSchema.index({ paymentIntentId: 1 });
-orderSchema.index({ createdAt: -1 });
-orderSchema.index({ orderNumber: 1 });
 
-// Pre-save middleware to generate order number
+orderSchema.index({ user: 1 });
+
+orderSchema.index({ createdAt: -1 });
+
+// Pre-save middleware to generate order number (kept as-is)
 orderSchema.pre('save', async function(next) {
   if (!this.orderNumber) {
     const count = await this.constructor.countDocuments();
@@ -199,58 +196,62 @@ orderSchema.statics.getTransactionStats = async function(dateFilter = {}) {
     }
   ]);
 };
+
 orderSchema.methods.calculateTotalAmount = function() {
   return this.items.reduce((total, item) => {
     return total + ((item.price || 0) * (item.qty || 0));
   }, 0);
 };
+
+
 orderSchema.pre('save', function(next) {
   // Generate order number if not exists
   if (!this.orderNumber) {
     this.orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
   }
-  
+
   // Ensure amount is calculated from items if not set or is 0
   if (!this.amount || this.amount === 0) {
     this.amount = this.calculateTotalAmount();
   }
-  
+
   next();
 });
 
 // Static method to update existing orders without amounts
 orderSchema.statics.fixMissingAmounts = async function() {
   try {
-    const ordersWithoutAmount = await this.find({ 
+    const ordersWithoutAmount = await this.find({
       $or: [
-        { amount: { $exists: false } }, 
-        { amount: 0 }, 
+        { amount: { $exists: false } },
+        { amount: 0 },
         { amount: null }
-      ] 
+      ]
     });
-    
+
     console.log(`Found ${ordersWithoutAmount.length} orders without amounts`);
-    
+
     for (const order of ordersWithoutAmount) {
       const calculatedAmount = order.items.reduce((total, item) => {
         return total + ((item.price || 0) * (item.qty || 0));
       }, 0);
-      
+
       await this.findByIdAndUpdate(order._id, { amount: calculatedAmount });
       console.log(`Updated order ${order.orderNumber} with amount ${calculatedAmount}`);
     }
-    
+
     return { updated: ordersWithoutAmount.length };
   } catch (error) {
     console.error('Error fixing missing amounts:', error);
     throw error;
   }
 };
+
 // Static method to get daily trends
 orderSchema.statics.getDailyTrends = async function(days = 30) {
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - days);
-  
+
   return this.aggregate([
     { $match: { createdAt: { $gte: startDate } } },
     {
