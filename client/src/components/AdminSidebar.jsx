@@ -70,7 +70,8 @@ export default function AdminSidebar() {
       )}
 
       <Group title="Reports">
-        <Item to="/admin/reports" label="Reports" />
+          <Item to="/admin/reports" label="Appointment Reports" />
+          <Item to="/admin/reports/service" label="Service Report" />
       </Group>
 
       <Group title="System">

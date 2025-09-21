@@ -24,6 +24,9 @@ import transactionRoutes from "./routes/transactionRoutes.js";
 
 import appointmentsRoutes from "./routes/appointmentsRoutes.js";
 
+import packagesRoutes from "./routes/packagesRoutes.js";
+import serviceReportsRoutes from "./routes/serviceReportsRoutes.js";
+
 const app = express();
 const port = process.env.PORT || 4000;
 
@@ -72,7 +75,14 @@ app.use("/api/payments", paymentRoutes);
 app.use("/api/services", servicesRoutes);
 app.use("/api/stripe", stripeRoutes);
 app.use("/api/appointments", appointmentsRoutes);
+
 app.use("/api/transactions", transactionRoutes);
+
+
+app.use("/api/packages", packagesRoutes);
+app.use("/api/reports", serviceReportsRoutes);
+
+
 // 404
 app.use((req, res) => {
   res.status(404).json({ success: false, message: "Route not found" });

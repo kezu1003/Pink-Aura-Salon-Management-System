@@ -30,7 +30,6 @@ import PaymentSuccess from './pages/PaymentSuccess.jsx';
 // Admin Product management
 import ProductsAdmin from './pages/admin/ProductsAdmin.jsx';
 import ProductForm from './pages/admin/ProductForm.jsx';
-
 // Staff dashboard
 import StaffDashboard from './pages/StaffDashboard.jsx';
 
@@ -49,9 +48,20 @@ import ServiceReport from './pages/admin/ServiceReport.jsx';
  import MyAppointments from './pages/appointments/MyAppointments.jsx';
  import AdminCalendar from './pages/admin/AdminCalendar.jsx';
 
+
 //Card Management page
  import CardManagement from './pages/CardManagement.jsx';
 import AdminTransactions from './pages/admin/AdminTransactions.jsx';
+
+ // package
+import Packages from './pages/Packages.jsx';
+import PackagesAdmin from './pages/admin/PackagesAdmin.jsx';
+import PackageForm from './pages/admin/PackageForm.jsx';
+
+//reports
+import ServiceReports from './pages/admin/ServiceReports.jsx';
+import AppointmentReports from './pages/admin/AppointmentReports.jsx';
+
 
 const App = () => {
   return (
@@ -77,6 +87,8 @@ const App = () => {
         <Route path='/book' element={<Book />} />
          <Route path='/appointments/mine' element={<MyAppointments />} />
         <Route path='/appointments/book' element={<Book />} />
+
+        <Route path='/packages' element={<Packages />} />
 
         {/* Staff/Admin auth */}
         <Route path='/admin/login' element={<AdminLogin />} />
@@ -115,7 +127,15 @@ const App = () => {
           <Route path='services/report' element={<ServiceReport />} />
           <Route path='calendar' element={<AdminCalendar />} />
           <Route path='appointments' element={<AppointmentsAdmin />} />
+
           <Route path='transactions' element={<AdminTransactions />} />
+
+          <Route path='packages' element={<PackagesAdmin />} />
+          <Route path='packages/new' element={<PackageForm />} />
+          <Route path='packages/:id/edit' element={<PackageForm />} />
+          <Route path='reports/service' element={<ServiceReports />} />
+          <Route path='reports' element={<AppointmentReports />} />
+
 
         </Route>
       </Routes>
