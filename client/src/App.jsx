@@ -52,6 +52,10 @@ import Packages from './pages/Packages.jsx';
 import PackagesAdmin from './pages/admin/PackagesAdmin.jsx';
 import PackageForm from './pages/admin/PackageForm.jsx';
 
+//reports
+import ServiceReports from './pages/admin/ServiceReports.jsx';
+import AppointmentReports from './pages/admin/AppointmentReports.jsx';
+
 const App = () => {
   return (
     <div>
@@ -117,6 +121,8 @@ const App = () => {
           <Route path='packages' element={<PackagesAdmin />} />
           <Route path='packages/new' element={<PackageForm />} />
           <Route path='packages/:id/edit' element={<PackageForm />} />
+          <Route path='reports/service' element={<ServiceReports />} />
+          <Route path='reports' element={<AppointmentReports />} />
 
         </Route>
       </Routes>
