@@ -4,46 +4,41 @@ import "dotenv/config";
 import cookieParser from "cookie-parser";
 
 import connectDB from "./config/mongodb.js";
+
+// existing routers
 import authRouter from "./routes/authRoutes.js";
 import userRouter from "./routes/userRoutes.js";
 import productRoutes from "./routes/productsRoutes.js";
-
-
 import adminRoutes from "./routes/adminRoutes.js";
 import staffRoutes from "./routes/staffRoutes.js";
-
-
 import orderRoutes from "./routes/ordersRoutes.js";
-
 import reviewsRoutes from "./routes/reviewsRoutes.js";
 import publicRoutes from "./routes/publicRoutes.js";
-
 import servicesRoutes from "./routes/servicesRoutes.js";
-
 import appointmentsRoutes from "./routes/appointmentsRoutes.js";
-
 import packagesRoutes from "./routes/packagesRoutes.js";
 import serviceReportsRoutes from "./routes/serviceReportsRoutes.js";
+
+
+import eventsRoutes from "./routes/eventsRoutes.js";
+import courseRoutes from "./routes/courseRoutes.js";
 
 const app = express();
 const port = process.env.PORT || 4000;
 
-
 connectDB();
-
 
 const allowedOrigins = [
   process.env.CLIENT_URL || "http://localhost:5173",
 ];
 
-// Middleware
+// Middleware 
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(
   cors({
     origin: function (origin, callback) {
-      
       if (!origin) return callback(null, true);
       return allowedOrigins.includes(origin)
         ? callback(null, true)
@@ -53,33 +48,32 @@ app.use(
   })
 );
 
-
 app.get("/", (req, res) => res.send("API Working"));
 
-// Routes
+// Existing routes (unchanged)
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/products", productRoutes);
-app.use("/api/orders", orderRoutes);         
+app.use("/api/orders", orderRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/staff", staffRoutes);
-
 app.use("/api/reviews", reviewsRoutes);
 app.use("/api/public", publicRoutes);
-
 app.use("/api/services", servicesRoutes);
-
 app.use("/api/appointments", appointmentsRoutes);
-
 app.use("/api/packages", packagesRoutes);
 app.use("/api/reports", serviceReportsRoutes);
+
+
+app.use("/api/events", eventsRoutes);
+app.use("/api/courses", courseRoutes);
 
 // 404
 app.use((req, res) => {
   res.status(404).json({ success: false, message: "Route not found" });
 });
 
-// Error handler 
+// Error handler
 app.use((err, req, res, next) => {
   console.error(err?.stack || err);
   res
