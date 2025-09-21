@@ -10,6 +10,7 @@ import {
   verifyEmail,
   sendResetOtp,
   resetPassword,
+  isAuthenticated
 } from "../controllers/authController.js";
 import userAuth from "../middleware/userAuth.js";
 
@@ -20,10 +21,13 @@ router.post("/register", register);
 router.post("/login", login);
 router.post("/logout", logout);
 
-
+// Staff routes
 router.post("/staff-register", staffRegister);
 router.post("/admin-staff-login", adminStaffLogin);
+
+// Protected routes
 router.get("/me", userAuth, me);
+router.get("/is-auth", userAuth, isAuthenticated);
 
 // Email OTP / reset
 router.post("/send-verify-otp", userAuth, sendVerifyOtp);

@@ -43,6 +43,12 @@ export default function AdminSidebar() {
         <Item to="/admin/products/new" label="Add Product" />
       </Group>
 
+      {/* Orders & Transactions */}
+      <Group title="Sales">
+        <Item to="/admin/orders" label="Orders" />
+        <Item to="/admin/transactions" label="Transactions" />
+      </Group>
+
       <Group title="Appointments">
         <Item to="/admin/appointments" label="All Appointments" />
         <Item to="/admin/calendar" label="Calendar View" />

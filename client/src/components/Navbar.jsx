@@ -140,6 +140,12 @@ const Navbar = () => {
                     </li>
                   )}
                   <li
+                    onClick={() => navigate('/payment-methods')}
+                    className="py-1 px-3 hover:bg-slate-100 cursor-pointer pr-10 rounded"
+                  >
+                    Payment Methods
+                  </li>
+                  <li
                     onClick={logout}
                     className="py-1 px-3 hover:bg-slate-100 cursor-pointer pr-10 rounded"
                   >

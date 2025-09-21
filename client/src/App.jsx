@@ -6,6 +6,7 @@ import Home from './pages/Home.jsx';
 import Login from './pages/Login';
 import EmailVerify from './pages/EmailVerify';
 import ResetPassword from './pages/ResetPassword';
+import EnterPayment from './pages/EnterPayment.jsx';
 
 // Toasts
 import { ToastContainer } from 'react-toastify';
@@ -24,7 +25,8 @@ import Shop from './pages/Shop.jsx';
 import ProductDetails from './pages/ProductDetails.jsx';
 import Cart from './pages/Cart.jsx';
 import Checkout from './pages/Checkout.jsx';
-
+import PaymentFailed from './pages/PaymentFailed.jsx';
+import PaymentSuccess from './pages/PaymentSuccess.jsx';
 // Admin Product management
 import ProductsAdmin from './pages/admin/ProductsAdmin.jsx';
 import ProductForm from './pages/admin/ProductForm.jsx';
@@ -47,6 +49,11 @@ import ServiceReport from './pages/admin/ServiceReport.jsx';
  import MyAppointments from './pages/appointments/MyAppointments.jsx';
  import AdminCalendar from './pages/admin/AdminCalendar.jsx';
 
+//Card Management page
+ import CardManagement from './pages/CardManagement.jsx';
+import Payment from '../../server/models/payment.js';
+import AdminTransactions from './pages/admin/AdminTransactions.jsx';
+
 const App = () => {
   return (
     <div>
@@ -63,11 +70,13 @@ const App = () => {
         <Route path='/product/:id' element={<ProductDetails />} />
         <Route path='/cart' element={<Cart />} />
         <Route path='/checkout' element={<Checkout />} />
-
+        <Route path='/payment-methods' element={<CardManagement />} />  
         <Route path='/services' element={<Services />} />
-
+        <Route path='/payment' element={<EnterPayment />} />
+        <Route path='/payment-success' element={<PaymentSuccess />} />
+        <Route path='/payment-failed' element={<PaymentFailed />} />
         <Route path='/book' element={<Book />} />
-+       <Route path='/appointments/mine' element={<MyAppointments />} />
+         <Route path='/appointments/mine' element={<MyAppointments />} />
         <Route path='/appointments/book' element={<Book />} />
 
         {/* Staff/Admin auth */}
@@ -107,6 +116,7 @@ const App = () => {
           <Route path='services/report' element={<ServiceReport />} />
           <Route path='calendar' element={<AdminCalendar />} />
           <Route path='appointments' element={<AppointmentsAdmin />} />
+          <Route path='transactions' element={<AdminTransactions />} />
 
         </Route>
       </Routes>
