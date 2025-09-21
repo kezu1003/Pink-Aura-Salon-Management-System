@@ -12,13 +12,15 @@ import productRoutes from "./routes/productsRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import staffRoutes from "./routes/staffRoutes.js";
 
+import paymentRoutes from "./routes/paymentRoutes.js";
 
 import orderRoutes from "./routes/ordersRoutes.js";
 
 import reviewsRoutes from "./routes/reviewsRoutes.js";
 import publicRoutes from "./routes/publicRoutes.js";
-
+import stripeRoutes from "./routes/stripeRoutes.js";
 import servicesRoutes from "./routes/servicesRoutes.js";
+import transactionRoutes from "./routes/transactionRoutes.js";
 
 import appointmentsRoutes from "./routes/appointmentsRoutes.js";
 
@@ -63,16 +65,23 @@ app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);         
 app.use("/api/admin", adminRoutes);
 app.use("/api/staff", staffRoutes);
+app.use("/api/stripe", stripeRoutes);
+
 
 app.use("/api/reviews", reviewsRoutes);
 app.use("/api/public", publicRoutes);
+app.use("/api/payments", paymentRoutes);
 
 app.use("/api/services", servicesRoutes);
-
+app.use("/api/stripe", stripeRoutes);
 app.use("/api/appointments", appointmentsRoutes);
+
+app.use("/api/transactions", transactionRoutes);
+
 
 app.use("/api/packages", packagesRoutes);
 app.use("/api/reports", serviceReportsRoutes);
+
 
 // 404
 app.use((req, res) => {
