@@ -56,6 +56,8 @@ import PackageForm from './pages/admin/PackageForm.jsx';
 import ServiceReports from './pages/admin/ServiceReports.jsx';
 import AppointmentReports from './pages/admin/AppointmentReports.jsx';
 
+import AdsDashboard from './pages/admin/AdsDashboard.jsx';
+
 const App = () => {
   return (
     <div>
@@ -80,6 +82,8 @@ const App = () => {
         <Route path='/appointments/book' element={<Book />} />
 
         <Route path='/packages' element={<Packages />} />
+
+        <Route path='ads' element={<AdsDashboard />} />
 
         {/* Staff/Admin auth */}
         <Route path='/admin/login' element={<AdminLogin />} />

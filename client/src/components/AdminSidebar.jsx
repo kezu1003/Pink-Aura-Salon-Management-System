@@ -63,6 +63,10 @@ export default function AdminSidebar() {
         </Group>
       )}
 
+      <Group title="Marketing">
+          <Item to="/admin/ads" label="Advertisements" />
+      </Group>
+
       <Group title="Reports">
           <Item to="/admin/reports" label="Appointment Reports" />
           <Item to="/admin/reports/service" label="Service Report" />

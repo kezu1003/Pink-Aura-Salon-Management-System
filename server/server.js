@@ -25,6 +25,8 @@ import appointmentsRoutes from "./routes/appointmentsRoutes.js";
 import packagesRoutes from "./routes/packagesRoutes.js";
 import serviceReportsRoutes from "./routes/serviceReportsRoutes.js";
 
+import advertisementRoutes from "./routes/advertisementRoutes.js";
+
 const app = express();
 const port = process.env.PORT || 4000;
 
@@ -73,6 +75,8 @@ app.use("/api/appointments", appointmentsRoutes);
 
 app.use("/api/packages", packagesRoutes);
 app.use("/api/reports", serviceReportsRoutes);
+
+app.use("/api/ads", advertisementRoutes);
 
 // 404
 app.use((req, res) => {
