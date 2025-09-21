@@ -52,16 +52,7 @@ import Packages from './pages/Packages.jsx';
 import PackagesAdmin from './pages/admin/PackagesAdmin.jsx';
 import PackageForm from './pages/admin/PackageForm.jsx';
 
-//courses and events
-import CourseCertificatePage from './pages/CourseCertificatePage.jsx';
-import CourseHomePage from './pages/CourseHomePage.jsx';
-import UserCourseHomePage from './pages/UserCourseHomePage.jsx';
-import CourseDetailsPage from './pages/CourseDetailsPage.jsx';
-import CourseCreatePage from './pages/CourseCreatePage.jsx';
-import EventHomePage from './pages/EventHomePage.jsx';
-import UserEventHomePage from './pages/UserEventHomePage.jsx';
-import EventDetailsPage from './pages/EventDetailsPage.jsx';
-import EventCreatepage from './pages/EventCreatepage.jsx';
+
 
 //reports
 import ServiceReports from './pages/admin/ServiceReports.jsx';
@@ -92,15 +83,7 @@ const App = () => {
 
         <Route path='/packages' element={<Packages />} />
 
-        <Route path="/courses/certificate" element={<CourseCertificatePage />} />
-        <Route path="/courses" element={<CourseHomePage />} />
-        <Route path="/courses/user" element={<UserCourseHomePage />} />
-        <Route path="/courses/:id" element={<CourseDetailsPage />} />
-        <Route path="/courses/create" element={<CourseCreatePage />} />
-        <Route path="/events" element={<EventHomePage />} />
-        <Route path="/events/user" element={<UserEventHomePage />} />
-        <Route path="/events/:id" element={<EventDetailsPage />} />
-        <Route path="/events/create" element={<EventCreatepage />} />
+        
 
         {/* Staff/Admin auth */}
         <Route path='/admin/login' element={<AdminLogin />} />
