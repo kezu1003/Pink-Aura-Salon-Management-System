@@ -51,7 +51,6 @@ import ServiceReport from './pages/admin/ServiceReport.jsx';
 
 //Card Management page
  import CardManagement from './pages/CardManagement.jsx';
-import Payment from '../../server/models/payment.js';
 import AdminTransactions from './pages/admin/AdminTransactions.jsx';
 
 const App = () => {
