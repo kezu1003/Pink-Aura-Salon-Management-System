@@ -62,6 +62,10 @@ import PackageForm from './pages/admin/PackageForm.jsx';
 import ServiceReports from './pages/admin/ServiceReports.jsx';
 import AppointmentReports from './pages/admin/AppointmentReports.jsx';
 
+import CourseHomePage from './pages/CourseHomePage.jsx';
+import CourseCreatePage from './pages/CourseCreatePage.jsx';
+import CourseDetailsPage from './pages/CourseDetailsPage.jsx';
+
 
 const App = () => {
   return (
@@ -136,8 +140,14 @@ const App = () => {
           <Route path='reports/service' element={<ServiceReports />} />
           <Route path='reports' element={<AppointmentReports />} />
 
+          {/* <Route path="/courses2" element={<CM2 />} /> */}
+
 
         </Route>
+
+        <Route path="/courses" element={<CourseHomePage />} />
+        <Route path="/courses/create" element={<CourseCreatePage />} />
+        <Route path="/courses/:id" element={<CourseDetailsPage />} />
       </Routes>
     </div>
   );

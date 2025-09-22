@@ -138,6 +138,10 @@ export default function AdminSidebar({ expanded, onClose }) {
           <Group title="System" expanded={expanded}>
             <Item to="/admin/settings" label="Settings" icon={Settings} expanded={expanded} />
           </Group>
+
+          <Group title="System" expanded={expanded}>
+            <Item to="/courses" label="courses" icon={Settings} expanded={expanded} />
+          </Group>
         </nav>
       </aside>
     </>
