@@ -27,6 +27,9 @@ import appointmentsRoutes from "./routes/appointmentsRoutes.js";
 import packagesRoutes from "./routes/packagesRoutes.js";
 import serviceReportsRoutes from "./routes/serviceReportsRoutes.js";
 
+import eventsRoutes from "./routes/eventsRoutes.js";
+import courseRoutes from "./routes/courseRoutes.js";
+
 const app = express();
 const port = process.env.PORT || 4000;
 
@@ -81,6 +84,9 @@ app.use("/api/transactions", transactionRoutes);
 
 app.use("/api/packages", packagesRoutes);
 app.use("/api/reports", serviceReportsRoutes);
+
+app.use("/api/events", eventsRoutes);
+app.use("/api/courses", courseRoutes);
 
 
 // 404
