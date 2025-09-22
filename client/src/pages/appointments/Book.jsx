@@ -8,6 +8,10 @@ import SlotGrid from "../../components/appointments/SlotGrid";
 import Calendar from "../../components/appointments/Calendar";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
+/* ✅ Added */
+import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
+
 export default function Book() {
   const { backendUrl, userData } = useContext(AppContext);
   const apptApi = useMemo(() => makeApi(backendUrl), [backendUrl]);
@@ -25,7 +29,7 @@ export default function Book() {
 
   // Package-awareness
   const [searchParams] = useSearchParams();
-  const packageFromQuery = searchParams.get("package"); 
+  const packageFromQuery = searchParams.get("package");
   const [pkg, setPkg] = useState(null);
   const [pkgServiceIds, setPkgServiceIds] = useState([]);
 
@@ -45,7 +49,6 @@ export default function Book() {
 
         if (pList?.success) setPackages(pList.packages || []);
 
-        
         if (list.length && !selectionKey) {
           setServiceId(list[0]._id);
           setSelectionKey(`svc:${list[0]._id}`);
@@ -54,10 +57,8 @@ export default function Book() {
         toast.error(e?.response?.data?.message || e.message || "Failed to load data");
       }
     })();
-    
-  }, [backendUrl]);
+  }, [backendUrl]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  
   useEffect(() => {
     (async () => {
       if (!packageFromQuery) {
@@ -74,7 +75,6 @@ export default function Book() {
       }
       setPkg(p);
 
-     
       const nameSet = new Set((p.servicesIncluded || []).map((s) => String(s).trim().toLowerCase()));
       const matched = (services || [])
         .filter((sv) => nameSet.has(String(sv.name).trim().toLowerCase()))
@@ -86,8 +86,7 @@ export default function Book() {
       setSelectionKey(`pkg:${p._id}`);
       if (matched.length > 0) setServiceId(matched[0]);
     })();
-   
-  }, [packageFromQuery, services]); 
+  }, [packageFromQuery, services]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Load slots whenever service/date changes
   useEffect(() => {
@@ -122,7 +121,7 @@ export default function Book() {
 
     if (v.startsWith("pkg:")) {
       const id = v.slice(4);
-      
+
       let p = packages.find((pp) => pp._id === id);
       if (!p) {
         const { success, package: one } = await packagesApi.get(id);
@@ -209,7 +208,6 @@ export default function Book() {
           </div>
         </div>
 
-        {/* Removed the amber warning line here */}
         {pkgServiceIds.length > 0 && (
           <div className="mt-3 text-xs text-gray-500">
             Slots are shown based on the first service in this package; the appointment will include all items.
@@ -228,79 +226,90 @@ export default function Book() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto pt-28 px-4 pb-16">
-      <h1 className="text-3xl md:text-4xl font-serif text-center mb-10">
-        Book Your Appointment
-      </h1>
+    <div className="bg-[#FEF4F1] min-h-screen">
+      
+      <Navbar />
+      <div className="h-20" />
 
-      <PackageBanner />
+      <div className="max-w-6xl mx-auto px-4 pb-16">
+        <h1 className="text-3xl md:text-4xl font-serif text-center mb-10">
+          Book Your Appointment
+        </h1>
 
-      {/* Combined selector (Services + Packages) */}
-      {!hideServicePicker && (services.length > 0 || packages.length > 0) && (
-        <div className="max-w-2xl mx-auto mb-6">
-          <label className="block text-sm font-medium mb-1">Select Service or Package</label>
-          <select
-            value={selectionKey}
-            onChange={onSelectChange}
-            className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-pink-400"
+        <PackageBanner />
+
+        {/* Combined selector (Services + Packages) */}
+        {!hideServicePicker && (services.length > 0 || packages.length > 0) && (
+          <div className="max-w-2xl mx-auto mb-6">
+            <label className="block text-sm font-medium mb-1">
+              Select Service or Package
+            </label>
+            <select
+              value={selectionKey}
+              onChange={onSelectChange}
+              className="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-pink-400"
+            >
+              {/* Packages first */}
+              {packages.length > 0 && (
+                <optgroup label="Packages">
+                  {packages.map((p) => (
+                    <option key={p._id} value={`pkg:${p._id}`}>
+                      {OptionLabelForPackage(p)}
+                    </option>
+                  ))}
+                </optgroup>
+              )}
+
+              {/* Individual services */}
+              {services.length > 0 && (
+                <optgroup label="Services">
+                  {services.map((s) => (
+                    <option key={s._id} value={`svc:${s._id}`}>
+                      {s.name} — Rs.{s.price} • {s.durationMins} mins
+                    </option>
+                  ))}
+                </optgroup>
+              )}
+            </select>
+          </div>
+        )}
+
+        <div className="grid md:grid-cols-2 gap-8">
+          {/* Left: calendar */}
+          <Calendar value={date} onChange={setDate} />
+
+          {/* Right: time slots */}
+          <div className="p-6 bg-white rounded-2xl shadow border">
+            <div className="font-semibold mb-3">Select your time</div>
+            {loading ? (
+              <div className="text-sm text-gray-500">Loading…</div>
+            ) : (
+              <SlotGrid slots={slots} selected={picked?.start} onSelect={setPicked} />
+            )}
+          </div>
+        </div>
+
+        <div className="mt-10 flex justify-end">
+          <button
+            onClick={onConfirm}
+            disabled={!picked || (!pkg && !serviceId)}
+            className={`px-8 py-3 text-base font-medium rounded-full transition ${
+              picked
+                ? "bg-pink-600 text-white hover:bg-pink-700"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+            }`}
           >
-            {/* Packages first */}
-            {packages.length > 0 && (
-              <optgroup label="Packages">
-                {packages.map((p) => (
-                  <option key={p._id} value={`pkg:${p._id}`}>
-                    {OptionLabelForPackage(p)}
-                  </option>
-                ))}
-              </optgroup>
-            )}
-
-            {/* Individual services */}
-            {services.length > 0 && (
-              <optgroup label="Services">
-                {services.map((s) => (
-                  <option key={s._id} value={`svc:${s._id}`}>
-                    {s.name} — Rs.{s.price} • {s.durationMins} mins
-                  </option>
-                ))}
-              </optgroup>
-            )}
-          </select>
+            Confirm & Continue
+          </button>
         </div>
-      )}
 
-      <div className="grid md:grid-cols-2 gap-8">
-        {/* Left: calendar */}
-        <Calendar value={date} onChange={setDate} />
-
-        {/* Right: time slots */}
-        <div className="p-6 bg-white rounded-2xl shadow border">
-          <div className="font-semibold mb-3">Select your time</div>
-          {loading ? (
-            <div className="text-sm text-gray-500">Loading…</div>
-          ) : (
-            <SlotGrid slots={slots} selected={picked?.start} onSelect={setPicked} />
-          )}
-        </div>
+        <p className="text-xs text-gray-500 mt-3">
+          Appointment status will show <b>Pending</b> until payment is completed.
+        </p>
       </div>
 
-      <div className="mt-10 flex justify-end">
-        <button
-          onClick={onConfirm}
-          disabled={!picked || (!pkg && !serviceId)}
-          className={`px-8 py-3 text-base font-medium rounded-full transition ${
-            picked
-              ? "bg-pink-600 text-white hover:bg-pink-700"
-              : "bg-gray-300 text-gray-500 cursor-not-allowed"
-          }`}
-        >
-          Confirm & Continue
-        </button>
-      </div>
-
-      <p className="text-xs text-gray-500 mt-3">
-        Appointment status will show <b>Pending</b> until payment is completed.
-      </p>
+      
+      <Footer />
     </div>
   );
 }

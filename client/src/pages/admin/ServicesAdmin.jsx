@@ -69,8 +69,7 @@ export default function ServicesAdmin() {
       <header className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">Services</h2>
         <div className="flex gap-2">
-          <button onClick={() => window.open("/admin/services/report", "_self")}
-                  className="px-3 py-2 rounded-lg border">Monthly Report</button>
+          
           <button onClick={onAdd} className="px-4 py-2 rounded-lg bg-pink-500 text-white hover:opacity-90">Add Service</button>
         </div>
       </header>
