@@ -44,18 +44,19 @@ const Navbar = () => {
     <div
       className="
         fixed top-0 inset-x-0 z-50
-        h-30
+        h-20                   /* fixed: 80px */
         bg-pink-100/60
         backdrop-blur-md
         border-b border-pink-200/60
         shadow-sm
         flex items-center
+        box-border
       "
     >
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
         {/* Brand */}
         <Link to="/" className="flex items-center gap-2">
-          <img src={assets.logo} alt="logo" className="w-17 h-17 rounded-full" />
+          <img src={assets.logo} alt="logo" className="w-16 h-16 rounded-full" />
           <span
             className="text-lg sm:text-2xl font-serif text-slate-900 tracking-wide"
             style={{ fontFamily: "'Dancing Script', cursive" }}
@@ -105,7 +106,6 @@ const Navbar = () => {
                 Services
               </NavLink>
 
-              
               <NavLink
                 to="/packages"
                 className={({ isActive }) =>
