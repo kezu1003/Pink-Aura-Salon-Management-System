@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import Product from "../models/Product.js";
 
-// ---- helpers -------------------------------------------------------------
+
 
 function computeExpiryDaysLeft(expiryDate) {
   if (!expiryDate) return null;
@@ -11,7 +11,7 @@ function computeExpiryDaysLeft(expiryDate) {
 }
 
 function withComputedFields(doc) {
-  // convert mongoose doc to plain object and add computed fields
+ 
   const obj = typeof doc.toObject === "function" ? doc.toObject() : doc;
   obj.expiryDaysLeft = computeExpiryDaysLeft(obj.expiryDate);
   return obj;
@@ -25,9 +25,9 @@ function parseNumber(value, fallback = undefined) {
 
 const ALLOWED_SORTS = new Set(["createdAt", "price", "stock", "name"]);
 
-// ---- controllers ---------------------------------------------------------
 
-// GET all products with filters/sorting/pagination
+
+
 export const getProducts = async (req, res) => {
   try {
     // 1) Fast-path: fetch by explicit IDs (e.g., cart stock refresh)
@@ -37,7 +37,7 @@ export const getProducts = async (req, res) => {
         .map((s) => s.trim())
         .filter(Boolean);
 
-      // Validate ObjectIds; ignore invalid ones to avoid throwing
+      
       const validIds = ids.filter((id) => mongoose.isValidObjectId(id));
 
       const products = await Product.find({
@@ -49,7 +49,7 @@ export const getProducts = async (req, res) => {
       return res.json({ success: true, products: payload, total: payload.length });
     }
 
-    // 2) Normal list with filters
+    
     const {
       category,
       q,
