@@ -66,6 +66,9 @@ import CourseHomePage from './pages/CourseHomePage.jsx';
 import CourseCreatePage from './pages/CourseCreatePage.jsx';
 import CourseDetailsPage from './pages/CourseDetailsPage.jsx';
 
+import CourseCertificatePage from './pages/CourseCertificatePage.jsx';
+import UserCourseHomePage from './pages/UserCourseHomePage.jsx';
+
 
 const App = () => {
   return (
@@ -148,6 +151,8 @@ const App = () => {
         <Route path="/courses" element={<CourseHomePage />} />
         <Route path="/courses/create" element={<CourseCreatePage />} />
         <Route path="/courses/:id" element={<CourseDetailsPage />} />
+        <Route path="/courses/certificate" element={<CourseCertificatePage />} />
+        <Route path="/courses/user" element={<UserCourseHomePage />} />
       </Routes>
     </div>
   );
