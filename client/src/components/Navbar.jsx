@@ -71,6 +71,26 @@ const Navbar = () => {
           {userData && (
             <>
               <NavLink
+                to="/courses/user"
+                className={({ isActive }) =>
+                  `text-lg ${isActive ? 'text-slate-900 font-medium' : 'text-slate-700 hover:text-slate-900'}`
+                }
+              >
+                Events
+              </NavLink>
+
+
+              <NavLink
+                to="/courses/user"
+                className={({ isActive }) =>
+                  `text-lg ${isActive ? 'text-slate-900 font-medium' : 'text-slate-700 hover:text-slate-900'}`
+                }
+              >
+                Courses
+              </NavLink>
+
+
+              <NavLink
                 to="/shop"
                 className={({ isActive }) =>
                   `text-lg ${isActive ? 'text-slate-900 font-medium' : 'text-slate-700 hover:text-slate-900'}`

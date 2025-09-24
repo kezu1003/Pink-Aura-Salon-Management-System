@@ -69,6 +69,11 @@ import CourseDetailsPage from './pages/CourseDetailsPage.jsx';
 import CourseCertificatePage from './pages/CourseCertificatePage.jsx';
 import UserCourseHomePage from './pages/UserCourseHomePage.jsx';
 
+import EventHomePage from './pages/EventHomePage.jsx';
+import EventCreatepage from './pages/EventCreatepage.jsx';
+import EventDetailsPage from './pages/EventDetailsPage.jsx';
+import UserEventHomePage from './pages/UserEventHomePage.jsx';
+
 
 const App = () => {
   return (
@@ -153,6 +158,12 @@ const App = () => {
         <Route path="/courses/:id" element={<CourseDetailsPage />} />
         <Route path="/courses/certificate" element={<CourseCertificatePage />} />
         <Route path="/courses/user" element={<UserCourseHomePage />} />
+
+        <Route path="/events" element={<EventHomePage />} />
+        <Route path="/events/create" element={<EventCreatepage />} />
+        <Route path="/events/:id" element={<EventDetailsPage />} />
+        <Route path="/events/user" element={<UserEventHomePage />} />
+
       </Routes>
     </div>
   );
