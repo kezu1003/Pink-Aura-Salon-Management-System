@@ -61,6 +61,7 @@ import PackageForm from './pages/admin/PackageForm.jsx';
 //reports
 import ServiceReports from './pages/admin/ServiceReports.jsx';
 import AppointmentReports from './pages/admin/AppointmentReports.jsx';
+import AdminProductReports from './pages/admin/ProductReports.jsx';
 
 import CourseHomePage from './pages/CourseHomePage.jsx';
 import CourseCreatePage from './pages/CourseCreatePage.jsx';
@@ -147,6 +148,7 @@ const App = () => {
           <Route path='packages/:id/edit' element={<PackageForm />} />
           <Route path='reports/service' element={<ServiceReports />} />
           <Route path='reports' element={<AppointmentReports />} />
+          <Route path='products/reports' element={<AdminProductReports />} />
 
           {/* <Route path="/courses2" element={<CM2 />} /> */}
 

@@ -8,8 +8,12 @@ import {
   adjustStock,
 } from "../controllers/productsController.js";
 import { requireAuth, requireRole } from "../middleware/userAuth.js";
+import { generateProductReport } from "../controllers/productReportsController.js"; 
 
 const router = express.Router();
+
+
+router.get("/report", requireAuth, requireRole("admin"), generateProductReport); 
 
 router.get("/", getProducts);
 router.get("/:id", getProductById);
