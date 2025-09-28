@@ -133,6 +133,14 @@ export default function AdminSidebar({ expanded, onClose }) {
               icon={FileText}
               expanded={expanded}
             />
+
+            <Item
+              to="/admin/products/reports"
+              label="product Report"
+              icon={FileText}
+              expanded={expanded}
+            />
+
           </Group>
 
           <Group title="System" expanded={expanded}>
