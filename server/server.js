@@ -2,6 +2,12 @@ import express from "express";
 import cors from "cors";
 import "dotenv/config";
 import cookieParser from "cookie-parser";
+import path from "path";
+import { fileURLToPath } from "url";
+
+// ES6 module path fix
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 import connectDB from "./config/mongodb.js";
 import authRouter from "./routes/authRoutes.js";
@@ -29,7 +35,11 @@ import serviceReportsRoutes from "./routes/serviceReportsRoutes.js";
 
 import eventsRoutes from "./routes/eventsRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
+
+import advertisementRoutes from "./routes/advertisementRoutes.js";
+
 import enrollmentRoutes from "./routes/enrollmentRoutes.js";
+
 
 
 const app = express();
@@ -60,6 +70,8 @@ app.use(
   })
 );
 
+// Serve static files for uploaded images
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.get("/", (req, res) => res.send("API Working"));
 
@@ -89,7 +101,12 @@ app.use("/api/reports", serviceReportsRoutes);
 
 app.use("/api/events", eventsRoutes);
 app.use("/api/courses", courseRoutes);
+
+app.use("/api/ads", advertisementRoutes);
+
+
 app.use("/api/enrollments", enrollmentRoutes);
+
 
 // 404
 app.use((req, res) => {

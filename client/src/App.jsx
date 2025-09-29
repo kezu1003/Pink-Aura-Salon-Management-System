@@ -57,6 +57,7 @@ import AdminTransactions from './pages/admin/AdminTransactions.jsx';
 import Packages from './pages/Packages.jsx';
 import PackagesAdmin from './pages/admin/PackagesAdmin.jsx';
 import PackageForm from './pages/admin/PackageForm.jsx';
+import AdvertisementDashboard from './pages/admin/AdvertisementDashboard.jsx';
 
 //reports
 import ServiceReports from './pages/admin/ServiceReports.jsx';
@@ -144,6 +145,7 @@ const App = () => {
           <Route path='services/report' element={<ServiceReport />} />
           <Route path='calendar' element={<AdminCalendar />} />
           <Route path='appointments' element={<AppointmentsAdmin />} />
+          <Route path='advertisements' element={<AdvertisementDashboard />} />
 
           <Route path='transactions' element={<AdminTransactions />} />
 

@@ -12,6 +12,7 @@ import {
   FileText,
   Settings,
   CreditCard,
+  Megaphone,
 } from "lucide-react";
 
 const Group = ({ title, children, expanded }) => {
@@ -108,6 +109,10 @@ export default function AdminSidebar({ expanded, onClose }) {
           <Group title="Services & Packages" expanded={expanded}>
             <Item to="/admin/services" label="Services" icon={ClipboardList} expanded={expanded} />
             <Item to="/admin/packages" label="Packages" icon={Package} expanded={expanded} />
+          </Group>
+
+          <Group title="Advertisement Management" expanded={expanded}>
+            <Item to="/admin/advertisements" label="Advertisements" icon={Megaphone} expanded={expanded} />
           </Group>
 
           <Group title="Reviews & Feedback" expanded={expanded}>
