@@ -35,7 +35,12 @@ import serviceReportsRoutes from "./routes/serviceReportsRoutes.js";
 
 import eventsRoutes from "./routes/eventsRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
+
 import advertisementRoutes from "./routes/advertisementRoutes.js";
+
+import enrollmentRoutes from "./routes/enrollmentRoutes.js";
+
+
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -96,7 +101,11 @@ app.use("/api/reports", serviceReportsRoutes);
 
 app.use("/api/events", eventsRoutes);
 app.use("/api/courses", courseRoutes);
+
 app.use("/api/ads", advertisementRoutes);
+
+
+app.use("/api/enrollments", enrollmentRoutes);
 
 
 // 404
