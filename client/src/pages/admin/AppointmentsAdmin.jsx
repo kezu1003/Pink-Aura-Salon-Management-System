@@ -4,7 +4,6 @@ import { makeApi } from "../../api/appointments";
 import { toast } from "react-toastify";
 import { format } from "date-fns";
 
-
 const JOB_FOR_CATEGORY = {
   Hair: "Hair dresser",
   Nails: "Nail Artist",
@@ -20,11 +19,23 @@ export default function AppointmentsAdmin() {
   const [by, setBy] = useState("date"); 
   const [groups, setGroups] = useState([]);
   const [staff, setStaff] = useState([]);
+  const [stats, setStats] = useState({ total: 0, completed: 0, pending: 0 });
 
   async function load() {
     const data = await api.adminGrouped(by);
     if (!data?.success) return toast.error(data?.message || "Failed to load appointments");
     setGroups(data.groups || []);
+
+    // calculate stats
+    let total = 0, completed = 0, pending = 0;
+    (data.groups || []).forEach((g) => {
+      g.items.forEach((a) => {
+        total++;
+        if (a.status === "completed") completed++;
+        if (a.status === "pending") pending++;
+      });
+    });
+    setStats({ total, completed, pending });
   }
 
   async function loadStaff() {
@@ -49,16 +60,24 @@ export default function AppointmentsAdmin() {
   };
 
   return (
-    <div className="p-6">
-      <div className="flex items-center gap-3 mb-4">
-        <h1 className="text-2xl font-semibold">Appointments</h1>
+    <div 
+      className="min-h-screen p-6" 
+      style={{ 
+        background: "linear-gradient(135deg, #FEF4F1, #FBAA99)", 
+      }}
+    >
+      {/* Header with Filter Buttons */}
+      <div className="flex items-center gap-3 mb-6">
+        <h1 className="text-3xl font-bold text-[#4D423A]">Appointments</h1>
         <div className="ml-auto flex gap-2">
           {["date", "type", "assignment"].map((k) => (
             <button
               key={k}
               onClick={() => setBy(k)}
-              className={`px-3 py-1.5 rounded-full border ${
-                by === k ? "bg-pink-600 text-white border-pink-600" : "bg-white"
+              className={`px-3 py-1.5 rounded-full border transition ${
+                by === k 
+                  ? "bg-[#FBAA99] text-white border-[#FBAA99]" 
+                  : "bg-white border-gray-300 text-gray-700"
               }`}
             >
               {k === "date" ? "Date" : k === "type" ? "Service Type" : "Assignment"}
@@ -67,14 +86,40 @@ export default function AppointmentsAdmin() {
         </div>
       </div>
 
+      {/* Glass Tiles */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+        {[
+          { label: "Total Appointments", value: stats.total, color: "#4D423A" },
+          { label: "Completed", value: stats.completed, color: "#000000" },
+          { label: "Pending", value: stats.pending, color: "#FBAA99" },
+        ].map((t, idx) => (
+          <div
+            key={idx}
+            className="rounded-2xl p-6 shadow-lg backdrop-blur-lg border border-white/30"
+            style={{
+              background: "rgba(255,255,255,0.25)",
+              boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.2)",
+            }}
+          >
+            <div className="text-lg font-semibold" style={{ color: t.color }}>
+              {t.label}
+            </div>
+            <div className="text-3xl font-bold mt-2 text-[#4D423A]">
+              {t.value}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Appointments List */}
       {groups.length === 0 ? (
-        <div className="text-gray-500">No appointments.</div>
+        <div className="text-gray-600">No appointments.</div>
       ) : (
         <div className="space-y-6">
           {groups.map((g) => (
-            <section key={g._id} className="border rounded-xl bg-white">
+            <section key={g._id} className="border rounded-xl bg-white/70 backdrop-blur-md shadow-md">
               <div className="px-4 py-3 border-b flex items-center justify-between">
-                <div className="font-medium">
+                <div className="font-medium text-[#4D423A]">
                   {g._id} <span className="ml-2 text-gray-500 text-sm">({g.count})</span>
                 </div>
               </div>
