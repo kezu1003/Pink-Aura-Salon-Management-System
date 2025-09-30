@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router';
+import React, { useState, useContext } from 'react';
+import { Link, useNavigate } from 'react-router';
 import { CalendarCheck, Clock, User, MapPin, Calendar, BookOpen, Star, Users, Award, Heart, Sparkles } from "lucide-react";
 import api from '../lib/axios';
 import toast from 'react-hot-toast';
+import { AppContext } from '../context/AppContext';
 
 // Simple date formatter
 const formatDate = (date) => date.toLocaleDateString();
@@ -11,19 +12,80 @@ const UserCourseCard = ({ course, onRegister }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isEnrolling, setIsEnrolling] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
+  
+  const navigate = useNavigate();
+  const { userData, isLoggedin } = useContext(AppContext);
 
   const handleEnrollment = async (e) => {
     e.preventDefault();
     e.stopPropagation();
     
+    // Check if user is logged in
+    if (!isLoggedin || !userData) {
+      toast.error('Please log in to enroll in courses');
+      return;
+    }
+
     setIsEnrolling(true);
     try {
-      // Simulate enrollment process
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      onRegister?.(course._id);
-      toast.success(`Successfully enrolled in ${course.courseName}!`);
+      // Navigate to enrollment page with pre-filled data
+      navigate('/enrollments/create', {
+        state: {
+          courseId: course._id,
+          courseName: course.courseName,
+          userId: userData._id || userData.id,
+          userName: userData.name || userData.username,
+          userEmail: userData.email,
+          courseData: course
+        }
+      });
     } catch (error) {
-      toast.error("Enrollment failed. Please try again.");
+      console.error('Navigation error:', error);
+      toast.error('Failed to navigate to enrollment page');
+    } finally {
+      setIsEnrolling(false);
+    }
+  };
+
+  const handleDirectEnrollment = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!isLoggedin || !userData) {
+      toast.error('Please log in to enroll in courses');
+      return;
+    }
+
+    setIsEnrolling(true);
+    try {
+      // Direct enrollment API call with proper response handling
+      const response = await api.post("/enrollments", {
+        courseID: course._id,
+        userID: userData._id || userData.id,
+        name: userData.name || userData.username,
+        courseName: course.courseName,
+        email: userData.email
+      });
+      
+      // Check if response indicates success
+      if (response.data.success) {
+        toast.success(response.data.message || `Successfully enrolled in ${course.courseName}!`);
+        onRegister?.(course._id);
+      } else {
+        toast.error(response.data.message || 'Enrollment failed');
+      }
+      
+    } catch (error) {
+      console.error('Enrollment error:', error);
+      
+      // Handle different error types
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else if (error.response?.status === 409 || error.code === 11000) {
+        toast.error('You are already enrolled in this course!');
+      } else {
+        toast.error('Enrollment failed. Please try again.');
+      }
     } finally {
       setIsEnrolling(false);
     }
@@ -34,6 +96,21 @@ const UserCourseCard = ({ course, onRegister }) => {
     e.stopPropagation();
     setIsLiked(!isLiked);
     toast.success(isLiked ? "Removed from favorites" : "Added to favorites!");
+  };
+
+  const handleQuickEnroll = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!isLoggedin) {
+      toast.error('Please log in to enroll in courses');
+      return;
+    }
+
+    // Show confirmation for quick enroll
+    if (window.confirm(`Are you sure you want to enroll in "${course.courseName}"?`)) {
+      handleDirectEnrollment(e);
+    }
   };
 
   return (
@@ -70,7 +147,7 @@ const UserCourseCard = ({ course, onRegister }) => {
                   </div>
                   <div className="flex items-center space-x-1">
                     <Users className="w-3 h-3" />
-                    <span>24 enrolled</span>
+                    <span>{course.enrolledCount || 24} enrolled</span>
                   </div>
                 </div>
               </div>
@@ -168,30 +245,56 @@ const UserCourseCard = ({ course, onRegister }) => {
               <span className="font-medium">Added:</span> {course.createdAt ? formatDate(new Date(course.createdAt)) : "Recently"}
             </div>
 
-            {/* Enrollment Button */}
-            <button
-              onClick={handleEnrollment}
-              disabled={isEnrolling}
-              className={`px-6 py-3 bg-gradient-to-r from-[#FBAA99] to-[#4D423A] hover:from-[#4D423A] hover:to-[#000000] text-white rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2 ${
-                isEnrolling ? 'opacity-75 cursor-not-allowed' : ''
-              }`}
-            >
-              {isEnrolling ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <span>Enrolling...</span>
-                </>
-              ) : (
-                <>
-                  <CalendarCheck className="w-4 h-4" />
-
-                 <Link to="/enrollments/create">
-                    <span>Enroll Now</span>
-                </Link>
-                </>
+            {/* Enrollment Buttons */}
+            <div className="flex items-center space-x-2">
+              {/* Quick Enroll Button (for logged-in users) */}
+              {isLoggedin && (
+                <button
+                  onClick={handleQuickEnroll}
+                  disabled={isEnrolling}
+                  className={`px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2 text-sm ${
+                    isEnrolling ? 'opacity-75 cursor-not-allowed' : ''
+                  }`}
+                  title="Quick enroll with auto-filled details"
+                >
+                  {isEnrolling ? (
+                    <>
+                      <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>Enrolling...</span>
+                    </>
+                  ) : (
+                    <>
+                      <CalendarCheck className="w-3 h-3" />
+                      <span>Quick Enroll</span>
+                    </>
+                  )}
+                </button>
               )}
-            </button>
+
+              {/* Detailed Enrollment Button */}
+              <button
+                onClick={handleEnrollment}
+                disabled={isEnrolling}
+                className={`px-4 py-2 bg-gradient-to-r from-[#FBAA99] to-[#4D423A] hover:from-[#4D423A] hover:to-[#000000] text-white rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2 text-sm ${
+                  isEnrolling ? 'opacity-75 cursor-not-allowed' : ''
+                }`}
+                title="Go to enrollment page with pre-filled details"
+              >
+                <BookOpen className="w-3 h-3" />
+                <span>{isLoggedin ? 'Enroll Now' : 'Login to Enroll'}</span>
+              </button>
+            </div>
           </div>
+
+          {/* Auto-fill Status Badge */}
+          {isLoggedin && (
+            <div className="mt-3 flex items-center justify-center">
+              <div className="inline-flex items-center space-x-1 bg-[#FEF4F1] px-3 py-1 rounded-full text-xs text-[#4D423A] border border-[#FBAA99]/30">
+                <Sparkles className="w-3 h-3 text-[#FBAA99]" />
+                <span>Auto-fill enabled for enrollment</span>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Hover indicator */}
@@ -208,8 +311,18 @@ const UserCourseCard = ({ course, onRegister }) => {
         {/* Corner Decorative Element */}
         <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-br from-[#FBAA99] to-[#4D423A] rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-0 group-hover:scale-100"></div>
 
+        {/* Auto-fill Badge */}
+        {isLoggedin && (
+          <div className="absolute top-4 left-4">
+            <div className="bg-gradient-to-r from-[#FBAA99] to-[#4D423A] text-white px-2 py-1 rounded-full text-xs font-bold transform -rotate-6 shadow-lg flex items-center space-x-1">
+              <Sparkles className="w-3 h-3" />
+              <span>AUTO-FILL</span>
+            </div>
+          </div>
+        )}
+
         {/* Special Offer Badge */}
-        {Math.random() > 0.7 && (
+        {Math.random() > 0.7 && !isLoggedin && (
           <div className="absolute top-4 left-4">
             <div className="bg-gradient-to-r from-green-400 to-green-600 text-white px-3 py-1 rounded-full text-xs font-bold transform -rotate-12 shadow-lg">
               POPULAR
