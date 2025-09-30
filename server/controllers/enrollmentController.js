@@ -2,7 +2,7 @@ import Enrollment from "../models/Enrollment.js";
 
 export async function getAllEnrollments(_,res) {
     try {
-        const enrollments = await Enrollment.find().sort({createdAt: -1});// -1 will sort in desc order (newest first)
+        const enrollments = await Enrollment.find().sort({createdAt: -1});
         res.status(200).json(enrollments);
     } catch  (error){
         console.error("Error in getAllEnrollments controller", error);
@@ -21,7 +21,6 @@ export async function getEnrollmentById(req, res) {
     }
 }
 
-// NEW: Search enrollments function
 export async function searchEnrollments(req, res) {
     try {
         const { q } = req.query;
@@ -30,8 +29,7 @@ export async function searchEnrollments(req, res) {
             return res.status(200).json([]);
         }
 
-        const searchRegex = new RegExp(q, 'i'); // Case-insensitive search
-
+        const searchRegex = new RegExp(q, 'i');
         const enrollments = await Enrollment.find({
             $or: [
                 { courseID: searchRegex },
@@ -40,7 +38,7 @@ export async function searchEnrollments(req, res) {
                 { courseName: searchRegex },
                 { email: searchRegex }
             ]
-        }).sort({createdAt: -1}); // Sort by newest first
+        }).sort({createdAt: -1});
         
         res.status(200).json(enrollments);
     } catch (error) {
@@ -52,13 +50,34 @@ export async function searchEnrollments(req, res) {
 export async function createEnrollments(req,res) {
     try {
         const {courseID,userID,name,courseName,email} = req.body;
+        
+        console.log("Creating enrollment:", { courseID, userID, email });
+        
         const enrollment = new Enrollment({courseID,userID,name,courseName,email});
-
         const savedEnrollment = await enrollment.save();
-        res.status(201).json(savedEnrollment);
+        
+        console.log("Enrollment created successfully:", savedEnrollment._id);
+        
+        res.status(201).json({
+            success: true,
+            message: "Enrollment created successfully!",
+            enrollment: savedEnrollment
+        });
+        
     } catch (error) {
-     console.error("Error in createEnrollment controller", error);
-     res.status(500).json({message:"Internal server error"});
+        console.error("Error in createEnrollment controller", error);
+        
+        if (error.code === 11000) {
+            return res.status(400).json({
+                success: false,
+                message: "You are already enrolled in this course!"
+            });
+        }
+        
+        res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        });
     }
 }
 
@@ -68,20 +87,15 @@ export async function updateEnrollments(req,res) {
         const updatedEnrollments = await Enrollment.findByIdAndUpdate(
             req.params.id,
             {courseID,userID,name,courseName,email},
-            {
-                new:true,
-            }
+            { new: true }
         );
 
         if(!updatedEnrollments) return res.status(404).json({message:"Enrollment not found"});
-
         res.status(200).json(updatedEnrollments);
-    } catch (error)
-    {
+    } catch (error) {
         console.error("Error in updatedEnrollments controller", error);
         res.status(500).json({message:"Internal server error"});   
     }
-    
 }
 
 export async function deleteEnrollments(req,res) {
