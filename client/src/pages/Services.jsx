@@ -52,11 +52,10 @@ export default function Services() {
   return (
     <div className="bg-[#FEF4F1] min-h-screen">
       <Navbar />
-      <div className="h-20" />
 
-      {/* ✅ Hero with background image */}
+      {/* ✅ Hero with full background image immediately under navbar */}
       <section
-        className="relative h-[60vh] flex items-center justify-center bg-cover bg-center"
+        className="relative w-full h-[60vh] flex items-center justify-center bg-cover bg-center"
         style={{ backgroundImage: "url('/serv01.png')" }}
       >
         <div className="absolute inset-0 bg-black/40" /> {/* dark overlay */}
@@ -79,7 +78,7 @@ export default function Services() {
         </div>
       </section>
 
-      {/* Filters */}
+      {/* Filters / Categories */}
       <div id="services-section" className="border-t">
         <div className="max-w-6xl mx-auto px-4 py-4 flex flex-wrap items-center gap-3">
           <div className="flex gap-2 overflow-x-auto">
