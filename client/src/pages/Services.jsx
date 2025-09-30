@@ -3,7 +3,6 @@ import axios from "axios";
 import { AppContext } from "../context/AppContext";
 import { useNavigate } from "react-router-dom";
 
-//added
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
@@ -44,40 +43,43 @@ export default function Services() {
     return () => clearTimeout(t);
   }, [activeCat, q]);
 
+  //Scroll
+  const handleScroll = () => {
+    document.getElementById("services-section")?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <div className="bg-[#FEF4F1] min-h-screen">
-      
       <Navbar />
       <div className="h-20" />
 
-      {/* Hero */}
-      <section className="max-w-4xl mx-auto px-4 text-center py-10 md:py-14">
-        <h1 className="text-4xl md:text-5xl font-serif tracking-tight text-slate-900">
-          Beauty Redefined at Sri Lanka’s Favourite Ladies Salon
-        </h1>
+      {/* background image */}
+      <section
+        className="relative h-[60vh] flex items-center justify-center bg-cover bg-center"
+        style={{ backgroundImage: "url('/serv01.png')" }}
+      >
+        <div className="absolute inset-0 bg-black/40" /> {/* dark overlay */}
+        <div className="relative z-10 text-center">
+          <h1 className="text-4xl md:text-5xl font-serif tracking-tight text-white">
+            Beauty Redefined at Sri Lanka’s Favourite Ladies Salon
+          </h1>
+          <p className="mt-6 text-white/90 max-w-2xl mx-auto">
+            Treat yourself with a self-care experience like never before — book your appointment today,
+            and discover why we’re the best ladies salon in Colombo!
+          </p>
 
-        <p className="mt-6 text-gray-600">
-          Treat yourself with a self-care experience like never before — book your appointment today,
-          and discover why we’re the best ladies salon in Colombo!
-        </p>
-
-        {/* Category icon quartet (visual only, acts as tabs) */}
-        <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {["Waxing", "Manicure", "Pedicure", "Nails Enhancements"].map((label, idx) => (
-            <div key={idx} className="group text-center">
-              <div className="mx-auto w-24 h-24 rounded-2xl bg-white shadow-sm flex items-center justify-center ring-1 ring-pink-100 group-hover:shadow-lg transition">
-                {/* simple icon placeholder */}
-                <div className="w-12 h-12 rounded-xl bg-pink-100/70" />
-              </div>
-              <div className="h-1 w-12 bg-pink-300/70 mx-auto mt-4 rounded-full" />
-              <div className="mt-3 font-serif text-2xl">{label}</div>
-            </div>
-          ))}
+          {/* Glass-effect button */}
+          <button
+            onClick={handleScroll}
+            className="mt-10 px-6 py-3 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 text-white font-medium shadow-lg hover:bg-white/30 transition"
+          >
+            Go for Services
+          </button>
         </div>
       </section>
 
       {/* Filters */}
-      <div className="border-t">
+      <div id="services-section" className="border-t">
         <div className="max-w-6xl mx-auto px-4 py-4 flex flex-wrap items-center gap-3">
           <div className="flex gap-2 overflow-x-auto">
             {categories.map((c) => (
@@ -143,7 +145,6 @@ export default function Services() {
         )}
       </div>
 
-      
       <Footer />
     </div>
   );
