@@ -79,7 +79,7 @@ export default function Services() {
       </section>
 
       {/* Filters */}
-      <div id="services-section" className="border-t">
+      <div id="services-section" className="border-t border-[#FBAA99]/30">
         <div className="max-w-6xl mx-auto px-4 py-4 flex flex-wrap items-center gap-3">
           <div className="flex gap-2 overflow-x-auto">
             {categories.map((c) => (
@@ -87,7 +87,9 @@ export default function Services() {
                 key={c}
                 onClick={() => setActiveCat(c)}
                 className={`px-4 py-2 rounded-full border ${
-                  activeCat === c ? "bg-pink-500 text-white border-pink-500" : "bg-white hover:bg-pink-50"
+                  activeCat === c
+                    ? "bg-[#FBAA99] text-white border-[#FBAA99]"
+                    : "bg-[#FEF4F1] hover:bg-[#FDE3DA]"
                 }`}
               >
                 {c}
@@ -99,7 +101,7 @@ export default function Services() {
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search services…"
-              className="px-3 py-2 rounded-lg border"
+              className="px-3 py-2 rounded-lg border border-[#FBAA99]"
             />
           </div>
         </div>
@@ -122,17 +124,17 @@ export default function Services() {
                     className="rounded-2xl border bg-white p-4 hover:shadow-md transition"
                   >
                     <div className="flex items-start justify-between gap-3">
-                      <h3 className="font-semibold">{s.name}</h3>
-                      <span className="text-pink-600 font-semibold">
+                      <h3 className="font-semibold-[#4D423A]">{s.name}</h3>
+                      <span className="text-[#FBAA99] font-semibold">
                         Rs. {s.price?.toLocaleString?.() ?? s.price}
                       </span>
                     </div>
                     <p className="text-sm text-gray-600 line-clamp-2 mt-1">{s.description}</p>
-                    <div className="mt-3 text-sm text-gray-700">{s.durationMins} mins</div>
+                    <div className="mt-3 text-sm text-[#4D423A]/70">{s.durationMins} mins</div>
                     <div className="mt-4">
                       <button
                         onClick={() => navigate(`/appointments/book?service=${s._id}`)}
-                        className="w-full px-4 py-2 rounded-lg bg-pink-500 text-white hover:opacity-90"
+                        className="w-full px-4 py-2 rounded-lg bg-[#FBAA99] text-white hover:opacity-90"
                       >
                         Book now
                       </button>
