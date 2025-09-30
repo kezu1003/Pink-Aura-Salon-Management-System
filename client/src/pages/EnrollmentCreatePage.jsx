@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { ArrowLeft, BookOpen, User, Mail, Hash, Sparkles, Save, X, UserCheck } from "lucide-react";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router";
 import api from "../lib/axios";
+import { AppContext } from "../context/AppContext"; 
 
 const EnrollmentCreatePage = () => {
   const [courseID, setCourseID] = useState("");
@@ -13,6 +14,14 @@ const EnrollmentCreatePage = () => {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  const { userData } = useContext(AppContext);
+
+  useEffect(() => {
+    if (userData) {
+      if (userData.name) setName(userData.name);
+      if (userData.email) setEmail(userData.email);
+    }
+  }, [userData]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

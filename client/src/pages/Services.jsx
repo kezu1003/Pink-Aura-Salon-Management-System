@@ -3,7 +3,7 @@ import axios from "axios";
 import { AppContext } from "../context/AppContext";
 import { useNavigate } from "react-router-dom";
 
-// ✅ Added
+//added
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
