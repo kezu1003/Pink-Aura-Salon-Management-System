@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { assets } from '../assets/assets';
 import { useNavigate, NavLink, Link } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
@@ -8,6 +8,15 @@ import axios from 'axios';
 const Navbar = () => {
   const navigate = useNavigate();
   const { userData, backendUrl, setUserData, setIsLoggedin } = useContext(AppContext);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20); // activates after 20px scroll
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const sendVerificationOtp = async () => {
     try {
@@ -40,60 +49,76 @@ const Navbar = () => {
     }
   };
 
+
   return (
     <div
-      className="
-        fixed top-0 inset-x-0 z-50
-        h-20                   /* fixed: 80px */
-        bg-pink-100/60
-        backdrop-blur-md
-        border-b border-pink-200/60
-        shadow-sm
-        flex items-center
-        box-border
-      "
+      className={`
+        fixed top-0 inset-x-0 z-50 flex items-center box-border transition-all duration-500
+        ${scrolled
+          ? 'h-16 bg-white/30 backdrop-blur-xl border-b border-white/20 shadow-lg'
+          : 'h-20 bg-[#FEF4F1]/70 backdrop-blur-md border-b border-[#FBAA99]/30 shadow-sm'}
+      `}
+      style={{
+        WebkitBackdropFilter: 'blur(20px) saturate(180%)', // iOS-style frosted blur
+        backdropFilter: 'blur(20px) saturate(180%)',
+      }}
     >
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
         {/* Brand */}
-        <Link to="/" className="flex items-center gap-2">
-          <img src={assets.logo} alt="logo" className="w-16 h-16 rounded-full" />
+        <Link to="/" className="flex items-center gap-2 transition-all duration-500">
+          <img
+            src={assets.logo}
+            alt="logo"
+            className={`rounded-full transition-all duration-500 ${
+              scrolled ? 'w-12 h-12' : 'w-16 h-16'
+            }`}
+          />
           <span
-            className="text-lg sm:text-2xl font-serif text-slate-900 tracking-wide"
-            style={{ fontFamily: "'Dancing Script', cursive" }}
+            className={`tracking-wide font-serif transition-all duration-500 ${
+              scrolled ? 'text-lg' : 'text-2xl'
+            }`}
+            style={{
+              fontFamily: "'Dancing Script', cursive",
+              color: '#4D423A',
+            }}
           >
             Pink Aura
           </span>
         </Link>
 
+
         {/* Links */}
-        <div className="flex items-center gap-5">
-          {/* Show only when logged in */}
+        <div className="flex items-center gap-4 sm:gap-5">
           {userData && (
             <>
               <NavLink
-                to="/courses/user"
+                to="/events"
                 className={({ isActive }) =>
-                  `text-lg ${isActive ? 'text-slate-900 font-medium' : 'text-slate-700 hover:text-slate-900'}`
+                  `hidden sm:block text-base sm:text-lg transition ${
+                    isActive ? 'text-[#4D423A] font-medium' : 'text-black hover:text-[#4D423A]'
+                  }`
                 }
               >
                 Events
               </NavLink>
 
-
               <NavLink
                 to="/courses/user"
                 className={({ isActive }) =>
-                  `text-lg ${isActive ? 'text-slate-900 font-medium' : 'text-slate-700 hover:text-slate-900'}`
+                  `hidden sm:block text-base sm:text-lg transition ${
+                    isActive ? 'text-[#4D423A] font-medium' : 'text-black hover:text-[#4D423A]'
+                  }`
                 }
               >
                 Courses
               </NavLink>
 
-
               <NavLink
                 to="/shop"
                 className={({ isActive }) =>
-                  `text-lg ${isActive ? 'text-slate-900 font-medium' : 'text-slate-700 hover:text-slate-900'}`
+                  `hidden sm:block text-base sm:text-lg transition ${
+                    isActive ? 'text-[#4D423A] font-medium' : 'text-black hover:text-[#4D423A]'
+                  }`
                 }
               >
                 Shop
@@ -102,7 +127,9 @@ const Navbar = () => {
               <NavLink
                 to="/cart"
                 className={({ isActive }) =>
-                  `text-lg ${isActive ? 'text-slate-900 font-medium' : 'text-slate-700 hover:text-slate-900'}`
+                  `hidden sm:block text-base sm:text-lg transition ${
+                    isActive ? 'text-[#4D423A] font-medium' : 'text-black hover:text-[#4D423A]'
+                  }`
                 }
               >
                 Cart
@@ -111,7 +138,9 @@ const Navbar = () => {
               <NavLink
                 to="/reviews"
                 className={({ isActive }) =>
-                  `text-lg ${isActive ? 'text-slate-900 font-medium' : 'text-slate-700 hover:text-slate-900'}`
+                  `hidden sm:block text-base sm:text-lg transition ${
+                    isActive ? 'text-[#4D423A] font-medium' : 'text-black hover:text-[#4D423A]'
+                  }`
                 }
               >
                 Reviews
@@ -120,7 +149,9 @@ const Navbar = () => {
               <NavLink
                 to="/services"
                 className={({ isActive }) =>
-                  `text-lg ${isActive ? 'text-slate-900 font-medium' : 'text-slate-700 hover:text-slate-900'}`
+                  `hidden sm:block text-base sm:text-lg transition ${
+                    isActive ? 'text-[#4D423A] font-medium' : 'text-black hover:text-[#4D423A]'
+                  }`
                 }
               >
                 Services
@@ -129,7 +160,9 @@ const Navbar = () => {
               <NavLink
                 to="/packages"
                 className={({ isActive }) =>
-                  `text-lg ${isActive ? 'text-slate-900 font-medium' : 'text-slate-700 hover:text-slate-900'}`
+                  `hidden sm:block text-base sm:text-lg transition ${
+                    isActive ? 'text-[#4D423A] font-medium' : 'text-black hover:text-[#4D423A]'
+                  }`
                 }
               >
                 Packages
@@ -137,16 +170,8 @@ const Navbar = () => {
 
               <button
                 onClick={() => navigate('/book')}
-                className="
-                  hidden sm:inline-flex
-                  items-center
-                  px-5 py-2.5 rounded-full
-                  bg-pink-500 text-white
-                  shadow-sm
-                  hover:opacity-90 active:opacity-95
-                  transition
-                  border border-pink-500
-                "
+                className="hidden sm:inline-flex items-center px-4 sm:px-5 py-2 sm:py-2.5 rounded-full
+                  bg-[#FBAA99] text-white shadow-md hover:opacity-90 active:opacity-95 transition border border-[#FBAA99]"
                 aria-label="Book an appointment"
               >
                 Book Appointment
@@ -156,27 +181,34 @@ const Navbar = () => {
 
           {/* Profile / Login */}
           {userData ? (
-            <div className="w-8 h-8 flex justify-center items-center rounded-full bg-slate-900 text-white relative group select-none">
+            <div
+              className="w-8 h-8 flex justify-center items-center rounded-full bg-[#4D423A] text-white relative group select-none"
+            >
               {userData.name?.[0]?.toUpperCase() || 'U'}
-              <div className="absolute hidden group-hover:block top-0 right-0 z-10 text-black rounded pt-10">
-                <ul className="list-none m-0 p-2 bg-white/90 backdrop-blur-md border border-slate-200 rounded shadow-md text-sm">
+              <div
+                className="
+                  absolute hidden group-hover:block top-0 right-0 z-10 text-black rounded pt-10
+                  transition-all duration-200 ease-out
+                "
+              >
+                <ul className="list-none m-0 p-2 bg-white/80 backdrop-blur-md border border-[#FBAA99]/40 rounded shadow-md text-sm">
                   {!userData.isAccountVerified && (
                     <li
                       onClick={sendVerificationOtp}
-                      className="py-1 px-3 hover:bg-slate-100 cursor-pointer rounded"
+                      className="py-1 px-3 hover:bg-[#FEF4F1] cursor-pointer rounded"
                     >
                       Verify Email
                     </li>
                   )}
                   <li
                     onClick={() => navigate('/payment-methods')}
-                    className="py-1 px-3 hover:bg-slate-100 cursor-pointer pr-10 rounded"
+                    className="py-1 px-3 hover:bg-[#FEF4F1] cursor-pointer rounded"
                   >
                     Payment Methods
                   </li>
                   <li
                     onClick={logout}
-                    className="py-1 px-3 hover:bg-slate-100 cursor-pointer pr-10 rounded"
+                    className="py-1 px-3 hover:bg-[#FEF4F1] cursor-pointer rounded"
                   >
                     Logout
                   </li>
@@ -186,18 +218,14 @@ const Navbar = () => {
           ) : (
             <button
               onClick={() => navigate('/login')}
-              className="
-                text-sm
-                px-5 py-2 rounded-full
-                bg-white/70 hover:bg-white
-                text-slate-800
-                border border-pink-200
-                transition
-              "
+              className="text-sm px-4 sm:px-5 py-1.5 sm:py-2 rounded-full bg-white/70 hover:bg-[#FEF4F1]/90
+                text-[#4D423A] border border-[#FBAA99]/50 transition backdrop-blur-sm"
             >
               Login
             </button>
           )}
+
+          
         </div>
       </div>
     </div>
