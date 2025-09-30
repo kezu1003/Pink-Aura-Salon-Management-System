@@ -184,7 +184,10 @@ const UserCourseCard = ({ course, onRegister }) => {
               ) : (
                 <>
                   <CalendarCheck className="w-4 h-4" />
-                  <span>Enroll Now</span>
+
+                 <Link to="/enrollments/create">
+                    <span>Enroll Now</span>
+                </Link>
                 </>
               )}
             </button>
