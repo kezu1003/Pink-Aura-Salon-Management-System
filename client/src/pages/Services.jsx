@@ -56,7 +56,7 @@ export default function Services() {
       {/* background image */}
       <section
         className="relative h-[60vh] flex items-center justify-center bg-cover bg-center"
-        style={{ backgroundImage: "url('/serv01.jpg')" }}
+        style={{ backgroundImage: "url('/serv01.png')" }}
       >
         <div className="absolute inset-0 bg-black/40" /> {/* dark overlay */}
         <div className="relative z-10 text-center">
