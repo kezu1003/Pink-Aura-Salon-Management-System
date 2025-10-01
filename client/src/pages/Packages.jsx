@@ -6,7 +6,7 @@ import PackageDetailsModal from "../components/PackageDetailsModal";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
-// ✅ Added
+
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 

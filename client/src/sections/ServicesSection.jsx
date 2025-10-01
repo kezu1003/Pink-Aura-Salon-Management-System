@@ -17,7 +17,7 @@ const SERVICES = [
     blurb:
       "Mini mani-pedis with fruity massaging care, glitter nails, and glossy finish.",
     icon: <Hand className="h-7 w-7" />,
-    href: "/services/mani-pedi",
+    href: "/services",
   },
   {
     id: "diva-package",
@@ -25,7 +25,7 @@ const SERVICES = [
     blurb:
       "Braids, mini facial, nail art & shimmer—our full princess experience.",
     icon: <Sparkles className="h-7 w-7" />,
-    href: "/services/diva",
+    href: "/services",
   },
   {
     id: "men-scrub",
@@ -33,7 +33,7 @@ const SERVICES = [
     blurb:
       "Full-body exfoliation for energized, smooth skin. Goodbye dullness.",
     icon: <Bath className="h-7 w-7" />,
-    href: "/services/mens-scrub",
+    href: "/services",
   },
   {
     id: "lillys-court",
@@ -41,35 +41,35 @@ const SERVICES = [
     blurb:
       "Exclusive men’s grooming zone—premium care, privacy & refreshments.",
     icon: <Gem className="h-7 w-7" />,
-    href: "/services/lillys-court",
+    href: "/services",
   },
   {
     id: "haircut-styling",
     title: "Haircut & Styling",
     blurb: "Signature cuts and blowouts tailored to your face shape.",
     icon: <Scissors className="h-7 w-7" />,
-    href: "/services/haircut-styling",
+    href: "/services",
   },
   {
     id: "herbal-facial",
     title: "Herbal Facial",
     blurb: "Botanical cleanse, steam & mask for calm, radiant skin.",
     icon: <Leaf className="h-7 w-7" />,
-    href: "/services/herbal-facial",
+    href: "/services",
   },
   {
     id: "body-polish",
     title: "Body Polish",
     blurb: "Silky-soft skin with gentle exfoliation & deep hydration.",
     icon: <Flower2 className="h-7 w-7" />,
-    href: "/services/body-polish",
+    href: "/services",
   },
   {
     id: "bridal-glow",
     title: "Bridal Glow",
     blurb: "Curated pre-wedding ritual for picture-perfect radiance.",
     icon: <HeartPulse className="h-7 w-7" />,
-    href: "/services/bridal",
+    href: "/services",
   },
 ];
 
