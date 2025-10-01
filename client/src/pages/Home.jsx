@@ -32,10 +32,18 @@ export default function Home() {
           </>
         ) : (
           <>
-            {/* Logged-in view (your existing content) */}
-            <header className="relative">
-              <Header />
-            </header>
+            {/* Logged-in view */}
+            <div
+              className="relative min-h-screen bg-cover bg-center"
+              style={{ backgroundImage: "url('/bg05.jpg')" }}
+            >
+
+              <div className="absolute inset-0 flex items-center justify-cente">
+                <Header />
+              </div>
+
+
+            </div>
 
             <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <ServicesSection />
@@ -62,7 +70,10 @@ export default function Home() {
                   View All Services
                 </a>
               </div>
+
+              
             </section>
+            
           </>
         )}
       </main>
@@ -72,7 +83,7 @@ export default function Home() {
       {/* Floating call button stays for both */}
       <a
         href="tel:+94XXXXXXXXX"
-        className="fixed bottom-6 right-6 flex items-center gap-2 rounded-full bg-rose-500 px-4 py-3 text-white shadow-xl transition hover:bg-rose-600"
+        className="fixed bottom-6 right-6 flex items-center gap-2 rounded-full bg-[#FBAA99] px-4 py-3 text-gray shadow-xl transition hover:bg-[#FEF4F1]"
         aria-label="Call us"
       >
         <Phone size={18} />
