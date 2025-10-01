@@ -97,29 +97,29 @@ const CardManagement = () => {
   const getCardBrandStyle = (brand) => {
     const brandStyles = {
       visa: {
-        gradient: 'from-blue-600 via-blue-700 to-blue-800',
-        color: 'text-white',
-        accent: 'text-blue-100'
+        gradient: 'from-[#FBAA99] via-[#FBAA99]/80 to-[#FBAA99]/60',
+        color: 'text-[#FFFFFF]',
+        accent: 'text-[#FFFFFF]/80'
       },
       mastercard: {
-        gradient: 'from-red-600 via-red-700 to-red-800',
-        color: 'text-white',
-        accent: 'text-red-100'
+        gradient: 'from-[#4D423A] via-[#4D423A]/80 to-[#4D423A]/60',
+        color: 'text-[#FFFFFF]',
+        accent: 'text-[#FFFFFF]/80'
       },
       amex: {
-        gradient: 'from-green-600 via-green-700 to-green-800',
-        color: 'text-white',
-        accent: 'text-green-100'
+        gradient: 'from-[#000000] via-[#000000]/80 to-[#000000]/60',
+        color: 'text-[#FFFFFF]',
+        accent: 'text-[#FFFFFF]/80'
       },
       discover: {
-        gradient: 'from-orange-600 via-orange-700 to-orange-800',
-        color: 'text-white',
-        accent: 'text-orange-100'
+        gradient: 'from-[#FBAA99]/80 via-[#FBAA99]/60 to-[#FBAA99]/40',
+        color: 'text-[#FFFFFF]',
+        accent: 'text-[#FFFFFF]/80'
       },
       unknown: {
-        gradient: 'from-gray-600 via-gray-700 to-gray-800',
-        color: 'text-white',
-        accent: 'text-gray-100'
+        gradient: 'from-[#4D423A]/80 via-[#4D423A]/60 to-[#4D423A]/40',
+        color: 'text-[#FFFFFF]',
+        accent: 'text-[#FFFFFF]/80'
       }
     };
 
@@ -142,34 +142,34 @@ const CardManagement = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center">
-        <div className="bg-white p-8 rounded-2xl shadow-xl flex items-center space-x-4">
-          <Loader className="w-8 h-8 animate-spin text-indigo-600" />
-          <span className="text-lg font-medium text-gray-700">Loading your payment methods...</span>
+      <div className="min-h-screen bg-[#FEF4F1] flex items-center justify-center">
+        <div className="bg-[#FFFFFF] p-8 rounded-2xl shadow-xl flex items-center space-x-4">
+          <Loader className="w-8 h-8 animate-spin text-[#FBAA99]" />
+          <span className="text-lg font-medium text-[#4D423A]">Loading your payment methods...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+    <div className="min-h-screen bg-[#FEF4F1]">
       {/* Enhanced Header */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600">
-        <div className="absolute inset-0 bg-black opacity-20"></div>
+      <div className="relative overflow-hidden bg-[#FBAA99]">
+        <div className="absolute inset-0 bg-[#000000] opacity-20"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
             <div className="flex justify-center mb-6">
-              <div className="bg-white/20 backdrop-blur-sm p-4 rounded-2xl">
-                <Wallet className="w-12 h-12 text-white" />
+              <div className="bg-[#FFFFFF]/20 backdrop-blur-sm p-4 rounded-2xl">
+                <Wallet className="w-12 h-12 text-[#FFFFFF]" />
               </div>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            <h1 className="text-4xl md:text-5xl font-bold text-[#FFFFFF] mb-4">
               Payment Methods
             </h1>
-            <p className="text-xl text-white/90 max-w-2xl mx-auto">
+            <p className="text-xl text-[#FFFFFF]/90 max-w-2xl mx-auto">
               Manage your saved cards and billing information with enterprise-grade security
             </p>
-            <div className="flex items-center justify-center mt-6 space-x-2 text-white/80">
+            <div className="flex items-center justify-center mt-6 space-x-2 text-[#FFFFFF]/80">
               <Shield className="w-5 h-5" />
               <span>Protected by 256-bit SSL encryption</span>
             </div>
@@ -182,9 +182,9 @@ const CardManagement = () => {
         <div className="mb-8">
           <button
             onClick={() => setShowAddModal(true)}
-            className="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+            className="group inline-flex items-center px-6 py-3 bg-[#FBAA99] text-[#FFFFFF] font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
           >
-            <div className="bg-white/20 p-2 rounded-lg mr-3 group-hover:bg-white/30 transition-colors">
+            <div className="bg-[#FFFFFF]/20 p-2 rounded-lg mr-3 group-hover:bg-[#FFFFFF]/30 transition-colors">
               <Plus className="w-5 h-5" />
             </div>
             Add New Payment Method
@@ -194,19 +194,19 @@ const CardManagement = () => {
         {/* Cards Grid */}
         {cards.length === 0 ? (
           <div className="text-center py-16">
-            <div className="bg-white rounded-3xl p-12 shadow-xl max-w-md mx-auto">
-              <div className="bg-gradient-to-br from-indigo-100 to-purple-100 p-6 rounded-2xl mb-6 inline-block">
-                <CreditCard className="w-16 h-16 text-indigo-600" />
+            <div className="bg-[#FFFFFF] rounded-3xl p-12 shadow-xl max-w-md mx-auto">
+              <div className="bg-[#FEF4F1] p-6 rounded-2xl mb-6 inline-block">
+                <CreditCard className="w-16 h-16 text-[#FBAA99]" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">
+              <h3 className="text-2xl font-bold text-[#4D423A] mb-3">
                 No Payment Methods Yet
               </h3>
-              <p className="text-gray-600 mb-8 leading-relaxed">
+              <p className="text-[#4D423A]/80 mb-8 leading-relaxed">
                 Add your first payment method to start making secure transactions with enhanced protection.
               </p>
               <button
                 onClick={() => setShowAddModal(true)}
-                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                className="inline-flex items-center px-6 py-3 bg-[#FBAA99] text-[#FFFFFF] font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
               >
                 <Plus className="w-5 h-5 mr-2" />
                 Add Your First Card
@@ -227,7 +227,7 @@ const CardManagement = () => {
                     {/* Default Badge */}
                     {card.isDefault && (
                       <div className="absolute -top-2 -right-2">
-                        <div className="bg-green-500 text-white p-2 rounded-full shadow-lg animate-pulse">
+                        <div className="bg-[#FBAA99] text-[#FFFFFF] p-2 rounded-full shadow-lg animate-pulse">
                           <CheckCircle className="w-4 h-4" />
                         </div>
                       </div>
@@ -236,7 +236,7 @@ const CardManagement = () => {
                     {/* Card Header */}
                     <div className="flex justify-between items-start mb-6">
                       <div className="flex items-center space-x-3">
-                        <div className="bg-white/20 backdrop-blur-sm p-2 rounded-lg">
+                        <div className="bg-[#FFFFFF]/20 backdrop-blur-sm p-2 rounded-lg">
                           <CreditCard className={`w-6 h-6 ${brandStyle.color}`} />
                         </div>
                         <div>
@@ -250,9 +250,9 @@ const CardManagement = () => {
                       </div>
                       
                       {card.isDefault && (
-                        <div className="flex items-center bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
-                          <Star className="w-4 h-4 fill-current text-yellow-300 mr-1" />
-                          <span className="text-xs font-medium text-white">Default</span>
+                        <div className="flex items-center bg-[#FFFFFF]/20 backdrop-blur-sm px-3 py-1 rounded-full">
+                          <Star className="w-4 h-4 fill-current text-[#FBAA99] mr-1" />
+                          <span className="text-xs font-medium text-[#FFFFFF]">Default</span>
                         </div>
                       )}
                     </div>
@@ -281,21 +281,21 @@ const CardManagement = () => {
 
                     {/* Decorative Elements */}
                     <div className="absolute top-4 right-4 opacity-10">
-                      <div className="w-16 h-16 rounded-full bg-white"></div>
+                      <div className="w-16 h-16 rounded-full bg-[#FFFFFF]"></div>
                     </div>
                     <div className="absolute bottom-4 right-4 opacity-5">
-                      <div className="w-12 h-12 rounded-full bg-white"></div>
+                      <div className="w-12 h-12 rounded-full bg-[#FFFFFF]"></div>
                     </div>
                   </div>
 
                   {/* Action Panel */}
-                  <div className="bg-white rounded-b-2xl p-4 shadow-lg group-hover:shadow-xl transition-shadow duration-300 -mt-2 relative z-10">
+                  <div className="bg-[#FFFFFF] rounded-b-2xl p-4 shadow-lg group-hover:shadow-xl transition-shadow duration-300 -mt-2 relative z-10">
                     <div className="flex justify-between items-center">
                       <div className="flex space-x-2">
                         <button
                           onClick={() => handleEditCard(card)}
                           disabled={actionLoading === card._id}
-                          className="p-2 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors duration-200"
+                          className="p-2 text-[#4D423A] hover:text-[#FBAA99] hover:bg-[#FEF4F1] rounded-lg transition-colors duration-200"
                           title="Edit Payment Method"
                         >
                           <Edit2 className="w-4 h-4" />
@@ -303,7 +303,7 @@ const CardManagement = () => {
                         <button
                           onClick={() => deleteCard(card._id)}
                           disabled={actionLoading === card._id}
-                          className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
+                          className="p-2 text-[#4D423A] hover:text-[#FBAA99] hover:bg-[#FEF4F1] rounded-lg transition-colors duration-200"
                           title="Delete Payment Method"
                         >
                           {actionLoading === card._id ? (
@@ -318,7 +318,7 @@ const CardManagement = () => {
                         <button
                           onClick={() => setAsDefault(card._id)}
                           disabled={actionLoading === card._id}
-                          className="text-xs font-medium text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg transition-colors duration-200"
+                          className="text-xs font-medium text-[#FBAA99] hover:text-[#4D423A] bg-[#FEF4F1] hover:bg-[#FBAA99]/20 px-3 py-1.5 rounded-lg transition-colors duration-200"
                         >
                           {actionLoading === card._id ? (
                             <Loader className="w-3 h-3 animate-spin inline" />
@@ -336,14 +336,14 @@ const CardManagement = () => {
         )}
 
         {/* Security Notice */}
-        <div className="mt-16 bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+        <div className="mt-16 bg-[#FFFFFF]/60 backdrop-blur-sm rounded-2xl p-6 border border-[#FEF4F1]">
           <div className="flex items-start space-x-4">
-            <div className="bg-green-100 p-2 rounded-lg">
-              <Shield className="w-6 h-6 text-green-600" />
+            <div className="bg-[#FEF4F1] p-2 rounded-lg">
+              <Shield className="w-6 h-6 text-[#FBAA99]" />
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 mb-2">Your Payment Information is Secure</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
+              <h3 className="font-semibold text-[#4D423A] mb-2">Your Payment Information is Secure</h3>
+              <p className="text-[#4D423A]/80 text-sm leading-relaxed">
                 We use industry-standard encryption to protect your payment information. Your card details are never stored in plain text and are protected by multiple layers of security.
               </p>
             </div>

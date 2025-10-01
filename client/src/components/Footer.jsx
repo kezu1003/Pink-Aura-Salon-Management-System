@@ -46,7 +46,7 @@ export default function Footer() {
 
       <div className="border-t border-white/10">
         <div className="mx-auto max-w-7xl px-4 py-4 text-center text-xs text-white/60 sm:px-6">
-          © {new Date().getFullYear()} Pink Aura Salon • Designed & Developed by Ants
+          © {new Date().getFullYear()} Pink Aura Salon • Designed & Developed by PentaCodes
         </div>
       </div>
     </footer>

@@ -3,6 +3,8 @@ import UserCourseCard from "../components/UserCourseCard";
 import CoursesNotFound from "../components/CoursesNotFound";
 import api from '../lib/axios';
 import toast from "react-hot-toast";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import { 
   MessageCircle, 
   ChevronLeft, 
@@ -370,6 +372,8 @@ const UserCourseHomePage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#FEF4F1] via-white to-[#FEF4F1] relative overflow-hidden">
+      <Navbar />
+
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-[#FBAA99]/10 rounded-full blur-3xl"></div>
@@ -377,7 +381,7 @@ const UserCourseHomePage = () => {
         <div className="absolute -bottom-40 right-1/4 w-80 h-80 bg-[#FBAA99]/10 rounded-full blur-3xl"></div>
       </div>
 
-      <div className="relative z-10 course-home-page p-6">
+       <div className="relative z-10 course-home-page p-6 pt-28">
         <div className="max-w-7xl mx-auto">
           {/* Hero Section */}
           <HeroSection />
@@ -493,6 +497,7 @@ const UserCourseHomePage = () => {
           transition-timing-function: ease-in-out;
         }
       `}</style>
+      <Footer />
     </div>
   );
 };

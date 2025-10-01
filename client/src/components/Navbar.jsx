@@ -92,7 +92,7 @@ const Navbar = () => {
           {userData && (
             <>
               <NavLink
-                to="/events"
+                to="/events/user"
                 className={({ isActive }) =>
                   `hidden sm:block text-base sm:text-lg transition ${
                     isActive ? 'text-[#4D423A] font-medium' : 'text-black hover:text-[#4D423A]'
