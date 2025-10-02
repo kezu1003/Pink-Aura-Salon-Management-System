@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom'; 
 import CourseCard from '../components/CourseCard'; 
 import CoursesNotFound from '../components/CoursesNotFound';
 import api from '../lib/axios';
@@ -29,7 +29,8 @@ import {
   Send,
   Zap,
   Globe,
-  Target
+  Target,
+  ArrowLeft 
 } from "lucide-react";
 
 const CourseHomePage = () => {
@@ -75,6 +76,7 @@ const CourseHomePage = () => {
       icon: <Award className="w-16 h-16" />
     }
   ];
+
   // Auto-advance slideshow
   useEffect(() => {
     const timer = setInterval(() => {
@@ -225,7 +227,7 @@ const CourseHomePage = () => {
                 <h3 className="text-xl font-bold text-[#4D423A] group-hover:text-[#FBAA99] transition-colors duration-300">
                   {course.courseName}
                 </h3>
-                <div className="flex items-center space-x-2 text-sm text-gray-500">
+                <div className="flex items-center דו-space-x-2 text-sm text-gray-500">
                   <Calendar className="w-4 h-4" />
                   <span>Updated 2 days ago</span>
                 </div>
@@ -321,10 +323,25 @@ const CourseHomePage = () => {
       </div>
 
       <div className="relative z-10 course-home-page p-6">
-        
         <div className="max-w-7xl mx-auto">
           {/* Admin Hero Header */}
           <div className="text-center mb-8">
+            <div className="flex flex-wrap gap-4 justify-center mb-6">
+              <Link 
+                to="/admin" 
+                className="inline-flex items-center space-x-2 px-6 py-3 bg-white/80 backdrop-blur-sm hover:bg-[#FEF4F1] border-2 border-[#FBAA99]/20 hover:border-[#FBAA99] rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-[#4D423A] font-medium"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                <span>Back to Admin Dashboard</span>
+              </Link>
+              <Link 
+                to="/courses/create"
+                className="inline-flex items-center space-x-2 px-6 py-3 bg-white/80 backdrop-blur-sm hover:bg-[#FEF4F1] border-2 border-[#FBAA99]/20 hover:border-[#FBAA99] rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-[#4D423A] font-medium"
+              >
+                <Plus className="w-5 h-5" />
+                <span>Create New Course</span>
+              </Link>
+            </div>
             <div className="inline-flex items-center space-x-3 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full border-2 border-[#FBAA99]/20 mb-4">
               <Settings className="w-6 h-6 text-[#4D423A]" />
               <span className="text-[#4D423A] font-bold">Admin Dashboard</span>

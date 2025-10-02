@@ -17,18 +17,21 @@ import {
 
 const Group = ({ title, children, expanded }) => {
   const [open, setOpen] = useState(true);
+
+  if (!expanded) {
+    return <div className="mb-2">{children}</div>;
+  }
+
   return (
     <div className="mb-2">
       <button
         onClick={() => setOpen(!open)}
-        className={`w-full flex items-center justify-between px-3 py-2 font-semibold text-sm ${
-          expanded ? "text-slate-700" : "justify-center"
-        }`}
+        className="w-full flex items-center justify-between px-3 py-2 font-semibold text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
       >
-        {expanded && <span>{title}</span>}
-        {expanded && <span className="text-xs">{open ? "▾" : "▸"}</span>}
+        <span>{title}</span>
+        <span className="text-xs">{open ? "▾" : "▸"}</span>
       </button>
-      {open && <div className={expanded ? "pl-3" : ""}>{children}</div>}
+      {open && <div className="pl-3">{children}</div>}
     </div>
   );
 };
@@ -37,10 +40,10 @@ const Item = ({ to, label, icon: Icon, expanded }) => (
   <NavLink
     to={to}
     className={({ isActive }) =>
-      `flex items-center gap-2 px-3 py-2 rounded transition-colors ${
+      `flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
         isActive
           ? "bg-pink-500 text-white"
-          : "text-slate-700 hover:bg-pink-100 hover:text-pink-700"
+          : "text-gray-700 hover:bg-pink-50 hover:text-pink-700"
       } ${expanded ? "justify-start" : "justify-center"}`
     }
   >
@@ -63,9 +66,9 @@ export default function AdminSidebar({ expanded, onClose }) {
       />
 
       <aside
-        className={`fixed lg:static z-40 top-0 left-0 h-full bg-gradient-to-b from-pink-200 to-pink-100 border-r border-pink-300 shadow-lg transition-all duration-300 ${
+        className={`fixed lg:static z-40 top-0 left-0 h-full bg-white border-r border-gray-200 shadow-sm transition-all duration-300 ease-in-out ${
           expanded ? "w-64" : "w-16"
-        }`}
+        } ${!expanded ? "-translate-x-full lg:translate-x-0" : "translate-x-0"}`}
       >
         <div className="px-4 py-4 font-bold text-xl text-pink-700">
           {expanded ? "Admin" : "A"}
@@ -119,6 +122,14 @@ export default function AdminSidebar({ expanded, onClose }) {
             <Item to="/admin/reviews" label="Manage Reviews" icon={Star} expanded={expanded} />
           </Group>
 
+          <Group title="Course Management" expanded={expanded}>
+            <Item to="/courses" label="courses" icon={Settings} expanded={expanded} />
+          </Group>
+
+          <Group title="Events Management" expanded={expanded}>
+            <Item to="/events" label="Events" icon={Settings} expanded={expanded} />
+          </Group>
+
           {hasRole("admin") && (
             <Group title="Staff" expanded={expanded}>
               <Item to="/admin/staff" label="Staff Directory" icon={Users} expanded={expanded} />
@@ -147,14 +158,7 @@ export default function AdminSidebar({ expanded, onClose }) {
             />
 
           </Group>
-
-          <Group title="System" expanded={expanded}>
-            <Item to="/admin/settings" label="Settings" icon={Settings} expanded={expanded} />
-          </Group>
-
-          <Group title="System" expanded={expanded}>
-            <Item to="/courses" label="courses" icon={Settings} expanded={expanded} />
-          </Group>
+          
         </nav>
       </aside>
     </>

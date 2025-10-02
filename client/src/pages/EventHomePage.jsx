@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom'; 
 import EventNavbar from '../components/EventNavbar';
 import EventCard from '../components/EventCard';
 import EventsNotFound from "../components/EventNotFound";
@@ -25,7 +25,8 @@ import {
   Sparkles,
   Target,
   Zap,
-  Globe
+  Globe,
+  ArrowLeft 
 } from "lucide-react";
 
 const EventHomePage = () => {
@@ -197,11 +198,25 @@ const EventHomePage = () => {
       </div>
 
       <div className="relative z-10 event-home-page p-6">
-        
-        
         <div className="max-w-7xl mx-auto">
           {/* Admin Hero Header */}
           <div className="text-center mb-8">
+            <div className="flex flex-wrap gap-4 justify-center mb-6">
+              <Link 
+                to="/admin" 
+                className="inline-flex items-center space-x-2 px-6 py-3 bg-white/80 backdrop-blur-sm hover:bg-[#FEF4F1] border-2 border-[#FBAA99]/20 hover:border-[#FBAA99] rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-[#4D423A] font-medium"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                <span>Back to Admin Dashboard</span>
+              </Link>
+              <Link 
+                to="/events/create"
+                className="inline-flex items-center space-x-2 px-6 py-3 bg-white/80 backdrop-blur-sm hover:bg-[#FEF4F1] border-2 border-[#FBAA99]/20 hover:border-[#FBAA99] rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-[#4D423A] font-medium"
+              >
+                <Plus className="w-5 h-5" />
+                <span>Create New Event</span>
+              </Link>
+            </div>
             <div className="inline-flex items-center space-x-3 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full border-2 border-[#FBAA99]/20 mb-4">
               <Settings className="w-6 h-6 text-[#4D423A]" />
               <span className="text-[#4D423A] font-bold">Event Management</span>
