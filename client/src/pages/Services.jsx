@@ -37,13 +37,13 @@ export default function Services() {
     }
   }
 
-  useEffect(() => { load(); }, []); // initial
+  useEffect(() => { load(); }, []); // initial load
   useEffect(() => {
     const t = setTimeout(load, 250);
     return () => clearTimeout(t);
   }, [activeCat, q]);
 
-  //Scroll
+  // Scroll to services
   const handleScroll = () => {
     document.getElementById("services-section")?.scrollIntoView({ behavior: "smooth" });
   };
@@ -53,7 +53,7 @@ export default function Services() {
       <Navbar />
       <div className="h-20" />
 
-      {/* background image */}
+      {/* Image */}
       <section
         className="relative h-[60vh] flex items-center justify-center bg-cover bg-top"
         style={{ backgroundImage: "url('/serv01.png')" }}
@@ -68,7 +68,7 @@ export default function Services() {
             and discover why we’re the best ladies salon in Colombo!
           </p>
 
-          {/* Glass-effect button */}
+          {/* Glass button */}
           <button
             onClick={handleScroll}
             className="mt-10 px-6 py-3 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 text-white font-medium shadow-lg hover:bg-white/30 transition"
@@ -78,7 +78,7 @@ export default function Services() {
         </div>
       </section>
 
-      {/* Filters */}
+      {/* Filters Section */}
       <div id="services-section" className="border-t border-[#FBAA99]/30">
         <div className="max-w-6xl mx-auto px-4 py-4 flex flex-wrap items-center gap-3">
           <div className="flex gap-2 overflow-x-auto">
@@ -107,7 +107,7 @@ export default function Services() {
         </div>
       </div>
 
-      {/* Groups */}
+      {/* Groups Section */}
       <div className="max-w-6xl mx-auto px-4 py-10">
         {loading ? (
           <div className="text-center text-gray-500">Loading…</div>
@@ -121,10 +121,12 @@ export default function Services() {
                 {g.items.map((s) => (
                   <article
                     key={s._id}
-                    className="rounded-2xl border bg-white p-4 hover:shadow-md transition"
+                    className="rounded-2xl border bg-white p-4
+                               transform transition duration-300 ease-in-out
+                               hover:shadow-2xl hover:-translate-y-1 hover:scale-105"
                   >
                     <div className="flex items-start justify-between gap-3">
-                      <h3 className="font-semibold-[#4D423A]">{s.name}</h3>
+                      <h3 className="font-semibold text-[#4D423A]">{s.name}</h3>
                       <span className="text-[#FBAA99] font-semibold">
                         Rs. {s.price?.toLocaleString?.() ?? s.price}
                       </span>
