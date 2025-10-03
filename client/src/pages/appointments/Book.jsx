@@ -27,6 +27,7 @@ export default function Book() {
   const [picked, setPicked] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // Packages
   const [searchParams] = useSearchParams();
   const packageFromQuery = searchParams.get("package");
   const [pkg, setPkg] = useState(null);

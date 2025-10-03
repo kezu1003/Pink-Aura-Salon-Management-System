@@ -1,15 +1,15 @@
+
 import { useState, useContext, useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { AppContext } from "../../context/AppContext";
 import AdminSidebar from "../../components/AdminSidebar";
-import { Menu } from "lucide-react";
+import { Menu, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function AdminLayout() {
   const navigate = useNavigate();
   const { backendUrl, getUserData } = useContext(AppContext);
-
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
@@ -40,7 +40,7 @@ export default function AdminLayout() {
   };
 
   return (
-    <div className="flex bg-[#fafafa] min-h-screen">
+    <div className="flex bg-gray-50 min-h-screen">
       {/* Sidebar */}
       <AdminSidebar expanded={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
@@ -51,15 +51,17 @@ export default function AdminLayout() {
           <div className="flex items-center gap-3">
             <button
               onClick={toggleSidebar}
-              className="p-2 rounded-md border border-pink-200 bg-pink-50 text-pink-600 hover:bg-pink-100 lg:hidden"
+              className="p-2 rounded-md hover:bg-gray-100 text-gray-600 transition-colors"
             >
-              <Menu size={20} />
+              <Menu size={20} className="lg:hidden" />
+              <ChevronLeft size={20} className={`hidden lg:block ${sidebarOpen ? "" : "hidden"}`} />
+              <ChevronRight size={20} className={`hidden lg:block ${sidebarOpen ? "hidden" : ""}`} />
             </button>
-            <h1 className="text-lg font-semibold text-slate-800">Pink Aura • Admin</h1>
+            <h1 className="text-lg font-semibold text-gray-800">Pink Aura • Admin</h1>
           </div>
           <button
             onClick={doLogout}
-            className="px-3 py-1.5 rounded bg-pink-500 text-white hover:opacity-90"
+            className="px-3 py-1.5 rounded bg-pink-500 text-white hover:opacity-90 transition-opacity"
           >
             Logout
           </button>
