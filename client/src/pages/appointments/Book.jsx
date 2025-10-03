@@ -8,7 +8,6 @@ import SlotGrid from "../../components/appointments/SlotGrid";
 import Calendar from "../../components/appointments/Calendar";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-/* ✅ Added */
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 
@@ -27,7 +26,7 @@ export default function Book() {
   const [picked, setPicked] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Package-awareness
+  // Packages
   const [searchParams] = useSearchParams();
   const packageFromQuery = searchParams.get("package");
   const [pkg, setPkg] = useState(null);
