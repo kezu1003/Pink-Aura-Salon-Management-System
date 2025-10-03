@@ -66,7 +66,6 @@ export default function Calendar({ value, onChange }) {
         </button>
       </div>
 
-      {/* Weekdays */}
 
       <div className="grid grid-cols-7 text-center text-sm text-gray-500 mb-2">
         {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((d) => (
@@ -74,8 +73,7 @@ export default function Calendar({ value, onChange }) {
         ))}
       </div>
 
-      {/* Days */}
-
+    
       <div className="grid grid-rows-6 gap-1">
         {weeks.map((w, i) => (
           <div key={i} className="grid grid-cols-7 gap-1">
@@ -91,7 +89,7 @@ export default function Calendar({ value, onChange }) {
                     "flex items-center justify-center border",
                     inMonth ? "text-gray-900" : "text-gray-300",
                     isSel
-                      ? "bg-blue-600 text-white border-blue-600"
+                      ? "bg-[#FBAA99] text-white border-[#FBAA99]"
                       : "bg-white hover:bg-pink-50 border-gray-200",
                   ].join(" ")}
                 >

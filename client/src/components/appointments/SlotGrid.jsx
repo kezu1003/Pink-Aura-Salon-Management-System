@@ -17,7 +17,7 @@ export default function SlotGrid({ slots = [], selected, onSelect }) {
             onClick={() => onSelect(s)}
 
             className={`px-4 py-2 rounded-full border transition
-              ${isActive ? "bg-pink-500 text-white border-pink-500" : "bg-white hover:bg-pink-50"}
+              ${isActive ? "bg-[#FBAA99] text-white border-[#FBAA99]" : "bg-white hover:bg-pink-50"}
             `}
 
             title={`${format(new Date(s.start), "p")} - ${format(new Date(s.end), "p")}`}
