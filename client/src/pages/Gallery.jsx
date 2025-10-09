@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Lightbox from "../components/Lightbox";
 import galleryItems from "../utils/galleryData";
 
-// Theme tokens
+
 const T = {
   bg: "#FEF4F1",
   accent: "#FBAA99",

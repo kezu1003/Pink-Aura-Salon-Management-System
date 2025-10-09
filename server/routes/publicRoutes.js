@@ -1,6 +1,7 @@
 import express from "express";
 import userAuth from "../middleware/userAuth.js";
 import User from "../models/userModel.js";
+import { createContactMessage } from "../controllers/contactController.js";
 
 const router = express.Router();
 
@@ -23,5 +24,7 @@ router.get("/staff-for-reviews", userAuth, async (_req, res) => {
   .lean();
 res.json({ success: true, staff });
 });
+
+router.post("/contact", createContactMessage);
 
 export default router;

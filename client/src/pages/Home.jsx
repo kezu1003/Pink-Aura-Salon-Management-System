@@ -8,6 +8,9 @@ import Header from "../components/Header";
 import ServicesSection from "../sections/ServicesSection";
 import { Phone } from "lucide-react";
 import { AppContext } from "../context/AppContext";
+import AboutUs from "../sections/AboutUs";
+import ContactUs from "../sections/ContactUs";
+
 
 export default function Home() {
   const { userData } = useContext(AppContext);
@@ -24,6 +27,11 @@ export default function Home() {
             <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
               <GalleryFeature />
             </section>
+
+            <section className="mx-auto max-w-7xl px-4 sm:px-6">
+              <AboutUs />
+            </section>
+
             <section className="border-t border-[#4D423A]/10 bg-[#FFFFFF]">
               <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
                 <MapAndBranches />
@@ -73,10 +81,16 @@ export default function Home() {
 
               
             </section>
+
+            <section className="mx-auto max-w-7xl px-4 sm:px-6">
+              <AboutUs />
+            </section>
             
           </>
         )}
       </main>
+
+      <ContactUs />
 
       <Footer />
 
