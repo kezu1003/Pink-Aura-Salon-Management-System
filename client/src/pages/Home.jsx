@@ -82,7 +82,7 @@ export default function Home() {
 
       {/* Floating call button stays for both */}
       <a
-        href="tel:+94XXXXXXXXX"
+        href="tel:+94703154962"
         className="fixed bottom-6 right-6 flex items-center gap-2 rounded-full bg-[#FBAA99] px-4 py-3 text-gray shadow-xl transition hover:bg-[#FEF4F1]"
         aria-label="Call us"
       >

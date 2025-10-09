@@ -1,7 +1,7 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 
-// Existing pages
+
 import Home from './pages/Home.jsx';
 import Login from './pages/Login';
 import EmailVerify from './pages/EmailVerify';
@@ -64,6 +64,10 @@ import ServiceReports from './pages/admin/ServiceReports.jsx';
 import AppointmentReports from './pages/admin/AppointmentReports.jsx';
 import AdminProductReports from './pages/admin/ProductReports.jsx';
 
+//home
+import Gallery from "./pages/Gallery.jsx";
+
+
 import CourseHomePage from './pages/CourseHomePage.jsx';
 import CourseCreatePage from './pages/CourseCreatePage.jsx';
 import CourseDetailsPage from './pages/CourseDetailsPage.jsx';
@@ -92,6 +96,7 @@ const App = () => {
         <Route path='/login' element={<Login />} />
         <Route path='/email-verify' element={<EmailVerify />} />
         <Route path='/reset-password' element={<ResetPassword />} />
+        <Route path="/gallery" element={<Gallery />} />
 
         <Route path='/shop' element={<Shop />} />
         <Route path='/product/:id' element={<ProductDetails />} />
@@ -103,10 +108,11 @@ const App = () => {
         <Route path='/payment-success' element={<PaymentSuccess />} />
         <Route path='/payment-failed' element={<PaymentFailed />} />
         <Route path='/book' element={<Book />} />
-         <Route path='/appointments/mine' element={<MyAppointments />} />
+        <Route path='/appointments/mine' element={<MyAppointments />} />
         <Route path='/appointments/book' element={<Book />} />
-
         <Route path='/packages' element={<Packages />} />
+
+        
 
         {/* Staff/Admin auth */}
         <Route path='/admin/login' element={<AdminLogin />} />

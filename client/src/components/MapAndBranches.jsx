@@ -2,8 +2,8 @@ import React from "react";
 import branches from "../data/branches";
 
 export default function MapAndBranches() {
-  // Center map roughly around Colombo
-  const mapQuery = encodeURIComponent("Colombo, Sri Lanka beauty salon");
+  // Center map roughly around Matara
+  const mapQuery = encodeURIComponent("Matara, Sri Lanka beauty salon");
   const mapSrc = `https://www.google.com/maps/embed?pb=&q=${mapQuery}`;
 
   return (
