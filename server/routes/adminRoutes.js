@@ -11,6 +11,21 @@ import {
   
 } from '../controllers/transactionController.js';
 
+import {
+  getAppointmentsToday,
+  getRevenueMonthly,
+  getActiveClients,
+  getStaffUtilization,
+  getInventoryAlerts,
+  getCustomerSatisfaction,
+  getRevenueTrend,
+  getAppointmentDistribution,
+  getTopServices,
+  getRecentActivities,
+  getStaffOverview,
+  generateReport,
+} from '../controllers/adminDashboardController.js';
+
 import { appointmentsOverview, appointmentsOverviewPdf } from "../controllers/appointmentReportsController.js";
 
 
@@ -35,5 +50,17 @@ router.put('/transactions/:id/status', updateTransactionStatus);
 router.get("/appointment-reports/overview", appointmentsOverview);
 router.get("/appointment-reports/overview.pdf", appointmentsOverviewPdf);
 
+router.get('/dashboard/appointments-today', getAppointmentsToday);
+router.get('/dashboard/revenue-monthly', getRevenueMonthly);
+router.get('/dashboard/active-clients', getActiveClients);
+router.get('/dashboard/staff-utilization', getStaffUtilization);
+router.get('/dashboard/inventory-alerts', getInventoryAlerts);
+router.get('/dashboard/customer-satisfaction', getCustomerSatisfaction);
+router.get('/dashboard/revenue-trend', getRevenueTrend);
+router.get('/dashboard/appointment-distribution', getAppointmentDistribution);
+router.get('/dashboard/top-services', getTopServices);
+router.get('/dashboard/recent-activities', getRecentActivities);
+router.get('/dashboard/staff-overview', getStaffOverview);
+router.get('/dashboard/report', generateReport);
 
 export default router;

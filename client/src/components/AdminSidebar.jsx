@@ -26,7 +26,7 @@ const Group = ({ title, children, expanded }) => {
     <div className="mb-2">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-3 py-2 font-semibold text-sm text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
+        className="w-full flex items-center justify-between px-3 py-2 font-semibold text-sm text-[#4D423A] hover:bg-[#FBAA99] hover:text-[#FFFFFF] rounded-md transition-colors"
       >
         <span>{title}</span>
         <span className="text-xs">{open ? "▾" : "▸"}</span>
@@ -42,12 +42,12 @@ const Item = ({ to, label, icon: Icon, expanded }) => (
     className={({ isActive }) =>
       `flex items-center gap-2 px-3 py-2 rounded-md transition-colors ${
         isActive
-          ? "bg-pink-500 text-white"
-          : "text-gray-700 hover:bg-pink-50 hover:text-pink-700"
+          ? "bg-[#FBAA99] text-[#FFFFFF]"
+          : "text-[#4D423A] hover:bg-[#FEF4F1] hover:text-[#000000]"
       } ${expanded ? "justify-start" : "justify-center"}`
     }
   >
-    {Icon && <Icon size={18} />}
+    {Icon && <Icon size={18} color={expanded ? "#4D423A" : "#000000"} />}
     {expanded && <span className="text-sm">{label}</span>}
   </NavLink>
 );
@@ -59,18 +59,18 @@ export default function AdminSidebar({ expanded, onClose }) {
     <>
       {/* Backdrop for mobile */}
       <div
-        className={`fixed inset-0 bg-black/30 z-30 lg:hidden ${
+        className={`fixed inset-0 bg-[#000000]/30 z-30 lg:hidden ${
           expanded ? "block" : "hidden"
         }`}
         onClick={onClose}
       />
 
       <aside
-        className={`fixed lg:static z-40 top-0 left-0 h-full bg-white border-r border-gray-200 shadow-sm transition-all duration-300 ease-in-out ${
+        className={`fixed lg:static z-40 top-0 left-0 h-full bg-[#FEF4F1] border-r border-[#4D423A]/20 shadow-sm transition-all duration-300 ease-in-out ${
           expanded ? "w-64" : "w-16"
         } ${!expanded ? "-translate-x-full lg:translate-x-0" : "translate-x-0"}`}
       >
-        <div className="px-4 py-4 font-bold text-xl text-pink-700">
+        <div className="px-4 py-4 font-bold text-xl text-[#4D423A]">
           {expanded ? "Admin" : "A"}
         </div>
 
@@ -85,7 +85,7 @@ export default function AdminSidebar({ expanded, onClose }) {
           </Group>
 
           <Group title="Sales" expanded={expanded}>
-            <Item to="/admin/orders" label="Orders" icon={ClipboardList} expanded={expanded} />
+            
             <Item
               to="/admin/transactions"
               label="Transactions"
@@ -123,7 +123,7 @@ export default function AdminSidebar({ expanded, onClose }) {
           </Group>
 
           <Group title="Course Management" expanded={expanded}>
-            <Item to="/courses" label="courses" icon={Settings} expanded={expanded} />
+            <Item to="/courses" label="Courses" icon={Settings} expanded={expanded} />
           </Group>
 
           <Group title="Events Management" expanded={expanded}>
@@ -149,16 +149,13 @@ export default function AdminSidebar({ expanded, onClose }) {
               icon={FileText}
               expanded={expanded}
             />
-
             <Item
               to="/admin/products/reports"
-              label="product Report"
+              label="Product Report"
               icon={FileText}
               expanded={expanded}
             />
-
           </Group>
-          
         </nav>
       </aside>
     </>
