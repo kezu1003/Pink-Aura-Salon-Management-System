@@ -44,7 +44,9 @@ export default function AdminLayout() {
       <AdminSidebar expanded={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Main content */}
+
       <main className="flex-1 min-h-screen">
+        
         {/* Topbar */}
         <header className="flex items-center justify-between px-6 py-4 border-b bg-[#FFFFFF] shadow-sm sticky top-0 z-40">
           <div className="flex items-center gap-3">

@@ -156,6 +156,11 @@ export default function AdminSidebar({ expanded, onClose }) {
               expanded={expanded}
             />
           </Group>
+
+          <Group title="Email Management" expanded={expanded}>
+            <Item to="/admin/messages" label="Emails" icon={Megaphone} expanded={expanded} />
+          </Group>
+
         </nav>
       </aside>
     </>

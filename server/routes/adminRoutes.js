@@ -26,6 +26,12 @@ import {
   generateReport,
 } from '../controllers/adminDashboardController.js';
 
+import {
+  getAllMessages,
+  deleteMessage,
+  replyToMessage,
+} from "../controllers/contactController.js";
+
 import { appointmentsOverview, appointmentsOverviewPdf } from "../controllers/appointmentReportsController.js";
 
 
@@ -62,5 +68,9 @@ router.get('/dashboard/top-services', getTopServices);
 router.get('/dashboard/recent-activities', getRecentActivities);
 router.get('/dashboard/staff-overview', getStaffOverview);
 router.get('/dashboard/report', generateReport);
+
+router.get("/contact-messages",  getAllMessages);
+router.delete("/contact-messages/:id",  deleteMessage);
+router.post("/contact-messages/reply", replyToMessage);
 
 export default router;

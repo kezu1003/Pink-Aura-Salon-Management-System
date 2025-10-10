@@ -38,6 +38,10 @@ import Reviews from './pages/reviews/Reviews.jsx';
 import AddReview from './pages/reviews/AddReview.jsx';
 import AdminReviews from './pages/admin/AdminReviews.jsx';
 
+//contact
+import AdminMessages from './pages/admin/AdminMessages.jsx';
+
+
 //services
 import Services from './pages/Services.jsx';
 import ServicesAdmin from './pages/admin/ServicesAdmin.jsx';
@@ -161,6 +165,7 @@ const App = () => {
           <Route path='reports/service' element={<ServiceReports />} />
           <Route path='reports' element={<AppointmentReports />} />
           <Route path='products/reports' element={<AdminProductReports />} />
+          <Route path="/admin/messages" element={<AdminMessages />} />
 
           {/* <Route path="/courses2" element={<CM2 />} /> */}
 
