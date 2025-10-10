@@ -338,7 +338,10 @@ export default function Book() {
           }} minDate={new Date()} />
 
           <div className="p-6 bg-white rounded-2xl shadow border">
-            <div className="font-semibold mb-3 text-[#4D423A]">Select your time</div>
+            <div className="text-xl font-serif font-semibold mb-4 text-center text-[#4D423A]">
+                PICK A SLOT
+            </div>
+
             {loading ? (
               <div className="text-sm text-gray-500">Loading…</div>
             ) : (
