@@ -13,7 +13,7 @@ import {
 
 
 export default function Calendar({ value, onChange }) {
-  const selected = useMemo(() => new Date(value + "T00:00:00"), [value]);
+  const selected = useMemo(() => new Date(value), [value]);
   const [month, setMonth] = useState(startOfMonth(selected));
 
   const weeks = useMemo(() => {
@@ -34,13 +34,12 @@ export default function Calendar({ value, onChange }) {
   }, [month]);
 
   const pick = (d) => {
-    const iso = new Date(d);
-    const str = iso.toISOString().slice(0, 10);
+    const str = format(d, "yyyy-MM-dd");
     onChange?.(str);
   };
 
   return (
-    <div className="p-6 bg-white rounded-2xl shadow border">
+    <div className="p-6 bg-white rounded-2xl shadow border relative z-10">
     
       <div className="flex items-center justify-between mb-4">
         <button
@@ -85,7 +84,7 @@ export default function Calendar({ value, onChange }) {
                   key={d.toISOString()}
                   onClick={() => pick(d)}
                   className={[
-                    "aspect-square rounded-full mx-auto w-11 text-sm",
+                    "aspect-square rounded-full w-full h-full text-sm",
                     "flex items-center justify-center border",
                     inMonth ? "text-gray-900" : "text-gray-300",
                     isSel
