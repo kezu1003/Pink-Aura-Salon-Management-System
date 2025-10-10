@@ -168,6 +168,17 @@ const Navbar = () => {
                 Packages
               </NavLink>
 
+              <NavLink
+                to="/appointments/mine"
+                className={({ isActive }) =>
+                  `hidden sm:block text-base sm:text-lg transition ${
+                    isActive ? 'text-[#4D423A] font-medium' : 'text-black hover:text-[#4D423A]'
+                    }`
+                  }
+                >
+                  View Appointments
+              </NavLink>
+
               <button
                 onClick={() => navigate('/book')}
                 className="hidden sm:inline-flex items-center px-4 sm:px-5 py-2 sm:py-2.5 rounded-full
