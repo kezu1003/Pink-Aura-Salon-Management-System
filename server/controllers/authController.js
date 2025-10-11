@@ -140,6 +140,14 @@ export const login = async (req, res) => {
     const user = await userModel.findOne({ email });
     if (!user) return res.json({ success: false, message: 'Invalid email' });
 
+    if (user.role !== 'customer') {
+      return res.json({
+        success: false,
+        message: 'Please use the Staff/Admin login portal for this account.',
+        code: 'WRONG_PORTAL'
+      });
+    }
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.json({ success: false, message: 'Invalid password' });
 

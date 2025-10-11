@@ -45,7 +45,7 @@ export default function AdminLogin() {
 
   return (
     <div className="min-h-screen bg-[url('/bg1.jpg')] bg-cover bg-center relative">
-      {/* Header (same as customer) */}
+      {/* Header  */}
       <header className="fixed top-0 left-0 right-0 z-50 flex h-25 items-center justify-between bg-white/70 backdrop-blur-md shadow px-4 sm:px-6">
         <img
           onClick={() => navigate("/")}

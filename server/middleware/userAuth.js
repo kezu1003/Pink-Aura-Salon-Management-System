@@ -36,7 +36,7 @@ export const requireAuth = (req, res, next) => {
 };
 
 /**
- * Role guard (RBAC)
+ * Role guard 
  */
 export const requireRole = (...roles) => (req, res, next) => {
   const role = req?.user?.role || "customer";
@@ -46,8 +46,8 @@ export const requireRole = (...roles) => (req, res, next) => {
   return next();
 };
 
-// Alias if you used it elsewhere
+
 export const requireAnyRole = (...roles) => requireRole(...roles);
 
-// Keep default export for any existing imports that expect "userAuth"
+
 export default requireAuth;
