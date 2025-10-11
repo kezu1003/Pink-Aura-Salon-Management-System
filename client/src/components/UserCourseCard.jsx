@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router';
-import { CalendarCheck, Clock, User, MapPin, Calendar, BookOpen, Star, Users, Award, Heart, Sparkles } from "lucide-react";
+import { Clock, User, MapPin, Calendar, BookOpen, Users, Award, Heart, Sparkles } from "lucide-react";
 import api from '../lib/axios';
 import toast from 'react-hot-toast';
 import { AppContext } from '../context/AppContext';
@@ -98,20 +98,6 @@ const UserCourseCard = ({ course, onRegister }) => {
     toast.success(isLiked ? "Removed from favorites" : "Added to favorites!");
   };
 
-  const handleQuickEnroll = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    if (!isLoggedin) {
-      toast.error('Please log in to enroll in courses');
-      return;
-    }
-
-    // Show confirmation for quick enroll
-    if (window.confirm(`Are you sure you want to enroll in "${course.courseName}"?`)) {
-      handleDirectEnrollment(e);
-    }
-  };
 
   return (
     <div 
@@ -141,10 +127,6 @@ const UserCourseCard = ({ course, onRegister }) => {
                   {course.courseName}
                 </h3>
                 <div className="flex items-center space-x-4 text-sm text-[#4D423A]/60 mt-1">
-                  <div className="flex items-center space-x-1">
-                    <Star className="w-3 h-3 text-yellow-500 fill-current" />
-                    <span>4.8</span>
-                  </div>
                   <div className="flex items-center space-x-1">
                     <Users className="w-3 h-3" />
                     <span>{course.enrolledCount || 24} enrolled</span>
@@ -245,40 +227,16 @@ const UserCourseCard = ({ course, onRegister }) => {
               <span className="font-medium">Added:</span> {course.createdAt ? formatDate(new Date(course.createdAt)) : "Recently"}
             </div>
 
-            {/* Enrollment Buttons */}
+            {/* Enrollment Button */}
             <div className="flex items-center space-x-2">
-              {/* Quick Enroll Button (for logged-in users) */}
-              {isLoggedin && (
-                <button
-                  onClick={handleQuickEnroll}
-                  disabled={isEnrolling}
-                  className={`px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2 text-sm ${
-                    isEnrolling ? 'opacity-75 cursor-not-allowed' : ''
-                  }`}
-                  title="Quick enroll with auto-filled details"
-                >
-                  {isEnrolling ? (
-                    <>
-                      <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      <span>Enrolling...</span>
-                    </>
-                  ) : (
-                    <>
-                      <CalendarCheck className="w-3 h-3" />
-                      <span>Quick Enroll</span>
-                    </>
-                  )}
-                </button>
-              )}
-
-              {/* Detailed Enrollment Button */}
+              {/* Enrollment Button */}
               <button
                 onClick={handleEnrollment}
                 disabled={isEnrolling}
                 className={`px-4 py-2 bg-gradient-to-r from-[#FBAA99] to-[#4D423A] hover:from-[#4D423A] hover:to-[#000000] text-white rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2 text-sm ${
                   isEnrolling ? 'opacity-75 cursor-not-allowed' : ''
                 }`}
-                title="Go to enrollment page with pre-filled details"
+                title="Go to enrollment page"
               >
                 <BookOpen className="w-3 h-3" />
                 <span>{isLoggedin ? 'Enroll Now' : 'Login to Enroll'}</span>
@@ -286,40 +244,15 @@ const UserCourseCard = ({ course, onRegister }) => {
             </div>
           </div>
 
-          {/* Auto-fill Status Badge */}
-          {isLoggedin && (
-            <div className="mt-3 flex items-center justify-center">
-              <div className="inline-flex items-center space-x-1 bg-[#FEF4F1] px-3 py-1 rounded-full text-xs text-[#4D423A] border border-[#FBAA99]/30">
-                <Sparkles className="w-3 h-3 text-[#FBAA99]" />
-                <span>Auto-fill enabled for enrollment</span>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Hover indicator */}
         <div className={`absolute bottom-0 left-0 h-1 bg-gradient-to-r from-[#FBAA99] to-[#4D423A] transition-all duration-300 ${isHovered ? 'w-full' : 'w-0'}`}></div>
 
-        {/* Floating Rating Badge */}
-        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <div className="flex items-center space-x-1 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-medium text-[#4D423A] shadow-lg">
-            <Star className="w-3 h-3 text-yellow-500 fill-current" />
-            <span>4.8</span>
-          </div>
-        </div>
 
         {/* Corner Decorative Element */}
         <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-br from-[#FBAA99] to-[#4D423A] rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-0 group-hover:scale-100"></div>
 
-        {/* Auto-fill Badge */}
-        {isLoggedin && (
-          <div className="absolute top-4 left-4">
-            <div className="bg-gradient-to-r from-[#FBAA99] to-[#4D423A] text-white px-2 py-1 rounded-full text-xs font-bold transform -rotate-6 shadow-lg flex items-center space-x-1">
-              <Sparkles className="w-3 h-3" />
-              <span>AUTO-FILL</span>
-            </div>
-          </div>
-        )}
 
         {/* Special Offer Badge */}
         {Math.random() > 0.7 && !isLoggedin && (
