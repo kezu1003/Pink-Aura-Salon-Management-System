@@ -2,111 +2,132 @@ import { useContext, useEffect, useMemo, useState } from "react";
 import { AppContext } from "../../context/AppContext";
 import { makeApi } from "../../api/appointments";
 import { toast } from "react-toastify";
-import { format } from "date-fns";
-
-const JOB_FOR_CATEGORY = {
-  Hair: "Hair dresser",
-  Nails: "Nail Artist",
-  Makeup: "Makeup Artist",
-  Facials: "Facial Artist",
-  Other: "",
-};
+import { format, isToday } from "date-fns";
 
 export default function AppointmentsAdmin() {
   const { backendUrl } = useContext(AppContext);
   const api = useMemo(() => makeApi(backendUrl), [backendUrl]);
 
-  const [by, setBy] = useState("date"); 
   const [groups, setGroups] = useState([]);
-  const [staff, setStaff] = useState([]);
-  const [stats, setStats] = useState({ total: 0, completed: 0, pending: 0 });
+  const [stats, setStats] = useState({ total: 0, pending: 0, started: 0, completed: 0 });
+  const [filterStatus, setFilterStatus] = useState("");
+  const [sortOrder, setSortOrder] = useState("new"); // new or old
 
+  // Load appointments and calculate stats
   async function load() {
-    const data = await api.adminGrouped(by);
+    const data = await api.adminGrouped("date");
     if (!data?.success) return toast.error(data?.message || "Failed to load appointments");
+
     setGroups(data.groups || []);
 
-    // calculate stats
-    let total = 0, completed = 0, pending = 0;
-    (data.groups || []).forEach((g) => {
-      g.items.forEach((a) => {
-        total++;
-        if (a.status === "completed") completed++;
-        if (a.status === "pending") pending++;
+    // Calculate stats for today
+    let total = 0, pending = 0, started = 0, completed = 0;
+    (data.groups || []).forEach(g => {
+      g.items.forEach(a => {
+        if (isToday(new Date(a.startTime))) {
+          total++;
+          if (a.status === "pending") pending++;
+          else if (a.status === "started") started++;
+          else if (a.status === "completed") completed++;
+        }
       });
     });
-    setStats({ total, completed, pending });
+    setStats({ total, pending, started, completed });
   }
 
-  async function loadStaff() {
-    const res = await fetch(`${backendUrl}/api/admin/staff`, { credentials: "include" });
-    const data = await res.json();
-    if (data.success) setStaff(data.staff || []);
-  }
+  useEffect(() => { load(); }, []);
 
-  useEffect(() => { loadStaff(); }, [backendUrl]);
-  useEffect(() => { load(); }, [by]);
+  // Update status (live + server)
+  const onStatusChange = async (apptId, newStatus) => {
+    let oldStatus;
+    // Optimistic update groups + stats
+    setGroups(prev =>
+      prev.map(g => ({
+        ...g,
+        items: g.items.map(a => {
+          if (a._id === apptId) {
+            oldStatus = a.status; // capture old status
+            // Only adjust stats for today
+            if (isToday(new Date(a.startTime))) {
+              setStats(prevStats => {
+                const newStats = { ...prevStats };
+                if (oldStatus) newStats[oldStatus]--;
+                if (newStatus) newStats[newStatus]++;
+                return newStats;
+              });
+            }
+            return { ...a, status: newStatus }; // update locally
+          }
+          return a;
+        })
+      }))
+    );
 
-  const assignableForCategory = (category) => {
-    const job = JOB_FOR_CATEGORY[category] || "";
-    return staff.filter((s) => s.jobTitle === job && s.status === "active");
+    // Send update to server
+    const res = await api.updateStatus(apptId, newStatus);
+    if (!res.success) {
+      toast.error(res.message || "Failed to update status");
+      load(); // reload if server fails
+    }
   };
 
-  const onAssign = async (apptId, staffId) => {
-    const r = await api.assignStaff(apptId, staffId);
-    if (!r.success) return toast.error(r.message || "Assign failed");
-    toast.success("Staff assigned");
-    load();
+  const filterItemsByStatus = items => {
+    if (!filterStatus) return items;
+    return items.filter(a => a.status === filterStatus);
   };
+
+  // Tiles config
+  const tiles = [
+    { label: "Total Today", value: stats.total, bg: "#FFFFFF", text: "#000000" },
+    { label: "Pending", value: stats.pending, bg: "#FFFFFF", text: "#FBAA99" },
+    { label: "Started", value: stats.started, bg: "#FFFFFF", text: "#4D423A" },
+    { label: "Completed", value: stats.completed, bg: "#FFFFFF", text: "#4D423A" },
+  ];
 
   return (
-    <div 
-      className="min-h-screen p-6" 
-      style={{ 
-        background: "linear-gradient(135deg, #FEF4F1, #FBAA99)", 
-      }}
-    >
-      {/* Header with Filter Buttons */}
+    <div className="min-h-screen p-6" style={{ backgroundColor: "#FEF4F1" }}>
+      {/* Header */}
       <div className="flex items-center gap-3 mb-6">
-        <h1 className="text-3xl font-bold text-[#4D423A]">Appointments</h1>
+        <h1 className="text-3xl font-bold" style={{ color: "#4D423A" }}>Appointments</h1>
         <div className="ml-auto flex gap-2">
-          {["date", "type", "assignment"].map((k) => (
+          {["pending", "started", "completed"].map(k => (
             <button
               key={k}
-              onClick={() => setBy(k)}
-              className={`px-3 py-1.5 rounded-full border transition ${
-                by === k 
-                  ? "bg-[#FBAA99] text-white border-[#FBAA99]" 
-                  : "bg-white border-gray-300 text-gray-700"
-              }`}
+              onClick={() => setFilterStatus(filterStatus === k ? "" : k)}
+              className="px-3 py-1.5 rounded-full border transition"
+              style={{
+                backgroundColor: filterStatus === k ? "#FBAA99" : "#FFFFFF",
+                color: filterStatus === k ? "#FFFFFF" : "#4D423A",
+                borderColor: "#4D423A"
+              }}
             >
-              {k === "date" ? "Date" : k === "type" ? "Service Type" : "Assignment"}
+              {k.charAt(0).toUpperCase() + k.slice(1)}
             </button>
           ))}
+          <button
+            onClick={() => setSortOrder(sortOrder === "new" ? "old" : "new")}
+            className="px-3 py-1.5 rounded-full border"
+            style={{
+              backgroundColor: "#FFFFFF",
+              color: "#4D423A",
+              borderColor: "#4D423A"
+            }}
+          >
+            {sortOrder === "new" ? "New → Old" : "Old → New"}
+          </button>
         </div>
       </div>
 
-      {/* Glass Tiles */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-        {[
-          { label: "Total Appointments", value: stats.total, color: "#4D423A" },
-          { label: "Completed", value: stats.completed, color: "#000000" },
-          { label: "Pending", value: stats.pending, color: "#FBAA99" },
-        ].map((t, idx) => (
+      {/* Tiles */}
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-6 mb-8">
+        {tiles.map((t, idx) => (
           <div
             key={idx}
-            className="rounded-2xl p-6 shadow-lg backdrop-blur-lg border border-white/30"
-            style={{
-              background: "rgba(255,255,255,0.25)",
-              boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.2)",
-            }}
+            className="rounded-xl p-4 border shadow-sm"
+            style={{ backgroundColor: t.bg, borderColor: "#FBAA99", borderWidth: 2 }}
           >
-            <div className="text-lg font-semibold" style={{ color: t.color }}>
-              {t.label}
-            </div>
-            <div className="text-3xl font-bold mt-2 text-[#4D423A]">
-              {t.value}
-            </div>
+            <div className="text-lg font-semibold" style={{ color: t.text }}>{t.label}</div>
+            <div className="text-2xl font-bold mt-1" style={{ color: "#4D423A" }}>{t.value}</div>
           </div>
         ))}
       </div>
@@ -115,53 +136,58 @@ export default function AppointmentsAdmin() {
       {groups.length === 0 ? (
         <div className="text-gray-600">No appointments.</div>
       ) : (
-        <div className="space-y-6">
-          {groups.map((g) => (
-            <section key={g._id} className="border rounded-xl bg-white/70 backdrop-blur-md shadow-md">
-              <div className="px-4 py-3 border-b flex items-center justify-between">
-                <div className="font-medium text-[#4D423A]">
-                  {g._id} <span className="ml-2 text-gray-500 text-sm">({g.count})</span>
+        <div className="space-y-4">
+          {groups.map(g => {
+            let filteredItems = filterItemsByStatus(g.items);
+            filteredItems = filteredItems.sort((a,b) =>
+              sortOrder === "new" ? new Date(b.startTime) - new Date(a.startTime) : new Date(a.startTime) - new Date(b.startTime)
+            );
+            if(filteredItems.length === 0) return null;
+            return (
+              <section
+                key={g._id}
+                className="border rounded-lg shadow-sm"
+                style={{ backgroundColor: "#FFFFFF", borderColor: "#FBAA99", borderWidth: 2 }}
+              >
+                <div className="px-4 py-2 border-b flex items-center justify-between">
+                  <div className="font-medium" style={{ color: "#4D423A" }}>
+                    {g._id} <span className="ml-2 text-gray-500 text-sm">({filteredItems.length})</span>
+                  </div>
                 </div>
-              </div>
-              <div className="divide-y">
-                {g.items.map((a) => (
-                  <div key={a._id} className="px-4 py-3 grid grid-cols-12 items-center gap-3">
-                    <div className="col-span-3">
-                      <div className="font-medium">{format(new Date(a.startTime), "PPp")}</div>
-                      <div className="text-xs text-gray-500">{a.serviceNames?.join(", ")}</div>
-                    </div>
-                    <div className="col-span-3">
-                      <div className="text-sm">Customer: {a.customer?.name || "-"}</div>
-                      <div className="text-xs text-gray-500">{a.customer?.email || ""}</div>
-                    </div>
-                    <div className="col-span-2">
-                      <div className="text-sm">Type: {a.serviceCategory || "-"}</div>
-                      <div className="text-xs text-gray-500">Status: {a.status}</div>
-                    </div>
-                    <div className="col-span-4 flex items-center gap-2">
-                      <div className="flex-1">
+                <div className="divide-y">
+                  {filteredItems.map(a => (
+                    <div key={a._id} className="px-4 py-2 grid grid-cols-12 items-center gap-3">
+                      <div className="col-span-3">
+                        <div className="font-medium" style={{ color: "#000000" }}>
+                          {format(new Date(a.startTime), "PPp")}
+                        </div>
+                      </div>
+                      <div className="col-span-3">
+                        <div className="text-sm" style={{ color: "#4D423A" }}>Customer: {a.customer?.name||"-"}</div>
+                        <div className="text-xs text-gray-500">{a.customer?.email||""}</div>
+                        <div className="text-xs text-gray-500">Payment: {a.isPaid?"Paid":"Not Paid"}</div>
+                      </div>
+                      <div className="col-span-3">
+                        <div className="text-sm" style={{ color: "#4D423A" }}>Services: {a.serviceNames?.join(",")||"-"}</div>
+                      </div>
+                      <div className="col-span-3">
                         <select
-                          className="w-full border rounded-lg px-2 py-2"
-                          value={a.staff?._id || ""}
-                          onChange={(e) => onAssign(a._id, e.target.value)}
+                          className="w-full border rounded px-2 py-2"
+                          value={a.status}
+                          onChange={e => onStatusChange(a._id, e.target.value)}
+                          style={{ borderColor:"#FBAA99", backgroundColor:"#FFFFFF", color:"#4D423A" }}
                         >
-                          <option value="">— Assign staff —</option>
-                          {assignableForCategory(a.serviceCategory).map((s) => (
-                            <option key={s._id} value={s._id}>
-                              {s.name} ({s.jobTitle})
-                            </option>
-                          ))}
+                          <option value="pending">Pending</option>
+                          <option value="started">Started</option>
+                          <option value="completed">Completed</option>
                         </select>
                       </div>
-                      {a.staff?._id && (
-                        <span className="text-xs text-gray-600">Assigned to {a.staff.name}</span>
-                      )}
                     </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-          ))}
+                  ))}
+                </div>
+              </section>
+            );
+          })}
         </div>
       )}
     </div>
