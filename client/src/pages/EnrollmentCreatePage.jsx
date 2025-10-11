@@ -123,6 +123,10 @@ const EnrollmentCreatePage = () => {
     }
 
     setLoading(true);
+    
+    // Test toast to ensure toast system is working
+    toast.success("Testing toast system...");
+    
     try {
       const response = await api.post("/enrollments", {
         courseID,
@@ -132,11 +136,20 @@ const EnrollmentCreatePage = () => {
         email
       });
       
-      // Check if response indicates success
-      if (response.data.success) {
-        toast.success(response.data.message || "Enrollment created successfully!");
-        navigate("/enrollments");
+      console.log("Enrollment response:", response);
+      console.log("Response data:", response.data);
+      console.log("Response success:", response.data.success);
+      
+      // Check if response indicates success (multiple ways to check)
+      if (response.data.success || response.status === 201 || response.status === 200) {
+        console.log("Showing success toast");
+        toast.success("Enrolled Successfully!");
+        // Add a small delay to ensure toast is visible before navigation
+        setTimeout(() => {
+          navigate("/courses/user");
+        }, 1000);
       } else {
+        console.log("Showing error toast");
         toast.error(response.data.message || "Failed to create enrollment");
       }
 
@@ -268,11 +281,11 @@ const EnrollmentCreatePage = () => {
           {/* Header Section */}
           <div className="mb-8">
             <Link 
-              to="/enrollments" 
+              to="/courses/user" 
               className="inline-flex items-center space-x-2 px-6 py-3 bg-white/80 backdrop-blur-sm hover:bg-[#FEF4F1] border-2 border-[#FBAA99]/20 hover:border-[#FBAA99] rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-[#4D423A] font-medium mb-6"
             >
               <ArrowLeft className="w-5 h-5" />
-              <span>Back to Enrollments</span>
+              <span>Back to courses</span>
             </Link>
 
             {/* Page Title */}
@@ -390,7 +403,7 @@ const EnrollmentCreatePage = () => {
                 {/* Action Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4 justify-end pt-8 border-t-2 border-[#FEF4F1]">
                   <Link
-                    to="/enrollments"
+                    to="/courses/user"
                     className="px-8 py-4 bg-[#FEF4F1] hover:bg-[#FBAA99]/20 text-[#4D423A] border-2 border-[#FBAA99]/30 hover:border-[#FBAA99] rounded-2xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2"
                   >
                     <X className="w-5 h-5" />
