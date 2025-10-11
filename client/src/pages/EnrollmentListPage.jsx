@@ -330,6 +330,96 @@ const EnrollmentListPage = () => {
         yPosition += 15;
       });
       
+      yPosition += 20;
+      
+      // Pie Chart Section
+      doc.setFontSize(16);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Enrollment Distribution Pie Chart', margin, yPosition);
+      yPosition += 25;
+      
+      // Calculate total enrollments for percentages
+      const totalEnrollmentsForChart = courseEntries.reduce((sum, [, count]) => sum + count, 0);
+      
+      // Define colors for pie chart segments
+      const pieColors = [
+        [251, 170, 153], // #FBAA99 - Pink
+        [77, 66, 58],    // #4D423A - Dark brown
+        [254, 244, 241], // #FEF4F1 - Light pink
+        [200, 150, 140], // Light brown
+        [180, 120, 110], // Medium brown
+        [160, 100, 90],  // Dark brown
+        [140, 80, 70]    // Darker brown
+      ];
+      
+      // Pie chart dimensions
+      const chartCenterX = pageWidth / 2;
+      const chartCenterY = yPosition + 60;
+      const chartRadius = 50;
+      
+      // Draw pie chart using simple approach
+      let currentAngle = 0;
+      
+      // Draw the main pie chart circle outline
+      doc.setDrawColor(darkColor[0], darkColor[1], darkColor[2]);
+      doc.setLineWidth(2);
+      doc.circle(chartCenterX, chartCenterY, chartRadius, 'S');
+      
+      // Draw pie segments as individual circles positioned around the center
+      courseEntries.forEach(([courseName, count], index) => {
+        const percentage = (count / totalEnrollmentsForChart) * 100;
+        const angle = (count / totalEnrollmentsForChart) * 360;
+        
+        // Set color for this segment
+        const colorIndex = index % pieColors.length;
+        const color = pieColors[colorIndex];
+        doc.setFillColor(color[0], color[1], color[2]);
+        
+        // Calculate segment position around the circle
+        const midAngle = currentAngle + (angle / 2);
+        const segmentX = chartCenterX + Math.cos(midAngle * Math.PI / 180) * (chartRadius * 0.6);
+        const segmentY = chartCenterY + Math.sin(midAngle * Math.PI / 180) * (chartRadius * 0.6);
+        const segmentSize = Math.max(8, chartRadius * (percentage / 100) * 0.4);
+        
+        // Draw segment as a circle
+        doc.circle(segmentX, segmentY, segmentSize, 'F');
+        
+        // Add percentage label
+        doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'bold');
+        doc.text(`${Math.round(percentage)}%`, segmentX, segmentY + 2);
+        
+        currentAngle += angle;
+      });
+      
+      // Add legend below the pie chart
+      yPosition = chartCenterY + chartRadius + 30;
+      
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Legend:', margin, yPosition);
+      yPosition += 15;
+      
+      // Create legend items
+      courseEntries.forEach(([courseName, count], index) => {
+        const colorIndex = index % pieColors.length;
+        const color = pieColors[colorIndex];
+        const percentage = (count / totalEnrollmentsForChart) * 100;
+        
+        // Draw color circle
+        doc.setFillColor(color[0], color[1], color[2]);
+        doc.circle(margin + 5, yPosition, 3, 'F');
+        
+        // Add text
+        doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`${courseName}: ${count} enrollments (${Math.round(percentage)}%)`, margin + 12, yPosition);
+        
+        yPosition += 12;
+      });
+      
       // Footer
       const footerY = pageHeight - 30;
       
