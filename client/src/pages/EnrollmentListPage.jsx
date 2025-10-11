@@ -23,7 +23,8 @@ import {
   Mail,
   Calendar,
   FileText,
-  Settings
+  Settings,
+  Download
 } from "lucide-react";
 
 const EnrollmentListPage = () => {
@@ -33,6 +34,7 @@ const EnrollmentListPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searching, setSearching] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [downloading, setDownloading] = useState(false);
 
   // Enhanced slideshow data for enrollment management
   const enrollmentSlideImages = [
@@ -147,6 +149,228 @@ const EnrollmentListPage = () => {
     setSearchQuery("");
   };
 
+  const handleGenerateReport = async () => {
+    console.log("Generate Report button clicked");
+    console.log("Enrollments data:", enrollments);
+    
+    if (!enrollments.length) {
+      toast.error("No enrollment data available to generate report");
+      return;
+    }
+    
+    setDownloading(true);
+    try {
+      console.log("Starting PDF generation...");
+      const { jsPDF } = await import('jspdf');
+      console.log("jsPDF imported successfully");
+      const doc = new jsPDF();
+      console.log("PDF document created");
+      
+      // Set up colors
+      const headerColor = [251, 170, 153]; // #FBAA99 - Pink
+      const darkColor = [77, 66, 58]; // #4D423A - Dark brown
+      const lightPink = [254, 244, 241]; // #FEF4F1 - Light pink
+      
+      // Page dimensions
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const margin = 20;
+      
+      // Header Section
+      doc.setFillColor(headerColor[0], headerColor[1], headerColor[2]);
+      doc.rect(0, 0, pageWidth, 40, 'F');
+      
+      // Load and process logo image
+      try {
+        // Load the logo image
+        const logoImg = new Image();
+        logoImg.crossOrigin = 'anonymous';
+        
+        // Convert logo to white color using canvas
+        const whiteLogoBase64 = await new Promise((resolve) => {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          const img = new Image();
+          img.onload = () => {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            
+            // Get image data and convert to white
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            
+            for (let i = 0; i < data.length; i += 4) {
+              // If pixel is not transparent, make it white
+              if (data[i + 3] > 0) {
+                data[i] = 255;     // Red
+                data[i + 1] = 255; // Green
+                data[i + 2] = 255; // Blue
+                // Keep alpha as is
+              }
+            }
+            
+            ctx.putImageData(imageData, 0, 0);
+            resolve(canvas.toDataURL('image/png'));
+          };
+          img.src = '/logo-removebg.png'; // Use the logo file from public folder
+        });
+        
+        if (whiteLogoBase64) {
+          doc.addImage(whiteLogoBase64, 'PNG', 10, 5, 30, 30);
+        }
+      } catch (error) {
+        console.log('Logo loading failed, using text fallback:', error);
+        // Fallback to text if logo loading fails
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(20);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Pink Aura', 20, 15);
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Beauty Salon', 20, 25);
+      }
+      
+      // Add main title in center
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(24);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Pink Aura', pageWidth / 2, 15, { align: 'center' });
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Beauty Academy & Professional Training', pageWidth / 2, 25, { align: 'center' });
+      
+      // Decorative circle on the right
+      doc.setFillColor(darkColor[0], darkColor[1], darkColor[2]);
+      doc.circle(pageWidth - 20, 20, 8, 'F');
+      
+      // Separator line
+      doc.setFillColor(darkColor[0], darkColor[1], darkColor[2]);
+      doc.rect(0, 40, pageWidth, 3, 'F');
+      
+      // Main content
+      let yPosition = 60;
+      
+      // Report title
+      doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+      doc.setFontSize(20);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Enrollment Report', pageWidth / 2, yPosition, { align: 'center' });
+      yPosition += 20;
+      
+      // Calculate statistics
+      const totalEnrollments = enrollments.length;
+      const uniqueCourses = new Set(enrollments.map(e => e.courseID)).size;
+      const uniqueStudents = new Set(enrollments.map(e => e.userID)).size;
+      
+      // Course enrollment counts
+      const courseCounts = {};
+      enrollments.forEach(enrollment => {
+        const courseName = enrollment.courseName || 'Unknown Course';
+        courseCounts[courseName] = (courseCounts[courseName] || 0) + 1;
+      });
+      
+      // Find max and min enrollment courses
+      const courseEntries = Object.entries(courseCounts);
+      const maxCourse = courseEntries.reduce((max, [name, count]) => count > max.count ? { name, count } : max, { name: 'None', count: 0 });
+      const minCourse = courseEntries.reduce((min, [name, count]) => count < min.count ? { name, count } : min, { name: 'None', count: Infinity });
+      
+      // Summary section
+      const summaryData = [
+        { label: 'Total Enrollments:', value: totalEnrollments.toString() },
+        { label: 'Max Enrollment Course:', value: `${maxCourse.name} (${maxCourse.count})` },
+        { label: 'Min Enrollment Course:', value: `${minCourse.name} (${minCourse.count})` }
+      ];
+      
+      // Add summary data with alternating colors
+      summaryData.forEach((item, index) => {
+        const isEven = index % 2 === 0;
+        const bgColor = isEven ? lightPink : [255, 255, 255];
+        
+        // Background
+        doc.setFillColor(bgColor[0], bgColor[1], bgColor[2]);
+        doc.rect(margin, yPosition - 8, pageWidth - 2 * margin, 12, 'F');
+        
+        // Text
+        doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold');
+        doc.text(item.label, margin + 5, yPosition);
+        doc.setFont('helvetica', 'normal');
+        doc.text(item.value, margin + 80, yPosition);
+        
+        yPosition += 15;
+      });
+      
+      yPosition += 10;
+      
+      // Course breakdown
+      doc.setFontSize(16);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Course Enrollment Breakdown', margin, yPosition);
+      yPosition += 15;
+      
+      // Course details
+      courseEntries.forEach(([courseName, count], index) => {
+        const isEven = index % 2 === 0;
+        const bgColor = isEven ? lightPink : [255, 255, 255];
+        
+        // Background
+        doc.setFillColor(bgColor[0], bgColor[1], bgColor[2]);
+        doc.rect(margin, yPosition - 8, pageWidth - 2 * margin, 12, 'F');
+        
+        // Text
+        doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'bold');
+        doc.text(courseName, margin + 5, yPosition);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`${count} enrollments`, pageWidth - margin - 50, yPosition);
+        
+        yPosition += 15;
+      });
+      
+      // Footer
+      const footerY = pageHeight - 30;
+      
+      // Footer background (pink bar)
+      doc.setFillColor(headerColor[0], headerColor[1], headerColor[2]);
+      doc.rect(0, footerY, pageWidth, 20, 'F');
+      
+      // Footer text in white
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Generated on: ${new Date().toLocaleDateString()}, ${new Date().toLocaleTimeString()}`, margin, footerY + 8);
+      doc.setFont('helvetica', 'italic');
+      doc.text('Pink Aura Beauty Academy - Professional Training Excellence', pageWidth - margin, footerY + 8, { align: 'right' });
+      
+      // White strip for page number
+      doc.setFillColor(255, 255, 255);
+      doc.rect(0, footerY + 20, pageWidth, 10, 'F');
+      
+      // Page number in dark text
+      doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Page 1 of 1', pageWidth / 2, pageHeight - 5, { align: 'center' });
+      
+      // Save the PDF
+      console.log("Saving PDF...");
+      doc.save(`Pink-Aura-Enrollment-Report-${new Date().toISOString().split('T')[0]}.pdf`);
+      console.log("PDF saved successfully");
+      
+      toast.success("Enrollment report generated successfully!");
+      
+    } catch (error) {
+      console.error('Error generating report:', error);
+      console.error('Error details:', error.message);
+      toast.error("Failed to generate enrollment report: " + error.message);
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   // Admin Stats Component
   const EnrollmentStatsGrid = () => {
     const stats = [
@@ -252,16 +476,24 @@ const EnrollmentListPage = () => {
                 )}
               </div>
               
-              <div className="flex gap-3">
-                {/* Add Enrollment Button */}
-                <Link 
-                  to="/enrollments/create"
-                  className="px-6 py-4 bg-gradient-to-r from-[#4D423A] to-[#000000] hover:from-[#000000] hover:to-[#4D423A] text-white rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 flex items-center space-x-2 shadow-lg hover:shadow-xl"
-                >
-                  <Plus className="w-5 h-5" />
-                  <span>New Enrollment</span>
-                </Link>
-              </div>
+              {/* Generate Report Button */}
+              <button
+                onClick={handleGenerateReport}
+                disabled={downloading}
+                className="px-6 py-4 bg-gradient-to-r from-[#FBAA99] to-[#4D423A] hover:from-[#4D423A] hover:to-[#000000] text-white rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 flex items-center space-x-2 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              >
+                {downloading ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Generating...</span>
+                  </>
+                ) : (
+                  <>
+                    <Download className="w-5 h-5" />
+                    <span>Generate Report</span>
+                  </>
+                )}
+              </button>
             </div>
 
             {/* Search Results Info */}
@@ -357,13 +589,6 @@ const EnrollmentListPage = () => {
               <div className="text-sm font-medium text-[#4D423A] bg-[#FEF4F1] px-4 py-2 rounded-full border-2 border-[#FBAA99]/30">
                 {enrollments.length} Total Enrollments
               </div>
-              <Link 
-                to="/enrollments/create"
-                className="px-6 py-3 bg-gradient-to-r from-[#FBAA99] to-[#4D423A] hover:from-[#4D423A] hover:to-[#000000] text-white rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center space-x-2"
-              >
-                <FileText className="w-4 h-4" />
-                <span>New Enrollment</span>
-              </Link>
             </div>
           </div>
 
@@ -465,9 +690,8 @@ const EnrollmentListPage = () => {
               <p className="text-[#4D423A]/70">Streamline your enrollment management</p>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[
-                { icon: <Plus className="w-6 h-6" />, label: "New Enrollment", desc: "Enroll student", color: "from-[#FBAA99] to-[#4D423A]", link: "/enrollments/create" },
                 { icon: <Users className="w-6 h-6" />, label: "View Students", desc: "All students", color: "from-[#4D423A] to-[#000000]", link: "#" },
                 { icon: <BookOpen className="w-6 h-6" />, label: "View Courses", desc: "All courses", color: "from-[#FBAA99] to-[#4D423A]", link: "/courses" },
                 { icon: <BarChart3 className="w-6 h-6" />, label: "View Analytics", desc: "Statistics", color: "from-[#4D423A] to-[#000000]", link: "#" },
@@ -491,24 +715,6 @@ const EnrollmentListPage = () => {
             </div>
           </div>
 
-          {/* Floating Action Button */}
-          <div className="fixed bottom-8 right-8 z-50">
-            <div className="relative group">
-              <Link
-                to="/enrollments/create"
-                className="w-16 h-16 bg-gradient-to-r from-[#FBAA99] to-[#4D423A] hover:from-[#4D423A] hover:to-[#000000] text-white rounded-full shadow-xl hover:shadow-2xl transform hover:scale-110 transition-all duration-300 flex items-center justify-center relative overflow-hidden"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
-                <Plus className="w-8 h-8 relative z-10" />
-              </Link>
-              
-              {/* Tooltip */}
-              <div className="absolute bottom-full right-0 mb-3 bg-[#4D423A] text-white px-4 py-2 rounded-lg text-sm whitespace-nowrap shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 transform translate-y-2 group-hover:translate-y-0">
-                New Enrollment
-                <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-[#4D423A]"></div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
