@@ -63,11 +63,6 @@ const EnrollmentCard = ({ enrollment, setEnrollments }) => {
                   <h3 className="text-xl font-bold text-[#4D423A] group-hover:text-[#FBAA99] transition-colors duration-300 truncate">
                     {enrollment.name}
                   </h3>
-                  {/* Status Badge */}
-                  <div className="flex items-center space-x-1 flex-shrink-0">
-                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                    <span className="text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full">Active</span>
-                  </div>
                 </div>
                 <div className="flex items-center text-sm text-[#4D423A]/60">
                   <Calendar className="w-4 h-4 mr-1 flex-shrink-0" />
@@ -77,7 +72,18 @@ const EnrollmentCard = ({ enrollment, setEnrollments }) => {
             </div>
 
             {/* Right Section - Details Grid */}
-            <div className="hidden lg:grid grid-cols-3 gap-4 ml-6">
+            <div className="hidden lg:grid grid-cols-4 gap-4 ml-6">
+              {/* Username */}
+              <div className="flex items-center space-x-2 p-3 bg-[#FEF4F1] rounded-xl hover:bg-[#FBAA99]/10 transition-colors duration-200 border border-[#FBAA99]/20 min-w-[140px]">
+                <div className="w-8 h-8 bg-gradient-to-br from-[#FBAA99]/20 to-[#4D423A]/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <User className="w-4 h-4 text-[#4D423A]" />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-xs text-[#4D423A]/60 font-medium">Username</div>
+                  <div className="text-sm font-bold text-[#4D423A] truncate">{enrollment.name}</div>
+                </div>
+              </div>
+
               {/* User ID */}
               <div className="flex items-center space-x-2 p-3 bg-[#FEF4F1] rounded-xl hover:bg-[#FBAA99]/10 transition-colors duration-200 border border-[#FBAA99]/20 min-w-[140px]">
                 <div className="w-8 h-8 bg-gradient-to-br from-[#FBAA99]/20 to-[#4D423A]/20 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -145,6 +151,15 @@ const EnrollmentCard = ({ enrollment, setEnrollments }) => {
           {/* Mobile/Tablet View - Show details below on smaller screens */}
           <div className="lg:hidden mt-4 pt-4 border-t-2 border-[#FEF4F1]">
             <div className="grid grid-cols-2 gap-3">
+              {/* Username */}
+              <div className="flex items-center space-x-2 p-3 bg-[#FEF4F1] rounded-xl border border-[#FBAA99]/20">
+                <User className="w-4 h-4 text-[#4D423A] flex-shrink-0" />
+                <div className="min-w-0">
+                  <div className="text-xs text-[#4D423A]/60 font-medium">Username</div>
+                  <div className="text-sm font-bold text-[#4D423A] truncate">{enrollment.name}</div>
+                </div>
+              </div>
+
               {/* Email */}
               <div className="flex items-center space-x-2 p-3 bg-[#FEF4F1] rounded-xl border border-[#FBAA99]/20">
                 <Mail className="w-4 h-4 text-[#4D423A] flex-shrink-0" />
@@ -200,13 +215,6 @@ const EnrollmentCard = ({ enrollment, setEnrollments }) => {
         {/* Bottom Progress Bar */}
         <div className={`absolute bottom-0 left-0 h-1 bg-gradient-to-r from-[#FBAA99] to-[#4D423A] transition-all duration-300 ${isHovered ? 'w-full' : 'w-0'}`}></div>
 
-        {/* Floating Progress Badge */}
-        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <div className="flex items-center space-x-1 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs font-medium text-[#4D423A] border border-[#FBAA99]/30">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            <span>75% Complete</span>
-          </div>
-        </div>
       </Link>
 
       {/* Enhanced Shadow Effect */}
