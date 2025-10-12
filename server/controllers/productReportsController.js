@@ -1,6 +1,7 @@
 import Product from "../models/Product.js";
 import mongoose from "mongoose";
-import PDFDocument from "pdfkit"; // added for PDF support
+import PDFDocument from "pdfkit";
+
 
 function toCSV(rows = [], columns = []) {
   const header = columns.map((c) => `"${c.label.replace(/"/g, '""')}"`).join(",");
@@ -15,40 +16,126 @@ function toCSV(rows = [], columns = []) {
   return [header, ...lines].join("\r\n");
 }
 
-// helper: build PDF
+//PDF helpers
+function fmtMoney(v) {
+  if (v === undefined || v === null || Number.isNaN(Number(v))) return "-";
+  return new Intl.NumberFormat("en-LK", {
+    style: "currency",
+    currency: "LKR",
+    maximumFractionDigits: 2,
+  }).format(Number(v));
+}
+function fmtDate(v) {
+  if (!v) return "-";
+  const d = new Date(v);
+  if (isNaN(d.getTime())) return "-";
+  return d.toLocaleDateString();
+}
+
+// Draw a paginated table PDF and stream to response
 function streamPDF(res, title, columns, rows) {
   const doc = new PDFDocument({ margin: 40, size: "A4" });
+
   res.setHeader("Content-Type", "application/pdf");
-  res.setHeader("Content-Disposition", `attachment; filename="${title}.pdf"`);
+  res.setHeader("Content-Disposition", `attachment; filename="${title.replace(/[^a-z0-9_-]+/gi, "_")}.pdf"`);
+
   doc.pipe(res);
 
-  // header
+  // Title + generated time
   doc.fontSize(18).fillColor("#2C3E50").text(title, { align: "center" });
+  doc.moveDown(0.5);
+  doc.fontSize(9).fillColor("#7F8C8D").text(`Generated on ${new Date().toLocaleString()}`, { align: "center" });
   doc.moveDown();
 
-  // table header
-  doc.fontSize(12).fillColor("#16A085");
-  columns.forEach((c, i) => {
-    doc.text(c.label, 50 + i * 100, doc.y, { continued: i < columns.length - 1 });
-  });
-  doc.moveDown(0.5);
+  const pageWidth = doc.page.width - doc.page.margins.left - doc.page.margins.right;
+  const startX = doc.page.margins.left;
+  let y = doc.y;
 
-  // rows
-  doc.fillColor("black").fontSize(10);
-  rows.forEach((row) => {
+  // simple flexible widths: first column a bit wider
+  const colCount = columns.length;
+  const base = pageWidth / colCount;
+  const widths = columns.map((_, i) => (i === 0 ? base * 1.4 : (pageWidth - base * 1.4) / (colCount - 1)));
+
+  function drawHeader() {
+    doc.save();
+    doc.rect(startX, y, pageWidth, 20).fill("#E8F6F3");
+    doc.fillColor("#16A085").fontSize(11).font("Helvetica-Bold");
+    let x = startX + 6;
     columns.forEach((c, i) => {
-      doc.text(row[c.key] ?? "-", 50 + i * 100, doc.y, { continued: i < columns.length - 1 });
+      doc.text(c.label, x, y + 6, { width: widths[i] - 12, ellipsis: true });
+      x += widths[i];
     });
-    doc.moveDown(0.5);
+    y += 20;
+    doc.restore();
+  }
+
+  function footer() {
+    const bottom = doc.page.height - doc.page.margins.bottom + 10;
+    doc.fontSize(9).fillColor("#7F8C8D");
+    doc.text(`Page ${doc.page.number}`, doc.page.margins.left, bottom, {
+      width: pageWidth,
+      align: "right",
+    });
+  }
+
+  drawHeader();
+  doc.font("Helvetica").fontSize(10).fillColor("black");
+
+  rows.forEach((row, idx) => {
+    const display = columns.map((c) => {
+      const val = row[c.key];
+      if (/price|value/i.test(c.key)) return fmtMoney(val);
+      if (/date/i.test(c.key)) return fmtDate(val);
+      return val === null || val === undefined || val === "" ? "-" : String(val);
+    });
+
+    // measure to compute row height
+    let maxH = 0;
+    display.forEach((cell, i) => {
+      const h = doc.heightOfString(cell, { width: widths[i] - 12, align: "left" });
+      maxH = Math.max(maxH, h);
+    });
+    const rowH = Math.max(18, maxH + 8);
+
+    // page break if needed
+    const bottomLimit = doc.page.height - doc.page.margins.bottom - 30;
+    if (y + rowH > bottomLimit) {
+      footer();
+      doc.addPage();
+      y = doc.page.margins.top;
+      drawHeader();
+    }
+
+    // zebra background
+    if (idx % 2 === 1) {
+      doc.save();
+      doc.rect(startX, y, pageWidth, rowH).fill("#FAFAFA");
+      doc.restore();
+    }
+
+    // draw cells
+    let x = startX + 6;
+    display.forEach((cell, i) => {
+      doc.fillColor("black").font("Helvetica").text(cell, x, y + 4, {
+        width: widths[i] - 12,
+        align: "left",
+      });
+      x += widths[i];
+    });
+
+    // row border
+    doc.save();
+    doc.lineWidth(0.3).strokeColor("#E0E0E0").moveTo(startX, y + rowH).lineTo(startX + pageWidth, y + rowH).stroke();
+    doc.restore();
+
+    y += rowH;
   });
 
-  // footer
-  doc.moveDown(2);
-  doc.fontSize(9).fillColor("#7F8C8D").text(`Generated on ${new Date().toLocaleString()}`, { align: "center" });
-
+  footer();
   doc.end();
 }
 
+//  Controller 
 export const generateProductReport = async (req, res) => {
   try {
     const {
@@ -286,6 +373,7 @@ export const generateProductReport = async (req, res) => {
       res.setHeader("Content-Disposition", `attachment; filename="products-summary.csv"`);
       return res.send(lines.join("\r\n"));
     }
+
     if (format === "pdf") {
       const cols = [
         { key: "metric", label: "Metric" },
