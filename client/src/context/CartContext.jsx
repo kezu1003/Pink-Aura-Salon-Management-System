@@ -8,6 +8,9 @@ export const useCart = () => useContext(CartContext);
 
 const STORAGE_KEY = "cart_v1";
 
+const CART_UPDATED_TOAST_ID = "cart-updated";
+const CART_ADDED_TOAST_ID = "cart-added";
+
 export default function CartProvider({ children }) {
   const [items, setItems] = useState(() => {
     try {
@@ -33,10 +36,10 @@ export default function CartProvider({ children }) {
         const next = [...prev];
         const newQty = Math.min(next[idx].qty + qty, product.stock);
         next[idx] = { ...next[idx], qty: newQty, stockSnapshot: product.stock };
-        toast.success("Updated cart");
+        toast.success("Updated cart", { toastId: CART_UPDATED_TOAST_ID });
         return next;
       }
-      toast.success("Added to cart");
+      toast.success("Added to cart", { toastId: CART_ADDED_TOAST_ID });
       return [
         ...prev,
         {
@@ -73,7 +76,7 @@ export default function CartProvider({ children }) {
     return { totalQty, totalAmount };
   }, [items]);
 
-  // Validate latest stock before checkout (optional preflight)
+  // Validate latest stock before checkout 
   const refreshStocks = async () => {
     if (items.length === 0) return items;
     const ids = items.map((i) => i.productId);
