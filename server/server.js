@@ -23,6 +23,7 @@ import paymentRoutes from "./routes/paymentRoutes.js";
 import orderRoutes from "./routes/ordersRoutes.js";
 
 import reviewsRoutes from "./routes/reviewsRoutes.js";
+import reviewReportsRoutes from "./routes/reviewReportsRoutes.js";
 import publicRoutes from "./routes/publicRoutes.js";
 import stripeRoutes from "./routes/stripeRoutes.js";
 import servicesRoutes from "./routes/servicesRoutes.js";
@@ -86,6 +87,7 @@ app.use("/api/stripe", stripeRoutes);
 
 
 app.use("/api/reviews", reviewsRoutes);
+app.use("/api/reviews", reviewReportsRoutes);
 app.use("/api/public", publicRoutes);
 app.use("/api/payments", paymentRoutes);
 

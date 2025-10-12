@@ -67,6 +67,7 @@ import AdvertisementDashboard from './pages/admin/AdvertisementDashboard.jsx';
 import ServiceReports from './pages/admin/ServiceReports.jsx';
 import AppointmentReports from './pages/admin/AppointmentReports.jsx';
 import AdminProductReports from './pages/admin/ProductReports.jsx';
+import AdminReviewReports from './pages/admin/ReviewReports.jsx';
 
 //home
 import Gallery from "./pages/Gallery.jsx";
@@ -165,6 +166,7 @@ const App = () => {
           <Route path='reports/service' element={<ServiceReports />} />
           <Route path='reports' element={<AppointmentReports />} />
           <Route path='products/reports' element={<AdminProductReports />} />
+          <Route path='reviews/reports' element={<AdminReviewReports />} />
           <Route path="/admin/messages" element={<AdminMessages />} />
 
           {/* <Route path="/courses2" element={<CM2 />} /> */}

@@ -155,6 +155,12 @@ export default function AdminSidebar({ expanded, onClose }) {
               icon={FileText}
               expanded={expanded}
             />
+            <Item
+              to="/admin/reviews/reports"
+              label="Review Report"
+              icon={FileText}
+              expanded={expanded}
+            />
           </Group>
 
           <Group title="Email Management" expanded={expanded}>
