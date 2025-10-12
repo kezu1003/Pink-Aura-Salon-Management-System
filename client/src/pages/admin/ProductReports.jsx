@@ -1,5 +1,6 @@
+// pages/admin/AdminProductReports.jsx
 import React, { useEffect, useState } from "react";
-import axios from "../../api/axios"; 
+import axios from "../../api/axios";
 import { saveAs } from "file-saver";
 
 const AdminProductReports = () => {
@@ -20,13 +21,14 @@ const AdminProductReports = () => {
       if (reportType === "expiry") params.set("expiryDays", expiryDays);
 
       const url = `/api/products/report?${params.toString()}`;
-      
       const res = await axios.get(url, { responseType: format === "csv" ? "blob" : "json" });
 
       if (format === "csv") {
-       
         const blob = res.data;
-        const fileName = `product-report-${reportType}.csv`;
+        const fileName =
+          reportType === "expiry"
+            ? `product-report-${reportType}-${expiryDays}d.csv`
+            : `product-report-${reportType}.csv`;
         saveAs(blob, fileName);
         setData(null);
       } else {
@@ -41,13 +43,11 @@ const AdminProductReports = () => {
   };
 
   useEffect(() => {
-   
     if (reportType === "summary") {
       fetchReport();
     } else {
       setData(null);
     }
-   
   }, [reportType, format]);
 
   const onDownloadCSV = async () => {
@@ -56,14 +56,44 @@ const AdminProductReports = () => {
     setFormat("json");
   };
 
+  const onDownloadPDF = async () => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams();
+      params.set("type", reportType);
+      params.set("format", "pdf");
+      if (reportType === "low-stock") params.set("lowThreshold", lowThreshold);
+      if (reportType === "expiry") params.set("expiryDays", expiryDays);
+
+      const url = `/api/products/report?${params.toString()}`;
+      const res = await axios.get(url, { responseType: "blob" });
+
+      const blob = new Blob([res.data], { type: "application/pdf" });
+      const fnameBase =
+        reportType === "expiry"
+          ? `product-report-${reportType}-${expiryDays}d`
+          : `product-report-${reportType}`;
+      saveAs(blob, `${fnameBase}.pdf`);
+    } catch (err) {
+      console.error(err);
+      alert(err?.response?.data?.message || err.message || "Failed to download PDF");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="p-6">
       <h2 className="text-xl font-semibold mb-4">Product Reports</h2>
 
-      <div className="mb-4 flex gap-2 items-end">
+      <div className="mb-4 flex gap-2 items-end flex-wrap">
         <div>
           <label className="block text-sm">Report Type</label>
-          <select value={reportType} onChange={(e) => setReportType(e.target.value)} className="border px-2 py-1">
+          <select
+            value={reportType}
+            onChange={(e) => setReportType(e.target.value)}
+            className="border px-2 py-1"
+          >
             <option value="summary">Summary</option>
             <option value="inventory">Inventory (full)</option>
             <option value="low-stock">Low Stock</option>
@@ -74,23 +104,45 @@ const AdminProductReports = () => {
         {reportType === "low-stock" && (
           <div>
             <label className="block text-sm">Low Threshold</label>
-            <input type="number" value={lowThreshold} min={0} onChange={(e) => setLowThreshold(Number(e.target.value))} className="border px-2 py-1 w-28" />
+            <input
+              type="number"
+              value={lowThreshold}
+              min={0}
+              onChange={(e) => setLowThreshold(Number(e.target.value))}
+              className="border px-2 py-1 w-28"
+            />
           </div>
         )}
 
         {reportType === "expiry" && (
           <div>
             <label className="block text-sm">Expiry Days</label>
-            <input type="number" value={expiryDays} min={1} onChange={(e) => setExpiryDays(Number(e.target.value))} className="border px-2 py-1 w-28" />
+            <input
+              type="number"
+              value={expiryDays}
+              min={1}
+              onChange={(e) => setExpiryDays(Number(e.target.value))}
+              className="border px-2 py-1 w-28"
+            />
           </div>
         )}
 
         <div>
-          <button onClick={fetchReport} className="bg-pink-500 text-white px-3 py-1 rounded">Fetch</button>
+          <button onClick={fetchReport} className="bg-pink-500 text-white px-3 py-1 rounded">
+            Fetch
+          </button>
         </div>
 
         <div>
-          <button onClick={onDownloadCSV} className="border px-3 py-1 rounded">Download CSV</button>
+          <button onClick={onDownloadCSV} className="border px-3 py-1 rounded">
+            Download CSV
+          </button>
+        </div>
+
+        <div>
+          <button onClick={onDownloadPDF} className="border px-3 py-1 rounded">
+            Download PDF
+          </button>
         </div>
       </div>
 
@@ -104,7 +156,7 @@ const AdminProductReports = () => {
               <div>Total Products: {data.report.totalProducts}</div>
               <div>Total Stock Units: {data.report.totalStockUnits}</div>
               <div>Total Inventory Value: {data.report.totalInventoryValue}</div>
-              <div>Average Price: {data.report.avgPrice.toFixed(2)}</div>
+              <div>Average Price: {Number(data.report.avgPrice || 0).toFixed(2)}</div>
             </div>
 
             <div className="p-4 border rounded">
