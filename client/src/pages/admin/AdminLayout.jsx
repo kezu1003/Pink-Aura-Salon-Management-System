@@ -8,7 +8,7 @@ import { Menu, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function AdminLayout() {
   const navigate = useNavigate();
-  const { backendUrl, getUserData } = useContext(AppContext);
+  const { backendUrl, getUserData, setIsLoggedin, setUserData } = useContext(AppContext);
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
@@ -25,16 +25,18 @@ export default function AdminLayout() {
 
   const doLogout = async () => {
     try {
-      const { data } = await axios.post(backendUrl + "/api/auth/logout");
-      if (data.success) {
-        toast.success("Logged out");
-        await getUserData(); // will clear role on is-auth fail next load
-        navigate("/login");
-      } else {
-        toast.error(data.message);
-      }
+      
+      toast.success("Logged out");
+      
+     
+      setIsLoggedin(false);
+      setUserData(null);
+      
+      navigate("/login");
     } catch (e) {
-      toast.error(e.message);
+      
+      console.error("Logout error:", e);
+      navigate("/login");
     }
   };
 
