@@ -10,6 +10,7 @@ import { Phone } from "lucide-react";
 import { AppContext } from "../context/AppContext";
 import AboutUs from "../sections/AboutUs";
 import ContactUs from "../sections/ContactUs";
+import Chatbot from "../AI/chatbot.jsx"; 
 
 
 export default function Home() {
@@ -53,6 +54,8 @@ export default function Home() {
 
             </div>
 
+            <Chatbot />
+
             <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <ServicesSection />
             </main>
@@ -94,7 +97,7 @@ export default function Home() {
 
       <Footer />
 
-      {/* Floating call button stays for both */}
+      {/* Floating call button stays for both *
       <a
         href="tel:+94703154962"
         className="fixed bottom-6 right-6 flex items-center gap-2 rounded-full bg-[#FBAA99] px-4 py-3 text-gray shadow-xl transition hover:bg-[#FEF4F1]"
@@ -102,7 +105,7 @@ export default function Home() {
       >
         <Phone size={18} />
         <span className="hidden sm:inline">Call Us</span>
-      </a>
+      </a>  */}
     </div>
   );
 }
