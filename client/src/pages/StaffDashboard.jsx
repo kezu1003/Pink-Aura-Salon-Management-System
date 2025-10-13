@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { AppContext } from "../context/AppContext";
+import { useNavigate } from "react-router-dom"; 
 
 function Card({ title, children, className = "" }) {
   return (
@@ -57,6 +58,7 @@ export default function StaffDashboard() {
   const [pos, setPOs] = useState([]);
   const [performance, setPerformance] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate(); 
 
   const role = userData?.role || "";
   const jobTitle = userData?.jobTitle || "";
@@ -64,6 +66,24 @@ export default function StaffDashboard() {
 
   const WORK_START = "10:00";
   const WORK_END = "17:00";
+
+  
+  const handleLogout = async () => {
+    try {
+      
+      await axios.post(`${backendUrl}/api/auth/logout`, {}, { withCredentials: true });
+    } catch (e) {
+      
+    } finally {
+      try {
+       
+        localStorage.removeItem("token");
+        sessionStorage.removeItem("token");
+      } catch {}
+      toast.success("Logged out");
+      navigate("/login", { replace: true });
+    }
+  };
 
   const loadData = async () => {
     try {
@@ -168,13 +188,23 @@ export default function StaffDashboard() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">
-          Welcome back, {userData?.name}!
-        </h1>
-        <p className="text-gray-600 mt-2">
-          {role} {jobTitle ? `• ${jobTitle}` : ""} • Working hours: {WORK_START} – {WORK_END}
-        </p>
+      <div className="mb-8 flex items-start justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Welcome back, {userData?.name}!
+          </h1>
+          <p className="text-gray-600 mt-2">
+            {role} {jobTitle ? `• ${jobTitle}` : ""} • Working hours: {WORK_START} – {WORK_END}
+          </p>
+        </div>
+
+        
+        <button
+          onClick={handleLogout}
+          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+        >
+          Logout
+        </button>
       </div>
 
       {/* Performance Overview */}
