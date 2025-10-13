@@ -11,7 +11,6 @@ export default function MyAppointments() {
   const { backendUrl } = useContext(AppContext);
   const api = useMemo(() => makeApi(backendUrl), [backendUrl]);
   const [items, setItems] = useState([]);
-  const [sortOrder, setSortOrder] = useState("new-to-old"); // default sort
 
   async function load() {
     const { success, appointments, message } = await api.mine({});
@@ -43,115 +42,90 @@ export default function MyAppointments() {
   };
 
   const serviceNames = (a) =>
-    Array.isArray(a?.services)
-      ? a.services.map((s) => s?.name || "").filter(Boolean)
-      : [];
+    Array.isArray(a?.services) ? a.services.map((s) => s?.name || "").filter(Boolean) : [];
 
   return (
     <div className="bg-[#FEF4F1] min-h-screen">
+     
       <Navbar />
-      {/* Spacer between navbar and heading */}
-      <div className="h-32 md:h-40" />
+      <div className="h-20" />
 
       <div className="max-w-5xl mx-auto px-4 pb-16">
-        <h1 className="text-4xl md:text-5xl font-serif text-center mb-6 text-[#4D423A]">
-          My Appointments
-        </h1>
-
-        {/* Sort button */}
-        <div className="flex justify-center mb-8">
-          <button
-            onClick={() =>
-              setSortOrder(sortOrder === "new-to-old" ? "old-to-new" : "new-to-old")
-            }
-            className="px-6 py-2 rounded-full text-white font-medium shadow-lg transition
-                       bg-[#FBAA99] hover:bg-[#F68B78]"
-          >
-            {sortOrder === "new-to-old" ? "Sort: New → Old" : "Sort: Old → New"}
-          </button>
-        </div>
+        <h1 className="text-3xl font-serif mb-6">My Appointments</h1>
 
         {items.length === 0 ? (
-          <div className="text-center text-gray-500 text-lg">No appointments yet.</div>
+          <div className="text-gray-500">No appointments yet.</div>
         ) : (
-          <div className="space-y-6">
-            {[...items]
-              .sort((a, b) => {
-                const aTime = new Date(a.date + " " + a.startTime).getTime();
-                const bTime = new Date(b.date + " " + b.startTime).getTime();
-                return sortOrder === "new-to-old" ? bTime - aTime : aTime - bTime;
-              })
-              .map((a) => {
-                const pkg = isPackageAppt(a);
-                const pkgName = getPackageName(a);
-                const names = serviceNames(a);
+          <div className="space-y-4">
+            {items.map((a) => {
+              const pkg = isPackageAppt(a);
+              const pkgName = getPackageName(a);
+              const names = serviceNames(a);
 
-                return (
-                  <div
-                    key={a._id}
-                    className="p-6 rounded-2xl border bg-white shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
-                  >
-                    <div>
-                      {/* Title */}
-                      <div className="font-semibold flex items-center gap-2 text-[#4D423A] text-lg">
-                        {pkg ? (
-                          <>
-                            <span>Package{pkgName ? `: ${pkgName}` : ""}</span>
-                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-pink-100 text-pink-700">
-                              PACKAGE
-                            </span>
-                          </>
-                        ) : (
-                          <span>{names.join(", ") || "—"}</span>
-                        )}
-                      </div>
-
-                      <div className="text-sm text-gray-600 mt-1">
-                        {a.date} &middot; {format(new Date(a.startTime), "p")} –{" "}
-                        {format(new Date(a.endTime), "p")}
-                      </div>
-
-                      {pkg && names.length > 0 && (
-                        <div className="mt-1 text-xs text-gray-600">
-                          Includes: {names.join(", ")}
-                        </div>
+              return (
+                <div
+                  key={a._id}
+                  className="p-4 rounded-2xl border bg-white flex items-center justify-between"
+                >
+                  <div>
+                    {/* Title */}
+                    <div className="font-semibold flex items-center gap-2">
+                      {pkg ? (
+                        <>
+                          <span>Package{pkgName ? `: ${pkgName}` : ""}</span>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-pink-100 text-pink-700">
+                            PACKAGE
+                          </span>
+                        </>
+                      ) : (
+                        <span>{names.join(", ") || "—"}</span>
                       )}
-
-                      <div className="mt-1 text-xs">
-                        Staff: {a.staff ? a.staff.name : "Any"} &middot; Status:{" "}
-                        <span
-                          className={`inline-block px-2 py-0.5 rounded-full text-white text-xs ${
-                            a.status === "pending"
-                              ? "bg-yellow-500"
-                              : a.status === "confirmed"
-                              ? "bg-green-600"
-                              : a.status === "cancelled"
-                              ? "bg-gray-500"
-                              : "bg-pink-600"
-                          }`}
-                        >
-                          {a.status}
-                        </span>
-                      </div>
                     </div>
 
-                    {/* Actions */}
-                    {a.status !== "cancelled" && (
-                      <button
-                        onClick={() => cancel(a._id)}
-                        className="px-4 py-2 rounded-full border border-[#FBAA99] text-[#FBAA99] font-medium transition
-                                   hover:bg-[#FBAA99] hover:text-white"
-                      >
-                        Cancel
-                      </button>
+                    <div className="text-sm text-gray-600">
+                      {a.date} &middot; {format(new Date(a.startTime), "p")} –{" "}
+                      {format(new Date(a.endTime), "p")}
+                    </div>
+
+                    {pkg && names.length > 0 && (
+                      <div className="mt-1 text-xs text-gray-600">Includes: {names.join(", ")}</div>
                     )}
+
+                    <div className="mt-1 text-xs">
+                      Staff: {a.staff ? a.staff.name : "Any"} &middot; Status:{" "}
+                      <span
+                        className={`inline-block px-2 py-0.5 rounded-full text-white text-xs ${
+                          a.status === "pending"
+                            ? "bg-yellow-500"
+                            : a.status === "confirmed"
+                            ? "bg-green-600"
+                            : a.status === "cancelled"
+                            ? "bg-gray-500"
+                            : "bg-pink-600"
+                        }`}
+                      >
+                        {a.status}
+                      </span>
+                    </div>
                   </div>
-                );
-              })}
+
+                  {/* Actions */}
+                  {a.status !== "cancelled" && (
+                    <button
+                      onClick={() => cancel(a._id)}
+                      className="px-4 py-2 rounded-lg border hover:bg-pink-50"
+                    >
+                      Cancel
+                    </button>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
 
+    
       <Footer />
     </div>
   );
