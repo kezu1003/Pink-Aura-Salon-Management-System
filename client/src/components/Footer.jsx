@@ -9,7 +9,7 @@ export default function Footer() {
         <div>
           <img src={assets.logo} alt="Pink Aura" className="h-14 w-14 rounded-full" />
           <p className="mt-4 max-w-xs text-sm text-white/70">
-            Hair & Beauty • Unisex
+            Hair & Beauty • For Women
           </p>
           <div className="mt-4 flex items-center gap-3">
             <a href="#" className="text-white/80 hover:text-white">Facebook</a>
