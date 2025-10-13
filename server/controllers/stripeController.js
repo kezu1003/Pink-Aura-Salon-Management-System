@@ -1,6 +1,7 @@
 import Stripe from 'stripe';
 import Product from '../models/Product.js';
 import Order from '../models/Order.js';
+import { awardOnPaidOrder } from '../utils/loyalty.js';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_51S9IQbHMk9ohtPD1woCDycj7eANv7CykBB4XQ0olOt0j0Sq9SSnra7D4XthWAE39yV5ZAR4qQhaWI3oqYGt9hnyc00LOKtVu6w');
 
@@ -170,6 +171,16 @@ export const completeOrder = async (req, res) => {
     });
 
     await order.save();
+
+    try {
+      await awardOnPaidOrder({
+     userId: order.user,              
+     orderId: order._id,              
+     orderAmountLKR: totalAmount,     
+     });
+  } catch (e) {
+      console.error('[LOYALTY] award failed (non-blocking):', e?.message || e);
+  }
 
     // Populate product details for response
     await order.populate('items.product', 'name images');

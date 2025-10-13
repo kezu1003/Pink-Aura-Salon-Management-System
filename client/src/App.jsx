@@ -90,6 +90,10 @@ import EnrollmentCreatePage from './pages/EnrollmentCreatePage.jsx';
 import EnrollmentDetailsPage from './pages/EnrollmentDetailsPage.jsx';
 import EnrollmentListpage from './pages/EnrollmentListPage.jsx';
 
+import Rewards from './pages/account/Rewards.jsx';
+import LoyaltyTiers from './pages/admin/loyalty/LoyaltyTiers.jsx';
+import LoyaltyAccounts from './pages/admin/loyalty/LoyaltyAccounts.jsx';
+
 const App = () => {
   return (
     <div>
@@ -116,6 +120,7 @@ const App = () => {
         <Route path='/appointments/mine' element={<MyAppointments />} />
         <Route path='/appointments/book' element={<Book />} />
         <Route path='/packages' element={<Packages />} />
+        <Route path="/account/rewards" element={<Rewards />} />
 
         
 
@@ -168,6 +173,9 @@ const App = () => {
           <Route path='products/reports' element={<AdminProductReports />} />
           <Route path='reviews/reports' element={<AdminReviewReports />} />
           <Route path="/admin/messages" element={<AdminMessages />} />
+
+          <Route path="/admin/loyalty/tiers" element={<LoyaltyTiers />} />
+          <Route path="/admin/loyalty/accounts" element={<LoyaltyAccounts />} />  
 
           {/* <Route path="/courses2" element={<CM2 />} /> */}
 

@@ -41,6 +41,9 @@ import advertisementRoutes from "./routes/advertisementRoutes.js";
 
 import enrollmentRoutes from "./routes/enrollmentRoutes.js";
 
+import loyaltyRoutes from "./routes/loyaltyRoutes.js";
+import loyaltyAdminRoutes from "./routes/loyaltyAdminRoutes.js";
+
 
 
 const app = express();
@@ -106,8 +109,11 @@ app.use("/api/courses", courseRoutes);
 
 app.use("/api/ads", advertisementRoutes);
 
-
 app.use("/api/enrollments", enrollmentRoutes);
+
+app.use("/api/loyalty", loyaltyRoutes);
+app.use("/api/admin/loyalty", loyaltyAdminRoutes);
+
 
 
 // 404

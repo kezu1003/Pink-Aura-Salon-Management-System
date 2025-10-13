@@ -12,7 +12,7 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20); // activates after 20px scroll
+      setScrolled(window.scrollY > 20); 
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -59,7 +59,7 @@ const Navbar = () => {
           : 'h-20 bg-[#FEF4F1]/70 backdrop-blur-md border-b border-[#FBAA99]/30 shadow-sm'}
       `}
       style={{
-        WebkitBackdropFilter: 'blur(20px) saturate(180%)', // iOS-style frosted blur
+        WebkitBackdropFilter: 'blur(20px) saturate(180%)', 
         backdropFilter: 'blur(20px) saturate(180%)',
       }}
     >
@@ -217,6 +217,14 @@ const Navbar = () => {
                   >
                     Payment Methods
                   </li>
+                  
+                   <Link
+                     to="/account/rewards"
+                    className="block px-4 py-2 hover:bg-gray-50 text-sm"
+                  >
+                     My Rewards
+                    </Link>
+
                   <li
                     onClick={logout}
                     className="py-1 px-3 hover:bg-[#FEF4F1] cursor-pointer rounded"

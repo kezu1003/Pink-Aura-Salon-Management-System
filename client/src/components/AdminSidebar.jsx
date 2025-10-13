@@ -13,6 +13,7 @@ import {
   Settings,
   CreditCard,
   Megaphone,
+  Trophy,
 } from "lucide-react";
 
 const Group = ({ title, children, expanded }) => {
@@ -78,6 +79,23 @@ export default function AdminSidebar({ expanded, onClose }) {
           <Group title="Dashboard" expanded={expanded}>
             <Item to="/admin" label="Overview" icon={LayoutDashboard} expanded={expanded} />
           </Group>
+
+          {hasRole("admin") && (
+            <Group title="Loyalty" expanded={expanded}>
+              <Item
+                to="/admin/loyalty/tiers"
+                label="Tiers"
+                icon={Trophy}
+                expanded={expanded}
+              />
+              <Item
+                to="/admin/loyalty/accounts"
+                label="Accounts"
+                icon={Trophy}
+                expanded={expanded}
+              />
+            </Group>
+          )}
 
           <Group title="Catalog" expanded={expanded}>
             <Item to="/admin/products" label="Products" icon={ShoppingBag} expanded={expanded} />
