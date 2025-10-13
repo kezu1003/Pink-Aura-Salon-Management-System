@@ -1,6 +1,7 @@
 import express from "express";
 import userAuth, { requireRole } from "../middleware/userAuth.js";
 import { listStaff, createStaff, updateStaff, setStatus } from "../controllers/staffController.js";
+import { createStaffNotice, updateStaffNotice, deleteStaffNotice, getAllNotices } from "../controllers/staffDashController.js";
 
 import {
   getAllTransactions,
@@ -43,6 +44,12 @@ router.get("/staff", listStaff);
 router.post("/staff", createStaff);
 router.put("/staff/:id", updateStaff);
 router.patch("/staff/:id/status", setStatus);
+
+// Staff notices management
+router.get("/staff-notices", getAllNotices);
+router.post("/staff-notices", createStaffNotice);
+router.put("/staff-notices/:id", updateStaffNotice);
+router.delete("/staff-notices/:id", deleteStaffNotice);
 
 
 

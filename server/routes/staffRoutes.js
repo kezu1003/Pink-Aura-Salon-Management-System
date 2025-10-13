@@ -1,8 +1,8 @@
-// server/routes/staffRoutes.js
 import express from "express";
 import userAuth, { requireAnyRole } from "../middleware/userAuth.js";
 import {
   staffMe,
+  getStaffPerformance,
   listSchedule,
   startAppointment,
   completeAppointment,
@@ -10,7 +10,7 @@ import {
   createInventoryRequest,
   listPOs,
   fulfillPO,
-  listServices,
+  
 } from "../controllers/staffDashController.js";
 import { addTimeOff, removeTimeOff, listTimeOff } from "../controllers/staffTimeOffController.js";
 
@@ -21,9 +21,11 @@ router.use(userAuth, requireAnyRole("staff", "supplier"));
 
 router.get("/me", staffMe);
 
+// staff performance and ratings
+router.get("/performance", getStaffPerformance);
+
 // staff
 router.get("/schedule", listSchedule);
-router.get("/services", listServices);
 router.get("/announcements", listAnnouncements);
 router.post("/inventory/requests", createInventoryRequest);
 
