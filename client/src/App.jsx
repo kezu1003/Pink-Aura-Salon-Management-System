@@ -40,6 +40,7 @@ import AdminReviews from './pages/admin/AdminReviews.jsx';
 
 //contact
 import AdminMessages from './pages/admin/AdminMessages.jsx';
+import StaffNoticesAdmin from './pages/admin/StaffNoticesAdmin.jsx';
 
 
 //services
@@ -168,6 +169,7 @@ const App = () => {
           <Route path='products/reports' element={<AdminProductReports />} />
           <Route path='reviews/reports' element={<AdminReviewReports />} />
           <Route path="/admin/messages" element={<AdminMessages />} />
+          <Route path="/admin/staff-notices" element={<StaffNoticesAdmin />} />
 
           {/* <Route path="/courses2" element={<CM2 />} /> */}
 
