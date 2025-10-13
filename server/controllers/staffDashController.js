@@ -1,3 +1,4 @@
+import mongoose from "mongoose"; 
 import userModel from "../models/userModel.js";
 import Appointment from "../models/Appointment.js";
 import Review from "../models/Review.js";
@@ -33,9 +34,11 @@ export const getStaffPerformance = async (req, res) => {
     const startDate = subDays(new Date(), days);
     const endDate = new Date();
 
+    const staffObjectId = new mongoose.Types.ObjectId(staffId); // ✅ added
+
     // Get rating statistics
     const ratingStats = await Review.aggregate([
-      { $match: { staff: staffId, createdAt: { $gte: startDate, $lte: endDate } } },
+      { $match: { staff: staffObjectId, createdAt: { $gte: startDate, $lte: endDate } } }, // ✅ changed
       {
         $group: {
           _id: null,
@@ -63,7 +66,7 @@ export const getStaffPerformance = async (req, res) => {
     const appointmentStats = await Appointment.aggregate([
       { 
         $match: { 
-          staff: staffId, 
+          staff: staffObjectId, // ✅ changed
           startTime: { $gte: startDate, $lte: endDate } 
         } 
       },
@@ -85,7 +88,7 @@ export const getStaffPerformance = async (req, res) => {
     ]);
 
     // Get recent reviews
-    const recentReviews = await Review.find({ staff: staffId })
+    const recentReviews = await Review.find({ staff: staffObjectId }) // ✅ changed
       .populate('user', 'name')
       .sort({ createdAt: -1 })
       .limit(5)
