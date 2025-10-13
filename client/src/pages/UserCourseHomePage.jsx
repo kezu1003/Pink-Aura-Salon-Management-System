@@ -14,7 +14,6 @@ import {
   Users, 
   BookOpen, 
   Search, 
-  Filter, 
   Heart, 
   Sparkles,
   TrendingUp,
@@ -273,13 +272,8 @@ const HeroSection = () => {
   );
 };
 
-// Search and Filter Section
-const SearchFilterSection = ({ searchTerm, setSearchTerm, selectedCategory, setSelectedCategory }) => {
-  const categories = [
-    "All Courses", "Hair Styling", "Makeup Artistry", "Nail Art", 
-    "Spa & Wellness", "Bridal Beauty", "Men's Grooming", "Business"
-  ];
-
+// Search Section
+const SearchFilterSection = ({ searchTerm, setSearchTerm }) => {
   return (
     <div className="mb-12">
       <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border-2 border-[#FEF4F1] p-8">
@@ -299,21 +293,6 @@ const SearchFilterSection = ({ searchTerm, setSearchTerm, selectedCategory, setS
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          
-          <div className="relative group">
-            <Filter className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#4D423A]/60 w-5 h-5 group-focus-within:text-[#FBAA99] transition-colors duration-200" />
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="pl-12 pr-8 py-4 border-2 border-[#FEF4F1] focus:border-[#FBAA99] rounded-2xl transition-all duration-300 hover:shadow-md min-w-64 bg-[#FEF4F1]/50 backdrop-blur-sm focus:bg-white text-[#4D423A] focus:outline-none"
-            >
-              {categories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
-          </div>
         </div>
       </div>
     </div>
@@ -324,7 +303,6 @@ const UserCourseHomePage = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All Courses");
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -344,16 +322,13 @@ const UserCourseHomePage = () => {
     fetchCourses();
   }, []);
 
-  // Filter courses based on search and category
+  // Filter courses based on search
   const filteredCourses = courses.filter((course) => {
     const matchesSearch = !searchTerm || 
       course.courseName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       course.description?.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesCategory = selectedCategory === "All Courses" ||
-      course.category?.toLowerCase().includes(selectedCategory.toLowerCase());
-    
-    return matchesSearch && matchesCategory;
+    return matchesSearch;
   });
 
   if (loading) {
@@ -389,24 +364,22 @@ const UserCourseHomePage = () => {
           {/* Stats Section */}
           <UserStatsSection />
           
-          {/* Search and Filter */}
+          {/* Search */}
           <SearchFilterSection 
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
-            selectedCategory={selectedCategory}
-            setSelectedCategory={setSelectedCategory}
           />
 
           {/* Course Results Header */}
           <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <h2 className="text-3xl font-bold text-[#4D423A] mb-2">
-                {searchTerm || selectedCategory !== "All Courses" 
+                {searchTerm 
                   ? `${filteredCourses.length} Course${filteredCourses.length !== 1 ? 's' : ''} Found`
                   : "Available Courses"}
               </h2>
               <p className="text-[#4D423A]/70">
-                {searchTerm || selectedCategory !== "All Courses"
+                {searchTerm
                   ? "Matching your search criteria"
                   : "Choose from our comprehensive beauty training programs"}
               </p>
@@ -433,12 +406,11 @@ const UserCourseHomePage = () => {
               </div>
               <h3 className="text-2xl font-bold text-[#4D423A] mb-4">No courses found</h3>
               <p className="text-[#4D423A]/70 mb-6 max-w-md mx-auto">
-                {searchTerm ? `No courses match "${searchTerm}"` : `No courses available in ${selectedCategory}`}
+                {searchTerm ? `No courses match "${searchTerm}"` : "No courses available"}
               </p>
               <button 
                 onClick={() => {
                   setSearchTerm("");
-                  setSelectedCategory("All Courses");
                 }}
                 className="px-8 py-4 bg-gradient-to-r from-[#FBAA99] to-[#4D423A] text-white rounded-full font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-105"
               >
@@ -485,8 +457,7 @@ const UserCourseHomePage = () => {
         }
 
         /* Enhanced focus styles */
-        input:focus,
-        select:focus {
+        input:focus {
           box-shadow: 0 0 0 4px rgba(251, 170, 153, 0.2);
         }
 
