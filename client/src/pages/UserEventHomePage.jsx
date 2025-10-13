@@ -13,7 +13,6 @@ import {
   Users, 
   Calendar, 
   Search, 
-  Filter, 
   Heart, 
   Sparkles,
   TrendingUp,
@@ -273,12 +272,8 @@ const EventHeroSection = () => {
   );
 };
 
-// Search and Filter Section
-const EventSearchFilterSection = ({ searchTerm, setSearchTerm, selectedCategory, setSelectedCategory }) => {
-  const categories = [
-    "All Events", "Workshops", "Product Launches", "Beauty Shows", 
-    "Masterclasses", "Networking", "Seasonal Events", "VIP Events"
-  ];
+// Search Section
+const EventSearchFilterSection = ({ searchTerm, setSearchTerm }) => {
 
   return (
     <div className="mb-12">
@@ -299,21 +294,6 @@ const EventSearchFilterSection = ({ searchTerm, setSearchTerm, selectedCategory,
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          
-          <div className="relative group">
-            <Filter className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#4D423A]/60 w-5 h-5 group-focus-within:text-[#FBAA99] transition-colors duration-200" />
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="pl-12 pr-8 py-4 border-2 border-[#FEF4F1] focus:border-[#FBAA99] rounded-2xl transition-all duration-300 hover:shadow-md min-w-64 bg-[#FEF4F1]/50 backdrop-blur-sm focus:bg-white text-[#4D423A] focus:outline-none"
-            >
-              {categories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
-                </option>
-              ))}
-            </select>
-          </div>
         </div>
       </div>
     </div>
@@ -324,7 +304,6 @@ const UserEventHomePage = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All Events");
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -344,17 +323,14 @@ const UserEventHomePage = () => {
     fetchEvents();
   }, []);
 
-  // Filter events based on search and category
+  // Filter events based on search
   const filteredEvents = events.filter((event) => {
     const matchesSearch = !searchTerm || 
       event.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       event.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       event.venue?.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesCategory = selectedCategory === "All Events" ||
-      event.category?.toLowerCase().includes(selectedCategory.toLowerCase());
-    
-    return matchesSearch && matchesCategory;
+    return matchesSearch;
   });
 
   if (loading) {
@@ -389,24 +365,22 @@ const UserEventHomePage = () => {
           {/* Stats Section */}
           <UserEventStatsSection />
           
-          {/* Search and Filter */}
+          {/* Search */}
           <EventSearchFilterSection 
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
-            selectedCategory={selectedCategory}
-            setSelectedCategory={setSelectedCategory}
           />
 
           {/* Event Results Header */}
           <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <h2 className="text-3xl font-bold text-[#4D423A] mb-2">
-                {searchTerm || selectedCategory !== "All Events" 
+                {searchTerm 
                   ? `${filteredEvents.length} Event${filteredEvents.length !== 1 ? 's' : ''} Found`
                   : "Upcoming Events"}
               </h2>
               <p className="text-[#4D423A]/70">
-                {searchTerm || selectedCategory !== "All Events"
+                {searchTerm
                   ? "Matching your search criteria"
                   : "Join us for exciting beauty experiences and learning opportunities"}
               </p>
@@ -433,12 +407,11 @@ const UserEventHomePage = () => {
               </div>
               <h3 className="text-2xl font-bold text-[#4D423A] mb-4">No events found</h3>
               <p className="text-[#4D423A]/70 mb-6 max-w-md mx-auto">
-                {searchTerm ? `No events match "${searchTerm}"` : `No events available in ${selectedCategory}`}
+                {searchTerm ? `No events match "${searchTerm}"` : "No events available"}
               </p>
               <button 
                 onClick={() => {
                   setSearchTerm("");
-                  setSelectedCategory("All Events");
                 }}
                 className="px-8 py-4 bg-gradient-to-r from-[#FBAA99] to-[#4D423A] text-white rounded-full font-semibold hover:shadow-lg transition-all duration-300 transform hover:scale-105"
               >
@@ -485,8 +458,7 @@ const UserEventHomePage = () => {
         }
 
         /* Enhanced focus styles */
-        input:focus,
-        select:focus {
+        input:focus {
           box-shadow: 0 0 0 4px rgba(251, 170, 153, 0.2);
         }
 
