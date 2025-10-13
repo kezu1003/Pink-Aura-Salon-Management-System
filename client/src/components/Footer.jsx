@@ -39,7 +39,7 @@ export default function Footer() {
           <div className="mt-3 space-y-2 text-sm text-white/80">
             <p><span className="text-white/60">Opening Times:</span> Tue–Sun 9:00am–7:00pm</p>
             <p><span className="text-white/60">Phone:</span> +94 77 388 5122</p>
-            <p><span className="text-white/60">Location:</span> No.6, Pagoda Road, Nugegoda, 10250</p>
+            <p><span className="text-white/60">Location:</span> 5/75, Nandana, Danwalawatta, Wewahamanduwa, Matara, Sri Lanka</p>
           </div>
         </div>
       </div>

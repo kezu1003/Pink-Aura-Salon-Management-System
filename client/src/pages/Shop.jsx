@@ -53,105 +53,142 @@ export default function Shop() {
 
   const totalPages = Math.max(1, Math.ceil(total / limit));
 
+  const SkeletonCard = () => (
+    <div className="h-72 rounded-2xl border bg-white/60 shadow-sm animate-pulse" />
+  );
+
   return (
-    <div className="bg-[#FEF4F1] min-h-screen">
+    <div className="min-h-screen bg-gradient-to-b from-rose-50 via-pink-50 to-white">
       <Navbar />
-      
+
       <div className="h-20" />
 
       <div className="max-w-6xl mx-auto px-4 py-6">
-        <h1 className="text-2xl font-semibold mb-4"></h1>
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mb-3">
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900">
+            Shop
+          </h1>
+          <p className="text-sm text-gray-500">
+            {loading ? "Loading products…" : `${total} item${total === 1 ? "" : "s"} found`}
+          </p>
+        </div>
 
-        <CategoryTabs
-          value={category}
-          onChange={(c) => {
-            setCategory(c);
-            setPage(1);
-          }}
-        />
+        <div className="mb-4">
+          <CategoryTabs
+            value={category}
+            onChange={(c) => {
+              setCategory(c);
+              setPage(1);
+            }}
+          />
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4 mt-4">
-          <input
-            placeholder="Search products..."
-            className="border rounded-lg px-3 py-2"
-            value={q}
-            onChange={(e) => {
-              setQ(e.target.value);
-              setPage(1);
-            }}
-          />
-          <input
-            type="number"
-            placeholder="Min price"
-            className="border rounded-lg px-3 py-2"
-            value={minPrice}
-            onChange={(e) => {
-              setMinPrice(e.target.value);
-              setPage(1);
-            }}
-          />
-          <input
-            type="number"
-            placeholder="Max price"
-            className="border rounded-lg px-3 py-2"
-            value={maxPrice}
-            onChange={(e) => {
-              setMaxPrice(e.target.value);
-              setPage(1);
-            }}
-          />
-          <div className="flex gap-2">
-            <select
-              className="border rounded-lg px-3 py-2 w-full"
-              value={sort}
-              onChange={(e) => setSort(e.target.value)}
-            >
-              <option value="createdAt">Newest</option>
-              <option value="price">Price</option>
-              <option value="stock">Stock</option>
-            </select>
-            <select
-              className="border rounded-lg px-3 py-2 w-full"
-              value={order}
-              onChange={(e) => setOrder(e.target.value)}
-            >
-              <option value="desc">Desc</option>
-              <option value="asc">Asc</option>
-            </select>
+        {/* Filter bar with glittery pink outlines */}
+        <div className="sticky top-16 z-10">
+          <div className="rounded-2xl border bg-white/70 backdrop-blur p-3 shadow-sm">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+              <input
+                placeholder="Search products..."
+                className="border rounded-xl px-3 py-2 bg-white/80 focus:bg-white outline-none focus:ring-2 focus:ring-[#d63384] focus:border-[#d63384] transition-all"
+                value={q}
+                onChange={(e) => {
+                  setQ(e.target.value);
+                  setPage(1);
+                }}
+              />
+              <input
+                type="number"
+                placeholder="Min price"
+                className="border rounded-xl px-3 py-2 bg-white/80 focus:bg-white outline-none focus:ring-2 focus:ring-[#d63384] focus:border-[#d63384] transition-all"
+                value={minPrice}
+                onChange={(e) => {
+                  setMinPrice(e.target.value);
+                  setPage(1);
+                }}
+              />
+              <input
+                type="number"
+                placeholder="Max price"
+                className="border rounded-xl px-3 py-2 bg-white/80 focus:bg-white outline-none focus:ring-2 focus:ring-[#d63384] focus:border-[#d63384] transition-all"
+                value={maxPrice}
+                onChange={(e) => {
+                  setMaxPrice(e.target.value);
+                  setPage(1);
+                }}
+              />
+              <div className="flex gap-2">
+                <select
+                  className="border rounded-xl px-3 py-2 w-full bg-white/80 focus:bg-white outline-none focus:ring-2 focus:ring-[#d63384] focus:border-[#d63384] transition-all"
+                  value={sort}
+                  onChange={(e) => setSort(e.target.value)}
+                >
+                  <option value="createdAt">Newest</option>
+                  <option value="price">Price</option>
+                  <option value="stock">Stock</option>
+                </select>
+                <select
+                  className="border rounded-xl px-3 py-2 w-full bg-white/80 focus:bg-white outline-none focus:ring-2 focus:ring-[#d63384] focus:border-[#d63384] transition-all"
+                  value={order}
+                  onChange={(e) => setOrder(e.target.value)}
+                >
+                  <option value="desc">Desc</option>
+                  <option value="asc">Asc</option>
+                </select>
+              </div>
+            </div>
           </div>
         </div>
 
+        {/* Product Grid */}
         {loading ? (
-          <div className="py-10 text-center text-gray-500">Loading...</div>
+          <div className="mt-6 grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <SkeletonCard key={i} />
+            ))}
+          </div>
         ) : (
           <>
             {rows.length === 0 ? (
-              <div className="py-10 text-center text-gray-500">
-                No products found.
+              <div className="py-16 text-center">
+                <div className="mx-auto w-20 h-20 rounded-full bg-pink-100 mb-4 flex items-center justify-center">
+                  <span className="text-2xl">🛍️</span>
+                </div>
+                <p className="text-gray-600">No products found.</p>
               </div>
             ) : (
-              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+              <div className="mt-6 grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
                 {rows.map((p) => (
-                  <ProductCard key={p._id} product={p} />
+                  <div
+                    key={p._id}
+                    className="group rounded-2xl border bg-white/70 backdrop-blur shadow-sm transition hover:shadow-[#d63384]/40 hover:shadow-lg hover:-translate-y-0.5 hover:border-[#d63384] duration-200"
+                  >
+                    <div className="rounded-2xl overflow-hidden">
+                      <ProductCard product={p} />
+                    </div>
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity text-xs text-[#d63384] px-3 py-2">
+                      Quick view →
+                    </div>
+                  </div>
                 ))}
               </div>
             )}
 
-            <div className="mt-6 flex items-center justify-center gap-2">
+            {/* Pagination */}
+            <div className="mt-8 flex items-center justify-center gap-3">
               <button
                 disabled={page <= 1}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
-                className="px-3 py-1 rounded border disabled:opacity-50"
+                className="px-4 py-2 rounded-xl border bg-white/80 backdrop-blur shadow-sm disabled:opacity-50 disabled:cursor-not-allowed hover:border-[#d63384] hover:text-[#d63384] hover:shadow-md hover:-translate-y-0.5 transition"
               >
                 Prev
               </button>
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-gray-600 px-3 py-2 rounded-lg bg-white/60 border">
                 Page {page} / {totalPages}
               </span>
               <button
                 disabled={page >= totalPages}
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                className="px-3 py-1 rounded border disabled:opacity-50"
+                className="px-4 py-2 rounded-xl border bg-white/80 backdrop-blur shadow-sm disabled:opacity-50 disabled:cursor-not-allowed hover:border-[#d63384] hover:text-[#d63384] hover:shadow-md hover:-translate-y-0.5 transition"
               >
                 Next
               </button>

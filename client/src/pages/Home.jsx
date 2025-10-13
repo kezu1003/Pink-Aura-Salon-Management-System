@@ -33,11 +33,7 @@ export default function Home() {
               <AboutUs />
             </section>
 
-            <section className="border-t border-[#4D423A]/10 bg-[#FFFFFF]">
-              <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
-                <MapAndBranches />
-              </div>
-            </section>
+            
           </>
         ) : (
           <>
