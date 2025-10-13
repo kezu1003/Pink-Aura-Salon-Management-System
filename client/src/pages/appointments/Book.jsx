@@ -117,7 +117,25 @@ export default function Book() {
           ...slot,
           disabled: slot.booked || false,
         }));
-        setSlots(availableSlots);
+
+
+        // create extra static slots from 9:00 AM to 11:59 AM
+        const today = new Date(date);
+        const extraSlots = [
+          { start: new Date(today.setHours(9, 0, 0, 0)), end: new Date(today.setHours(9, 30, 0, 0)) },
+          { start: new Date(today.setHours(9, 30, 0, 0)), end: new Date(today.setHours(10, 0, 0, 0)) },
+          { start: new Date(today.setHours(10, 0, 0, 0)), end: new Date(today.setHours(10, 30, 0, 0)) },
+          { start: new Date(today.setHours(10, 30, 0, 0)), end: new Date(today.setHours(11, 0, 0, 0)) },
+          { start: new Date(today.setHours(11, 0, 0, 0)), end: new Date(today.setHours(11, 30, 0, 0)) },
+          { start: new Date(today.setHours(11, 30, 0, 0)), end: new Date(today.setHours(11, 59, 0, 0)) },
+        ];
+
+        // merge backend + extra and sort by time
+        const combined = [...availableSlots, ...extraSlots].sort(
+          (a, b) => new Date(a.start) - new Date(b.start)
+        );
+
+        setSlots(combined);
         setPicked(null);
       })
       .catch((err) => {

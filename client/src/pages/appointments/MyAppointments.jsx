@@ -4,7 +4,6 @@ import { makeApi } from "../../api/appointments";
 import { format } from "date-fns";
 import { toast } from "react-toastify";
 
-/* ✅ Added */
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 
