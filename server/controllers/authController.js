@@ -298,7 +298,7 @@ export const sendResetOtp = async (req, res) => {
 };
 
 export const resetPassword = async (req, res) => {
-  const { email, otp, newPassword } = req.body;
+  const { email, otp, newPassword, confirmPassword  } = req.body;
   if (!email || !otp || !newPassword) {
     return res.json({ success: false, message: 'Email, OTP and New password are required' });
   }
@@ -314,13 +314,17 @@ export const resetPassword = async (req, res) => {
       return res.json({ success: false, message: 'OTP Expired' });
     }
 
+    if (confirmPassword !== undefined && newPassword !== confirmPassword) {
+      return res.json({ success: false, message: 'Passwords do not match' });
+     }
+
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     user.password = hashedPassword;
     user.resetOtp = '';
     user.resetOtpExpireAt = 0;
     await user.save();
 
-    return res.json({ success: true, message: 'Password been reset successfully' });
+    return res.json({ success: true, message: 'Password has been reset successfully' });
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }
