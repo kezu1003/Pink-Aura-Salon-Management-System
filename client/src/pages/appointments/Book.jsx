@@ -212,10 +212,9 @@ export default function Book() {
     const apptId = (appointment && appointment._id) || (appointment && appointment.id) || null;
 
     if (apptId) {
-      navigate(`/payment?appointmentId=${encodeURIComponent(apptId)}`);
+      navigate(`/appointments/mine`);
     } else {
-      // if backend didn't return appointment id, navigate to payment page unknown
-      navigate("/payment");
+      navigate(`/appointments/mine`);
     }
   };
 
