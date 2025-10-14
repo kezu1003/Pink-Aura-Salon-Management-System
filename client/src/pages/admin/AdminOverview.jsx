@@ -9,7 +9,7 @@ import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, subMonths, subWeeks, 
 import { saveAs } from 'file-saver';
 import 'react-datepicker/dist/react-datepicker.css';
 
-// Register Chart.js components
+
 ChartJS.register(LineElement, BarElement, PieController, ArcElement, CategoryScale, LinearScale, PointElement, Title, Tooltip, Legend);
 
 export default function AdminOverview() {

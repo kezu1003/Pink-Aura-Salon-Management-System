@@ -54,7 +54,7 @@ export default function ResetPassword() {
         email,
         otp,
         newPassword,
-        confirmPassword, // server will validate too
+        confirmPassword, 
       });
       if (data?.success) {
         toast.success("Password reset successful. Please login.");

@@ -8,7 +8,7 @@ import Product from '../models/Product.js';
 import Review from '../models/Review.js';
 import Order from '../models/Order.js';
 
-// Helper to calculate expiry days left
+//  calculate expiry days left
 function computeExpiryDaysLeft(expiryDate) {
   if (!expiryDate) return null;
   const today = new Date();
@@ -16,7 +16,7 @@ function computeExpiryDaysLeft(expiryDate) {
   return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
 }
 
-// Helper to validate and parse date range
+//  validate and  date range
 function parseDateRange(req, defaultStart, defaultEnd) {
   const { startDate, endDate } = req.query;
   return {
@@ -25,7 +25,7 @@ function parseDateRange(req, defaultStart, defaultEnd) {
   };
 }
 
-// Get appointments for a date range (default: today)
+// Get appointments for a date range
 export const getAppointmentsToday = async (req, res) => {
   try {
     const { start, end } = parseDateRange(req, startOfDay(new Date()), endOfDay(new Date()));
@@ -39,7 +39,7 @@ export const getAppointmentsToday = async (req, res) => {
   }
 };
 
-// Get revenue for a date range (default: current month)
+// Get revenue for a date range 
 export const getRevenueMonthly = async (req, res) => {
   try {
     const { start, end } = parseDateRange(req, startOfMonth(new Date()), endOfMonth(new Date()));
@@ -68,7 +68,7 @@ export const getRevenueMonthly = async (req, res) => {
   }
 };
 
-// Get active clients (default: last 30 days)
+// Get active clients 
 export const getActiveClients = async (req, res) => {
   try {
     const { start, end } = parseDateRange(req, subDays(new Date(), 30), new Date());
@@ -83,12 +83,12 @@ export const getActiveClients = async (req, res) => {
   }
 };
 
-// Get staff utilization (default: today, 10 AM-5 PM)
+// Get staff utilization 
 export const getStaffUtilization = async (req, res) => {
   try {
     const { start, end } = parseDateRange(req, startOfDay(new Date()), endOfDay(new Date()));
     const staff = await User.find({ role: 'staff', status: 'active' });
-    const totalHours = staff.length * 7; // 10 AM-5 PM = 7 hours
+    const totalHours = staff.length * 7; 
     const bookedHours = await Appointment.aggregate([
       {
         $match: {
@@ -110,7 +110,7 @@ export const getStaffUtilization = async (req, res) => {
   }
 };
 
-// Get inventory alerts (default: current date)
+// Get inventory alerts 
 export const getInventoryAlerts = async (req, res) => {
   try {
     const products = await Product.find({ isActive: true });

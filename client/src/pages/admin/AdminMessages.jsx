@@ -34,7 +34,7 @@ export default function AdminMessages() {
     }
   };
 
-  // mailto link with encoded subject/body
+  // mailto link 
 
   const buildMailTo = (m) => {
     const subject = `Re: ${m.subject || "Your inquiry"}`;
@@ -53,13 +53,11 @@ export default function AdminMessages() {
     ];
     const body = bodyLines.join("\n");
    
-    // const cc = "hello@pinkaura.lk";
-    // const bcc = "archive@pinkaura.lk";
+   
     const params = new URLSearchParams({
       subject,
       body
-      // cc,
-      // bcc
+      
     });
     return `mailto:${encodeURIComponent(m.email)}?${params.toString()}`;
   };
