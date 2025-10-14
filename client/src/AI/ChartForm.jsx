@@ -1,16 +1,40 @@
 import React, { useRef } from "react";
 import { IoSend } from "react-icons/io5";
+import api from "../api/axios";
 
 const ChartForm = ({ chatHistory, setChatHistory, generateBotResponse }) => {
   const inputRef = useRef();
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
     const userMessage = inputRef.current.value.trim();
     if (!userMessage) return;
     inputRef.current.value = "";
 
     setChatHistory((h) => [...h, { role: "user", text: userMessage }]);
+
+    // Check if user is asking about products or skin type
+    const isProductQuery = /product|skincare|skin|recommend|suitable|oily|dry|sensitive|combination|normal|mature|acne/i.test(userMessage);
+    
+    let enhancedMessage = userMessage;
+    
+    if (isProductQuery) {
+      try {
+        // Extract potential skin type from user message
+        const skinTypes = ["dry skin", "oily skin", "sensitive skin", "combination skin", "normal skin", "mature skin", "acne-prone skin"];
+        const detectedSkinType = skinTypes.find(type => userMessage.toLowerCase().includes(type));
+        
+        // Fetch relevant products
+        const params = detectedSkinType ? { skinType: detectedSkinType } : {};
+        const { data } = await api.get('/api/products/chatbot', { params });
+        
+        if (data.success && data.products.length > 0) {
+          enhancedMessage = `User query: ${userMessage}. Available products data: ${JSON.stringify(data.products.slice(0, 10))}. Please provide personalized recommendations based on the user's needs and skin type preferences.`;
+        }
+      } catch (error) {
+        console.error('Failed to fetch products for recommendation:', error);
+      }
+    }
 
     // Simulate typing delay before bot responds
     setTimeout(() => {
@@ -19,7 +43,7 @@ const ChartForm = ({ chatHistory, setChatHistory, generateBotResponse }) => {
         ...chatHistory,
         {
           role: "user",
-          text: `Using the salon details provided above, please address this query: ${userMessage}`,
+          text: `Using the salon details and product catalog provided above, please address this query: ${enhancedMessage}`,
         },
       ]);
     }, 600);
@@ -33,7 +57,7 @@ const ChartForm = ({ chatHistory, setChatHistory, generateBotResponse }) => {
       <input
         ref={inputRef}
         type="text"
-        placeholder="Ask something about Pink Aura Salon..."
+        placeholder="Ask about services, products, or get skin type recommendations..."
         required
         className="w-full rounded-full border border-[#FBAA99]/50 bg-white px-4 py-2.5 text-sm text-[#4D423A] outline-none transition focus:border-[#FBAA99] focus:ring-1 focus:ring-[#FBAA99]"
       />
