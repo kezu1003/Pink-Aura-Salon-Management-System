@@ -119,7 +119,7 @@ export default function ProductForm() {
 
           <div>
             <label className="block text-sm mb-1">Price (LKR)</label>
-            <input type="number" min="0" step="0.01"
+            <input type="number" min="0" step="100"
               className="border rounded-lg px-3 py-2 w-full"
               value={form.price} onChange={(e) => set("price", e.target.value)} required />
           </div>
@@ -153,13 +153,7 @@ export default function ProductForm() {
                     set("images", copy);
                   }}
                 />
-                <button
-                  type="button"
-                  onClick={() => set("images", form.images.filter((_, i) => i !== idx))}
-                  className="px-3 rounded border"
-                >
-                  X
-                </button>
+                
               </div>
             ))}
             <button
