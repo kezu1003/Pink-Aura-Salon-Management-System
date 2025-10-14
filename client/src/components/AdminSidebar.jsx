@@ -127,6 +127,10 @@ export default function AdminSidebar({ expanded, onClose }) {
             <Item to="/courses" label="Courses" icon={Settings} expanded={expanded} />
           </Group>
 
+          <Group title="Enrollments" expanded={expanded}>
+            <Item to="/enrollments" label="Enrollments" icon={Settings} expanded={expanded} />
+          </Group>
+
           <Group title="Events Management" expanded={expanded}>
             <Item to="/events" label="Events" icon={Settings} expanded={expanded} />
           </Group>
