@@ -4,14 +4,56 @@ import ChartForm from "./ChartForm";
 import ChatMessage from "./ChatMessage";
 import { companyInfo } from "./companyInfo";
 import { IoChatbubblesOutline, IoClose, IoChevronDown } from "react-icons/io5";
+import api from "../api/axios";
 
 function Chatbot() {
-  const [chatHistory, setChatHistory] = useState([
-    { hideInChat: true, role: "model", text: JSON.stringify(companyInfo) },
-    { role: "model", text: "💖 Hi there! Welcome to Pink Aura Salon. How can I help you today?" },
-  ]);
+  const [products, setProducts] = useState([]);
+  const [chatHistory, setChatHistory] = useState([]);
   const [showChatbot, setShowChatbot] = useState(false);
   const chatBodyRef = useRef();
+
+  // Fetch products for chatbot context
+  const fetchProducts = async () => {
+    try {
+      const { data } = await api.get('/api/products/chatbot');
+      if (data.success) {
+        setProducts(data.products);
+      }
+    } catch (error) {
+      console.error('Failed to fetch products for chatbot:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  // Initialize chat history with company info and products when available
+  useEffect(() => {
+    if (products.length > 0) {
+      const contextData = {
+        companyInfo,
+        products: products.map(p => ({
+          name: p.name,
+          category: p.category,
+          brand: p.brand,
+          price: p.price,
+          description: p.description,
+          skinType: p.skinType
+        }))
+      };
+      
+      setChatHistory([
+        { hideInChat: true, role: "model", text: JSON.stringify(contextData) },
+        { role: "model", text: "💖 Hi there! Welcome to Pink Aura Salon. I can help you with our services, products, and recommendations based on your skin type. How can I help you today?" },
+      ]);
+    } else {
+      setChatHistory([
+        { hideInChat: true, role: "model", text: JSON.stringify(companyInfo) },
+        { role: "model", text: "💖 Hi there! Welcome to Pink Aura Salon. How can I help you today?" },
+      ]);
+    }
+  }, [products]);
 
   const generateBotResponse = async (history) => {
     const updateHistory = (text, isError = false) => {
