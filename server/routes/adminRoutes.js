@@ -33,7 +33,7 @@ import {
   replyToMessage,
 } from "../controllers/contactController.js";
 
-import { appointmentsOverview, appointmentsOverviewPdf } from "../controllers/appointmentReportsController.js";
+import { appointmentsOverview } from "../controllers/appointmentReportsController.js";
 
 
 const router = express.Router();
@@ -61,7 +61,6 @@ router.get('/transactions/:id', getTransactionById);
 router.put('/transactions/:id/status', updateTransactionStatus);
 
 router.get("/appointment-reports/overview", appointmentsOverview);
-router.get("/appointment-reports/overview.pdf", appointmentsOverviewPdf);
 
 router.get('/dashboard/appointments-today', getAppointmentsToday);
 router.get('/dashboard/revenue-monthly', getRevenueMonthly);
