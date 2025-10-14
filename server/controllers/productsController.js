@@ -52,6 +52,7 @@ export const getProducts = async (req, res) => {
     
     const {
       category,
+      skinType,
       q,
       minPrice,
       maxPrice,
@@ -64,6 +65,7 @@ export const getProducts = async (req, res) => {
     const query = { isActive: true };
 
     if (category) query.category = category;
+    if (skinType) query.skinType = skinType;
     if (q) query.name = { $regex: q, $options: "i" };
 
     const minP = parseNumber(minPrice);
@@ -198,5 +200,35 @@ export const adjustStock = async (req, res) => {
     res.json({ success: true, product: payload });
   } catch (err) {
     res.status(400).json({ success: false, message: err.message });
+  }
+};
+
+// GET products for chatbot (public endpoint)
+export const getProductsForChatbot = async (req, res) => {
+  try {
+    const { skinType, category } = req.query;
+    
+    const query = { isActive: true };
+    
+    // Filter by skin type if provided
+    if (skinType && skinType !== "All Skin Types") {
+      query.$or = [
+        { skinType: skinType },
+        { skinType: "All Skin Types" }
+      ];
+    }
+    
+    // Filter by category if provided
+    if (category) {
+      query.category = category;
+    }
+
+    const products = await Product.find(query)
+      .select('name category brand price description images skinType')
+      .limit(50); // Limit to 50 products for chatbot response
+
+    res.json({ success: true, products });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
 };

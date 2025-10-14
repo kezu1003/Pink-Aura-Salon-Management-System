@@ -6,6 +6,7 @@ import {
   updateProduct,
   deleteProduct,
   adjustStock,
+  getProductsForChatbot,
 } from "../controllers/productsController.js";
 import { requireAuth, requireRole } from "../middleware/userAuth.js";
 import { generateProductReport } from "../controllers/productReportsController.js"; 
@@ -15,6 +16,7 @@ const router = express.Router();
 
 router.get("/report", requireAuth, requireRole("admin"), generateProductReport); 
 
+router.get("/chatbot", getProductsForChatbot); // Public endpoint for chatbot
 router.get("/", getProducts);
 router.get("/:id", getProductById);
 

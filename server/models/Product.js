@@ -21,6 +21,20 @@ const productSchema = new Schema(
     images: [{ type: String }],
     stock: { type: Number, required: true, min: 0 },
     expiryDate: { type: Date },
+    skinType: {
+      type: String,
+      enum: [
+        "All Skin Types",
+        "Dry Skin",
+        "Oily Skin", 
+        "Combination Skin",
+        "Sensitive Skin",
+        "Normal Skin",
+        "Mature Skin",
+        "Acne-Prone Skin"
+      ],
+      default: "All Skin Types"
+    },
     isActive: { type: Boolean, default: true },
     createdBy: { type: Schema.Types.ObjectId, ref: "User" },
     updatedBy: { type: Schema.Types.ObjectId, ref: "User" },

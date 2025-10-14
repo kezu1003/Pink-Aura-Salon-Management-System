@@ -10,6 +10,17 @@ const CATS = [
   "Makeup Products",
 ];
 
+const SKIN_TYPES = [
+  "All Skin Types",
+  "Dry Skin",
+  "Oily Skin", 
+  "Combination Skin",
+  "Sensitive Skin",
+  "Normal Skin",
+  "Mature Skin",
+  "Acne-Prone Skin"
+];
+
 export default function ProductForm() {
   const { id } = useParams(); // undefined for create
   const navigate = useNavigate();
@@ -23,6 +34,7 @@ export default function ProductForm() {
     images: [""],
     stock: "",
     expiryDate: "",
+    skinType: "All Skin Types",
     isActive: true,
   });
 
@@ -41,6 +53,7 @@ export default function ProductForm() {
           images: p.images?.length ? p.images : [""],
           stock: p.stock ?? "",
           expiryDate: p.expiryDate ? new Date(p.expiryDate).toISOString().slice(0, 10) : "",
+          skinType: p.skinType ?? "All Skin Types",
           isActive: p.isActive ?? true,
         });
       } catch (e) {
@@ -110,6 +123,14 @@ export default function ProductForm() {
               className="border rounded-lg px-3 py-2 w-full"
               value={form.price} onChange={(e) => set("price", e.target.value)} required />
           </div>
+        </div>
+
+        <div>
+          <label className="block text-sm mb-1">Skin Type</label>
+          <select className="border rounded-lg px-3 py-2 w-full"
+            value={form.skinType} onChange={(e) => set("skinType", e.target.value)}>
+            {SKIN_TYPES.map((type) => <option key={type} value={type}>{type}</option>)}
+          </select>
         </div>
 
         <div>
