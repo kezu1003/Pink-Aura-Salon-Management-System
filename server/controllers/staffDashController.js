@@ -254,7 +254,7 @@ export const fulfillPO = async (_req, res) => {
   return res.json({ success: true, message: "PO fulfilled" });
 };
 
-// Create a new staff notice (admin only)
+// Create a new staff notice 
 export const createStaffNotice = async (req, res) => {
   try {
     const { title, body, type, priority, expiresAt } = req.body;
@@ -283,7 +283,7 @@ export const createStaffNotice = async (req, res) => {
   }
 };
 
-// Update a staff notice (admin only)
+// Update a staff notice 
 export const updateStaffNotice = async (req, res) => {
   try {
     const { id } = req.params;
@@ -311,7 +311,7 @@ export const updateStaffNotice = async (req, res) => {
   }
 };
 
-// Delete a staff notice (admin only)
+// Delete a staff notice 
 export const deleteStaffNotice = async (req, res) => {
   try {
     const { id } = req.params;
@@ -332,7 +332,7 @@ export const deleteStaffNotice = async (req, res) => {
   }
 };
 
-// Get all notices for admin management
+// Get all notices 
 export const getAllNotices = async (req, res) => {
   try {
     const notices = await Notice.find({ isActive: true })
