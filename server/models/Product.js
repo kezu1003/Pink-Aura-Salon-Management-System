@@ -2,6 +2,21 @@ import mongoose from "mongoose";
 
 const { Schema } = mongoose;
 
+export const BRANDS = [
+  "Seren Cosmetics",
+  "Basicare",
+  "Maybelline",
+  "L'Oreal",
+  "Dove",
+  "Dr. Rashel",
+  "Aussie",
+  "Femfresh",
+  "Anua",
+  "CeraVe",
+  "Banana Boat",
+  "Boots",
+];
+
 const productSchema = new Schema(
   {
     name: { type: String, required: true, trim: true },
@@ -15,12 +30,24 @@ const productSchema = new Schema(
       ],
       required: true,
     },
-    brand: { type: String, default: "" },
+    brand: { type: String, enum: BRANDS, required: true },
     price: { type: Number, required: true, min: 0 },
     description: { type: String, default: "" },
     images: [{ type: String }],
     stock: { type: Number, required: true, min: 0 },
-    expiryDate: { type: Date },
+    expiryDate: { 
+      
+      type: Date,
+      validate: {
+      validator(v) {
+      if (!v) return true;
+      const startOfToday = new Date();
+      startOfToday.setHours(0,0,0,0);
+      return v >= startOfToday;
+    },
+    message: "Expiry date cannot be in the past.",
+  },
+},
     skinType: {
       type: String,
       enum: [
@@ -41,6 +68,9 @@ const productSchema = new Schema(
   },
   { timestamps: true }
 );
+
+
+
 
 // Virtual field: days left until expiry
 productSchema.virtual("expiryDaysLeft").get(function () {

@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Product from "../models/Product.js";
+import { BRANDS } from "../models/Product.js";
 
 
 
@@ -30,7 +31,7 @@ const ALLOWED_SORTS = new Set(["createdAt", "price", "stock", "name"]);
 
 export const getProducts = async (req, res) => {
   try {
-    // 1) Fast-path: fetch by explicit IDs (e.g., cart stock refresh)
+  
     if (req.query.ids) {
       const ids = req.query.ids
         .split(",")
@@ -49,10 +50,10 @@ export const getProducts = async (req, res) => {
       return res.json({ success: true, products: payload, total: payload.length });
     }
 
-    
     const {
       category,
       skinType,
+      brand,
       q,
       minPrice,
       maxPrice,
@@ -65,6 +66,7 @@ export const getProducts = async (req, res) => {
     const query = { isActive: true };
 
     if (category) query.category = category;
+    if (brand) query.brand = brand; 
     if (skinType) query.skinType = skinType;
     if (q) query.name = { $regex: q, $options: "i" };
 
@@ -110,6 +112,10 @@ export const getProductById = async (req, res) => {
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
+};
+
+export const getBrands = async (_req, res) => {
+  res.json({ success: true, brands: BRANDS });
 };
 
 // CREATE (Admin)
@@ -178,7 +184,7 @@ export const adjustStock = async (req, res) => {
       return res.status(400).json({ success: false, message: "Invalid stock change" });
     }
 
-    // Prevent negative stock: require stock >= -change if change is negative
+    // Prevent negative stock
     const filter =
       change < 0
         ? { _id: req.params.id, stock: { $gte: Math.abs(change) } }
@@ -203,7 +209,7 @@ export const adjustStock = async (req, res) => {
   }
 };
 
-// GET products for chatbot (public endpoint)
+// GET products for chatbot 
 export const getProductsForChatbot = async (req, res) => {
   try {
     const { skinType, category } = req.query;

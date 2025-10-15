@@ -3,7 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/logo1.jpg" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
     
     <title>Pink Aura</title>
   </head>
@@ -11,5 +14,33 @@
     <div id="root"></div>
     
     <script type="module" src="/src/main.jsx"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+     tailwind.config = {
+        theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+            display: ['Playfair Display', 'ui-serif', 'Georgia'],
+         },
+          colors: {
+            rosePrimary: '#D63384',
+            roseSoft: '#F3A6C7',
+            onyx: '#0E0E10',
+            porcelain: '#F7F5F2',
+        },
+         boxShadow: {
+          silk: '0 10px 30px rgba(214,51,132,0.08)',
+        },
+         backdropBlur: {
+          12: '12px',
+        },
+      }
+    }
+  }
+</script>
+
+    
   </body>
 </html>
