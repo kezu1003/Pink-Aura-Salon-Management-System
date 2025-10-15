@@ -10,6 +10,7 @@ import {
 } from "../controllers/productsController.js";
 import { requireAuth, requireRole } from "../middleware/userAuth.js";
 import { generateProductReport } from "../controllers/productReportsController.js"; 
+import { getBrands } from "../controllers/productsController.js";
 
 const router = express.Router();
 
@@ -24,5 +25,7 @@ router.post("/", requireAuth, requireRole("admin"), createProduct);
 router.put("/:id", requireAuth, requireRole("admin"), updateProduct);
 router.delete("/:id", requireAuth, requireRole("admin"), deleteProduct);
 router.patch("/:id/stock", requireAuth, requireRole("admin"), adjustStock);
+
+router.get("/brands", getBrands);
 
 export default router;
