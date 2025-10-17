@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import logo from '../assets/logo.jpg';
+import api from '../lib/axios';
+import toast from 'react-hot-toast';
 
 const CourseCertificatePage = () => {
   const [studentName, setStudentName] = useState('');
   const [courseName, setCourseName] = useState('');
+  const [selectedCourseId, setSelectedCourseId] = useState('');
   const [completionDate, setCompletionDate] = useState(new Date().toISOString().split('T')[0]);
   const [downloadingCertificate, setDownloadingCertificate] = useState(false);
+  const [courses, setCourses] = useState([]);
+  const [loadingCourses, setLoadingCourses] = useState(true);
 
   const currentDateFormatted = new Date(completionDate).toLocaleDateString('en-US', { 
     year: 'numeric', 
@@ -27,6 +32,37 @@ const CourseCertificatePage = () => {
       }, 100);
     }
   }, []);
+
+  // Fetch courses on component mount
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const res = await api.get("/courses");
+        setCourses(res.data);
+        setLoadingCourses(false);
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+        toast.error("Failed to fetch courses");
+        setLoadingCourses(false);
+      }
+    };
+    fetchCourses();
+  }, []);
+
+  // Handle course selection
+  const handleCourseChange = (e) => {
+    const courseId = e.target.value;
+    setSelectedCourseId(courseId);
+    
+    if (courseId) {
+      const selectedCourse = courses.find(course => course._id === courseId);
+      if (selectedCourse) {
+        setCourseName(selectedCourse.courseName);
+      }
+    } else {
+      setCourseName('');
+    }
+  };
 
   const handleDownloadCertificate = async () => {
     if (!studentName.trim() || !courseName.trim()) {
@@ -64,13 +100,21 @@ const CourseCertificatePage = () => {
           
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Course Name</label>
-            <input
-              type="text"
-              value={courseName}
-              onChange={(e) => setCourseName(e.target.value)}
-              placeholder="Enter course name"
+            <select
+              value={selectedCourseId}
+              onChange={handleCourseChange}
               className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-pink-300 focus:border-transparent"
-            />
+              disabled={loadingCourses}
+            >
+              <option value="">
+                {loadingCourses ? 'Loading courses...' : 'Select a course'}
+              </option>
+              {courses.map((course) => (
+                <option key={course._id} value={course._id}>
+                  {course.courseName}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>
