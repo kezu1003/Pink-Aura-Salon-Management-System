@@ -12,8 +12,35 @@ const CourseCreatePage = () => {
   const [location, setLocation] = useState("");
   const [schedule, setSchedule] = useState("");
   const [loading, setLoading] = useState(false);
+  const [locationConflict, setLocationConflict] = useState(null);
 
   const navigate = useNavigate();
+
+  // Check for location conflicts in real-time
+  const checkLocationConflict = async (locationValue) => {
+    if (!locationValue.trim()) {
+      setLocationConflict(null);
+      return;
+    }
+
+    try {
+      const existingCoursesResponse = await api.get("/courses");
+      const existingCourses = existingCoursesResponse.data;
+      
+      const conflictingCourse = existingCourses.find(course => 
+        course.location && course.location.toLowerCase().trim() === locationValue.toLowerCase().trim()
+      );
+      
+      if (conflictingCourse) {
+        setLocationConflict(conflictingCourse);
+      } else {
+        setLocationConflict(null);
+      }
+    } catch (error) {
+      console.log("Error checking location conflicts:", error);
+      setLocationConflict(null);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,6 +52,22 @@ const CourseCreatePage = () => {
 
     setLoading(true);
     try {
+      // First, check if there are existing courses at the same location
+      const existingCoursesResponse = await api.get("/courses");
+      const existingCourses = existingCoursesResponse.data;
+      
+      // Check for courses at the same location
+      const conflictingCourses = existingCourses.filter(course => 
+        course.location && course.location.toLowerCase().trim() === location.toLowerCase().trim()
+      );
+      
+      if (conflictingCourses.length > 0) {
+        toast.error(`Cannot create course at "${location}". There is already a course at this location: "${conflictingCourses[0].courseName}"`);
+        setLoading(false);
+        return;
+      }
+
+      // If no conflicts, proceed with course creation
       await api.post("/courses", {
         courseName,
         description,
@@ -43,6 +86,8 @@ const CourseCreatePage = () => {
           duration: 4000,
           icon: "💀",
         });
+      } else if (error.response?.status === 409) {
+        toast.error("A course already exists at this location");
       } else {
         toast.error("Failed to create course");
       }
@@ -94,7 +139,10 @@ const CourseCreatePage = () => {
       placeholder: 'Enter classroom, studio, or online',
       icon: <MapPin className="w-5 h-5" />,
       value: location,
-      onChange: setLocation,
+      onChange: (value) => {
+        setLocation(value);
+        checkLocationConflict(value);
+      },
       type: 'input'
     },
     {
@@ -206,6 +254,20 @@ const CourseCreatePage = () => {
                           </div>
                         )}
                       </div>
+                      
+                      {/* Location conflict warning */}
+                      {field.id === 'location' && locationConflict && (
+                        <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+                          <div className="flex items-center space-x-2">
+                            <div className="w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+                              <span className="text-white text-xs">!</span>
+                            </div>
+                            <span className="text-red-700 text-sm font-medium">
+                              Location conflict: "{locationConflict.courseName}" is already using this location
+                            </span>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -239,15 +301,20 @@ const CourseCreatePage = () => {
                   <button
                     type="button"
                     onClick={handleSubmit}
-                    disabled={loading}
+                    disabled={loading || locationConflict}
                     className={`px-8 py-4 bg-gradient-to-r from-[#4D423A] to-[#000000] hover:from-[#000000] hover:to-[#4D423A] text-white rounded-2xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2 min-w-48 ${
-                      loading ? 'opacity-75 cursor-not-allowed' : ''
+                      loading || locationConflict ? 'opacity-75 cursor-not-allowed' : ''
                     }`}
                   >
                     {loading ? (
                       <>
                         <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                         <span>Creating Course...</span>
+                      </>
+                    ) : locationConflict ? (
+                      <>
+                        <X className="w-5 h-5" />
+                        <span>Location Conflict</span>
                       </>
                     ) : (
                       <>
