@@ -174,14 +174,6 @@ const UserEventCard = ({ event, onRegister }) => {
         {/* Corner Decorative Element */}
         <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-br from-[#FBAA99] to-[#4D423A] rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-0 group-hover:scale-100"></div>
 
-        {/* Early Bird Badge for Special Events */}
-        {Math.random() > 0.6 && (
-          <div className="absolute top-4 left-4">
-            <div className="bg-gradient-to-r from-green-400 to-green-600 text-white px-3 py-1 rounded-full text-xs font-bold transform -rotate-12 shadow-lg">
-              EARLY BIRD
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Enhanced Shadow Effect */}

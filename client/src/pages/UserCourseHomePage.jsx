@@ -7,6 +7,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { LikedCoursesProvider, useLikedCourses } from '../context/LikedCoursesContext';
 import LikedCoursesIndicator from '../components/LikedCoursesIndicator';
+import { useScrollAnimationMultiple } from '../hooks/useScrollAnimation';
 import { 
   MessageCircle, 
   ChevronLeft, 
@@ -124,6 +125,8 @@ const FloatingWhatsApp = () => {
 
 // Stats Section for Users
 const UserStatsSection = () => {
+  const visibleElements = useScrollAnimationMultiple(0.1);
+  
   const stats = [
     {
       icon: <BookOpen className="w-8 h-8" />,
@@ -160,7 +163,7 @@ const UserStatsSection = () => {
   ];
 
   return (
-    <div className="mb-12">
+    <div className="mb-12" data-scroll-animation>
       <div className="text-center mb-8">
         <h3 className="text-2xl font-bold text-[#4D423A] mb-2">Why Choose Pink Aura?</h3>
         <p className="text-[#4D423A]/70">Join thousands of successful beauty professionals</p>
@@ -190,6 +193,7 @@ const UserStatsSection = () => {
 // Hero Section with Slideshow
 const HeroSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const visibleElements = useScrollAnimationMultiple(0.1);
 
   const slides = [
     {
@@ -234,7 +238,7 @@ const HeroSection = () => {
   const goToNextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
 
   return (
-    <div className="mb-12">
+    <div className="mb-12" data-scroll-animation>
       <div className="relative overflow-hidden rounded-3xl shadow-2xl bg-white border-4 border-[#FEF4F1]">
         <div 
           className="flex transition-transform duration-1000 ease-in-out"
@@ -323,7 +327,7 @@ const SearchFilterSection = ({ searchTerm, setSearchTerm, showLikedOnly, setShow
   const { getLikedCoursesCount } = useLikedCourses();
 
   return (
-    <div className="mb-12">
+    <div className="mb-12" data-scroll-animation>
       <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border-2 border-[#FEF4F1] p-8">
         <div className="text-center mb-6">
           <h2 className="text-3xl font-bold text-[#4D423A] mb-2">Find Your Perfect Course</h2>
@@ -406,6 +410,19 @@ const UserCourseHomePageContent = () => {
   const [showLikedOnly, setShowLikedOnly] = useState(false);
   const [viewMode, setViewMode] = useState("grid");
   const { likedCourses, isCourseLiked, clearAllLikedCourses, toggleLike } = useLikedCourses();
+  const visibleElements = useScrollAnimationMultiple(0.1);
+
+  // Handle scroll animations
+  useEffect(() => {
+    const elements = document.querySelectorAll('[data-scroll-animation]');
+    elements.forEach((element, index) => {
+      if (visibleElements.has(index)) {
+        element.classList.add('animate-in');
+      } else {
+        element.classList.remove('animate-in');
+      }
+    });
+  }, [visibleElements]);
 
   // Handle like toggle for list view
   const handleLikeToggle = (courseId) => {
@@ -524,13 +541,13 @@ const UserCourseHomePageContent = () => {
 
           {/* Courses Grid/List View */}
           {viewMode === 'grid' ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mb-12" data-scroll-animation>
               {filteredCourses.map((course) => (
                 <UserCourseCard key={course._id} course={course} setCourses={setCourses} />
               ))}
             </div>
           ) : (
-            <div className="space-y-4 mb-12">
+            <div className="space-y-4 mb-12" data-scroll-animation>
               {filteredCourses.map((course) => (
                 <div key={course._id} className="bg-white/80 backdrop-blur-sm rounded-2xl border-2 border-[#FEF4F1] shadow-lg hover:shadow-xl transition-all duration-300 p-6">
                   <div className="flex flex-col lg:flex-row lg:items-center space-y-4 lg:space-y-0 lg:space-x-6">
@@ -665,6 +682,37 @@ const UserCourseHomePageContent = () => {
 
         .animate-float-delayed {
           animation: float-delayed 3s ease-in-out infinite 1.5s;
+        }
+
+        /* Scroll Animation Classes */
+        [data-scroll-animation] {
+          opacity: 0;
+          transform: translateY(50px);
+          transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        [data-scroll-animation].animate-in {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        /* Staggered animations for grid items */
+        [data-scroll-animation] .grid > * {
+          opacity: 0;
+          transform: translateY(30px);
+          transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        [data-scroll-animation].animate-in .grid > *:nth-child(1) { transition-delay: 0.1s; }
+        [data-scroll-animation].animate-in .grid > *:nth-child(2) { transition-delay: 0.2s; }
+        [data-scroll-animation].animate-in .grid > *:nth-child(3) { transition-delay: 0.3s; }
+        [data-scroll-animation].animate-in .grid > *:nth-child(4) { transition-delay: 0.4s; }
+        [data-scroll-animation].animate-in .grid > *:nth-child(5) { transition-delay: 0.5s; }
+        [data-scroll-animation].animate-in .grid > *:nth-child(6) { transition-delay: 0.6s; }
+
+        [data-scroll-animation].animate-in .grid > * {
+          opacity: 1;
+          transform: translateY(0);
         }
 
         /* Enhanced focus styles */

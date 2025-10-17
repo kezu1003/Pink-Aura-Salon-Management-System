@@ -7,6 +7,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { LikedEventsProvider, useLikedEvents } from '../context/LikedEventsContext';
 import LikedEventsIndicator from '../components/LikedEventsIndicator';
+import { useScrollAnimationMultiple } from '../hooks/useScrollAnimation';
 import { 
   MessageCircle, 
   ChevronLeft, 
@@ -27,8 +28,11 @@ import {
 // Enhanced Floating WhatsApp Component
 const FloatingWhatsApp = () => {
   const [showTooltip, setShowTooltip] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isClicked, setIsClicked] = useState(false);
 
   const handleWhatsAppClick = () => {
+    setIsClicked(true);
     const phoneNumber = "94784596755";
     const message = "Hi! I'm interested in your salon events. Could you please provide more information about upcoming events and how to register?";
     const encodedMessage = encodeURIComponent(message);
@@ -37,6 +41,7 @@ const FloatingWhatsApp = () => {
     try {
       if (window.open(whatsappUrl, '_blank')) {
         console.log("WhatsApp opened successfully");
+        toast.success("Opening WhatsApp...");
       } else {
         window.location.href = whatsappUrl;
       }
@@ -48,32 +53,72 @@ const FloatingWhatsApp = () => {
         toast.error("Please contact us at +94 78 459 6755");
       });
     }
+    
+    setTimeout(() => setIsClicked(false), 200);
   };
 
   return (
     <div className="fixed bottom-8 right-8 z-50">
+      {/* Enhanced Tooltip */}
       {showTooltip && (
-        <div className="absolute bottom-full right-0 mb-4 bg-[#4D423A] text-white px-4 py-3 rounded-2xl text-sm whitespace-nowrap shadow-2xl animate-bounce-in border-2 border-[#FBAA99]/20">
-          <div className="flex items-center space-x-2">
-            <Sparkles className="w-4 h-4 text-[#FBAA99]" />
-            <span>Chat about events!</span>
+        <div className="absolute bottom-full right-0 mb-4 bg-gradient-to-r from-[#4D423A] to-[#2D1B1B] text-white px-6 py-4 rounded-2xl text-sm whitespace-nowrap shadow-2xl animate-bounce-in border-2 border-[#FBAA99]/30 backdrop-blur-sm">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+              <MessageCircle className="w-4 h-4 text-white" />
+            </div>
+            <div>
+              <div className="font-semibold text-[#FBAA99]">Get Event Info!</div>
+              <div className="text-xs text-white/80">Click to chat with us</div>
+            </div>
           </div>
-          <div className="absolute top-full right-6 w-0 h-0 border-l-4 border-r-4 border-t-6 border-transparent border-t-[#4D423A]"></div>
+          <div className="absolute top-full right-8 w-0 h-0 border-l-4 border-r-4 border-t-6 border-transparent border-t-[#4D423A]"></div>
         </div>
       )}
 
-      <button
-        onMouseEnter={() => setShowTooltip(true)}
-        onMouseLeave={() => setShowTooltip(false)}
-        onClick={handleWhatsAppClick}
-        className="w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 rounded-full shadow-2xl hover:shadow-3xl transform hover:scale-110 transition-all duration-300 flex items-center justify-center text-white relative overflow-hidden group"
-        title="Contact us on WhatsApp about events"
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
-        <MessageCircle className="w-8 h-8 relative z-10" />
-      </button>
+      {/* Enhanced WhatsApp Button */}
+      <div className="relative">
+        {/* Pulsing Ring Animation */}
+        <div className={`absolute inset-0 rounded-full bg-green-400 animate-ping ${isHovered ? 'opacity-30' : 'opacity-20'} pointer-events-none`}></div>
+        
+        {/* Secondary Ring */}
+        <div className={`absolute inset-0 rounded-full bg-green-300 animate-pulse ${isHovered ? 'opacity-40' : 'opacity-10'} pointer-events-none`}></div>
 
-      <div className="absolute inset-0 rounded-full bg-green-400 animate-ping opacity-20 pointer-events-none"></div>
+        <button
+          onMouseEnter={() => {
+            setShowTooltip(true);
+            setIsHovered(true);
+          }}
+          onMouseLeave={() => {
+            setShowTooltip(false);
+            setIsHovered(false);
+          }}
+          onClick={handleWhatsAppClick}
+          className={`w-20 h-20 bg-gradient-to-br from-green-400 via-green-500 to-green-600 hover:from-green-500 hover:via-green-600 hover:to-green-700 rounded-full shadow-2xl hover:shadow-3xl transform transition-all duration-300 flex items-center justify-center text-white relative overflow-hidden group ${
+            isHovered ? 'scale-110' : 'scale-100'
+          } ${isClicked ? 'scale-95' : ''}`}
+          title="Contact us on WhatsApp about events"
+        >
+          {/* Shimmer Effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
+          
+          {/* WhatsApp Icon */}
+          <div className="relative z-10 flex items-center justify-center">
+            <MessageCircle className={`w-10 h-10 transition-all duration-300 ${isHovered ? 'scale-110' : 'scale-100'}`} />
+          </div>
+
+          {/* Notification Badge */}
+          <div className="absolute -top-2 -right-2 w-7 h-7 bg-red-500 rounded-full flex items-center justify-center text-sm font-bold text-white animate-bounce">
+            1
+          </div>
+
+          {/* Hover Glow Effect */}
+          <div className={`absolute inset-0 rounded-full bg-green-300 opacity-0 group-hover:opacity-20 transition-opacity duration-300 ${isHovered ? 'opacity-20' : ''}`}></div>
+        </button>
+
+        {/* Floating Particles */}
+        <div className="absolute -top-3 -left-3 w-3 h-3 bg-[#FBAA99] rounded-full animate-float opacity-60"></div>
+        <div className="absolute -bottom-2 -right-2 w-2 h-2 bg-[#FBAA99] rounded-full animate-float-delayed opacity-40"></div>
+      </div>
     </div>
   );
 };
@@ -106,17 +151,17 @@ const UserEventStatsSection = () => {
       description: "Happy participants"
     },
     {
-      icon: <Star className="w-8 h-8" />,
-      value: "4.9",
-      label: "Event Rating",
+      icon: <Clock className="w-8 h-8" />,
+      value: "3+",
+      label: "Hours Duration",
       color: "text-[#4D423A]",
       bg: "bg-[#FEF4F1]",
-      description: "Outstanding feedback"
+      description: "Per event session"
     },
   ];
 
   return (
-    <div className="mb-12">
+    <div className="mb-12" data-scroll-animation>
       <div className="text-center mb-8">
         <h3 className="text-2xl font-bold text-[#4D423A] mb-2">Why Join Pink Aura Events?</h3>
         <p className="text-[#4D423A]/70">Connect with beauty enthusiasts and learn from experts</p>
@@ -190,7 +235,7 @@ const EventHeroSection = () => {
   const goToNextSlide = () => setCurrentSlide((prev) => (prev + 1) % eventSlides.length);
 
   return (
-    <div className="mb-12">
+    <div className="mb-12" data-scroll-animation>
       <div className="relative overflow-hidden rounded-3xl shadow-2xl bg-white border-4 border-[#FEF4F1]">
         <div 
           className="flex transition-transform duration-1000 ease-in-out"
@@ -279,7 +324,7 @@ const EventSearchFilterSection = ({ searchTerm, setSearchTerm, showLikedOnly, se
   const { getLikedEventsCount } = useLikedEvents();
 
   return (
-    <div className="mb-12">
+    <div className="mb-12" data-scroll-animation>
       <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border-2 border-[#FEF4F1] p-8">
         <div className="text-center mb-6">
           <h2 className="text-3xl font-bold text-[#4D423A] mb-2">Find Your Perfect Event</h2>
@@ -362,6 +407,19 @@ const UserEventHomePageContent = () => {
   const [showLikedOnly, setShowLikedOnly] = useState(false);
   const [viewMode, setViewMode] = useState("grid");
   const { likedEvents, isEventLiked, clearAllLikedEvents, toggleLike } = useLikedEvents();
+  const visibleElements = useScrollAnimationMultiple(0.1);
+
+  // Handle scroll animations
+  useEffect(() => {
+    const elements = document.querySelectorAll('[data-scroll-animation]');
+    elements.forEach((element, index) => {
+      if (visibleElements.has(index)) {
+        element.classList.add('animate-in');
+      } else {
+        element.classList.remove('animate-in');
+      }
+    });
+  }, [visibleElements]);
 
   // Handle like toggle for list view
   const handleLikeToggle = (eventId) => {
@@ -480,13 +538,13 @@ const UserEventHomePageContent = () => {
 
           {/* Events Grid/List View */}
           {viewMode === 'grid' ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mb-12" data-scroll-animation>
               {filteredEvents.map((event) => (
                 <UserEventCard key={event._id} event={event} setEvents={setEvents} />
               ))}
             </div>
           ) : (
-            <div className="space-y-4 mb-12">
+            <div className="space-y-4 mb-12" data-scroll-animation>
               {filteredEvents.map((event) => (
                 <div key={event._id} className="bg-white/80 backdrop-blur-sm rounded-2xl border-2 border-[#FEF4F1] shadow-lg hover:shadow-xl transition-all duration-300 p-6">
                   <div className="flex flex-col lg:flex-row lg:items-center space-y-4 lg:space-y-0 lg:space-x-6">
@@ -595,11 +653,63 @@ const UserEventHomePageContent = () => {
 
         @keyframes float {
           0%, 100% {
-            transform: translateY(0px);
+            transform: translateY(0px) rotate(0deg);
+            opacity: 0.6;
           }
           50% {
-            transform: translateY(-20px);
+            transform: translateY(-10px) rotate(180deg);
+            opacity: 1;
           }
+        }
+
+        @keyframes float-delayed {
+          0%, 100% {
+            transform: translateY(0px) rotate(0deg);
+            opacity: 0.4;
+          }
+          50% {
+            transform: translateY(-8px) rotate(-180deg);
+            opacity: 0.8;
+          }
+        }
+
+        .animate-float {
+          animation: float 3s ease-in-out infinite;
+        }
+
+        .animate-float-delayed {
+          animation: float-delayed 3s ease-in-out infinite 1.5s;
+        }
+
+        /* Scroll Animation Classes */
+        [data-scroll-animation] {
+          opacity: 0;
+          transform: translateY(50px);
+          transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        [data-scroll-animation].animate-in {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        /* Staggered animations for grid items */
+        [data-scroll-animation] .grid > * {
+          opacity: 0;
+          transform: translateY(30px);
+          transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        [data-scroll-animation].animate-in .grid > *:nth-child(1) { transition-delay: 0.1s; }
+        [data-scroll-animation].animate-in .grid > *:nth-child(2) { transition-delay: 0.2s; }
+        [data-scroll-animation].animate-in .grid > *:nth-child(3) { transition-delay: 0.3s; }
+        [data-scroll-animation].animate-in .grid > *:nth-child(4) { transition-delay: 0.4s; }
+        [data-scroll-animation].animate-in .grid > *:nth-child(5) { transition-delay: 0.5s; }
+        [data-scroll-animation].animate-in .grid > *:nth-child(6) { transition-delay: 0.6s; }
+
+        [data-scroll-animation].animate-in .grid > * {
+          opacity: 1;
+          transform: translateY(0);
         }
 
         /* Enhanced focus styles */
