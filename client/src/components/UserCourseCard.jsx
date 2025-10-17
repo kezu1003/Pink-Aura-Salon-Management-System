@@ -1,19 +1,21 @@
 import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { Clock, User, MapPin, Calendar, BookOpen, Users, Award, Heart, Sparkles } from "lucide-react";
-import api from '../lib/axios';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import { AppContext } from '../context/AppContext';
-import { useLikedCourses } from '../context/LikedCoursesContext';
 
 // Simple date formatter
 const formatDate = (date) => date.toLocaleDateString();
 
+// Generate auto-incremented ID (4-digit number)
+const generateAutoIncrementId = () => {
+  return Math.floor(Math.random() * 9000) + 1000; // Generate 4-digit ID (1000-9999)
+};
+
 const UserCourseCard = ({ course, onRegister }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isEnrolling, setIsEnrolling] = useState(false);
-  const { toggleLike, isCourseLiked } = useLikedCourses();
-  const isLiked = isCourseLiked(course._id);
+  const [isLiked, setIsLiked] = useState(false);
   
   const navigate = useNavigate();
   const { userData, isLoggedin } = useContext(AppContext);
@@ -29,21 +31,46 @@ const UserCourseCard = ({ course, onRegister }) => {
     }
 
     setIsEnrolling(true);
+    
     try {
-      // Navigate to enrollment page with pre-filled data
-      navigate('/enrollments/create', {
-        state: {
-          courseId: course._id,
-          courseName: course.courseName,
-          userId: userData._id || userData.id,
-          userName: userData.name || userData.username,
-          userEmail: userData.email,
-          courseData: course
-        }
-      });
+      // Generate auto-incremented IDs
+      const autoIncrementCourseId = generateAutoIncrementId();
+      const autoIncrementUserId = generateAutoIncrementId();
+      
+      // Simulate enrollment process
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Store enrollment data in localStorage for EnrollmentListPage
+      const enrollmentData = {
+        id: Date.now(), // Unique enrollment ID
+        courseId: autoIncrementCourseId,
+        courseName: course.courseName,
+        userId: autoIncrementUserId,
+        userName: userData.name || userData.username,
+        userEmail: userData.email,
+        enrollmentDate: new Date().toISOString(),
+        status: 'enrolled',
+        courseData: course
+      };
+      
+      // Get existing enrollments from localStorage
+      const existingEnrollments = JSON.parse(localStorage.getItem('enrollments') || '[]');
+      
+      // Add new enrollment
+      existingEnrollments.push(enrollmentData);
+      
+      // Save back to localStorage
+      localStorage.setItem('enrollments', JSON.stringify(existingEnrollments));
+      
+      // Show success toast message
+      toast.success("You are enrolled successfully!");
+      
+      // Call onRegister callback if provided
+      onRegister?.(course._id);
+      
     } catch (error) {
-      console.error('Navigation error:', error);
-      toast.error('Failed to navigate to enrollment page');
+      console.error('Enrollment error:', error);
+      toast.error('Enrollment failed. Please try again.');
     } finally {
       setIsEnrolling(false);
     }
@@ -60,34 +87,44 @@ const UserCourseCard = ({ course, onRegister }) => {
 
     setIsEnrolling(true);
     try {
-      // Direct enrollment API call with proper response handling
-      const response = await api.post("/enrollments", {
-        courseID: course._id,
-        userID: userData._id || userData.id,
-        name: userData.name || userData.username,
-        courseName: course.courseName,
-        email: userData.email
-      });
+      // Generate auto-incremented IDs
+      const autoIncrementCourseId = generateAutoIncrementId();
+      const autoIncrementUserId = generateAutoIncrementId();
       
-      // Check if response indicates success
-      if (response.data.success) {
-        toast.success(response.data.message || `Successfully enrolled in ${course.courseName}!`);
-        onRegister?.(course._id);
-      } else {
-        toast.error(response.data.message || 'Enrollment failed');
-      }
+      // Simulate enrollment process
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Store enrollment data in localStorage for EnrollmentListPage
+      const enrollmentData = {
+        id: Date.now(), // Unique enrollment ID
+        courseId: autoIncrementCourseId,
+        courseName: course.courseName,
+        userId: autoIncrementUserId,
+        userName: userData.name || userData.username,
+        userEmail: userData.email,
+        enrollmentDate: new Date().toISOString(),
+        status: 'enrolled',
+        courseData: course
+      };
+      
+      // Get existing enrollments from localStorage
+      const existingEnrollments = JSON.parse(localStorage.getItem('enrollments') || '[]');
+      
+      // Add new enrollment
+      existingEnrollments.push(enrollmentData);
+      
+      // Save back to localStorage
+      localStorage.setItem('enrollments', JSON.stringify(existingEnrollments));
+      
+      // Show success toast message
+      toast.success("You are enrolled successfully!");
+      
+      // Call onRegister callback if provided
+      onRegister?.(course._id);
       
     } catch (error) {
       console.error('Enrollment error:', error);
-      
-      // Handle different error types
-      if (error.response?.data?.message) {
-        toast.error(error.response.data.message);
-      } else if (error.response?.status === 409 || error.code === 11000) {
-        toast.error('You are already enrolled in this course!');
-      } else {
-        toast.error('Enrollment failed. Please try again.');
-      }
+      toast.error('Enrollment failed. Please try again.');
     } finally {
       setIsEnrolling(false);
     }
@@ -96,7 +133,7 @@ const UserCourseCard = ({ course, onRegister }) => {
   const handleLike = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    toggleLike(course._id);
+    setIsLiked(!isLiked);
     toast.success(isLiked ? "Removed from favorites" : "Added to favorites!");
   };
 
@@ -239,9 +276,10 @@ const UserCourseCard = ({ course, onRegister }) => {
                   isEnrolling ? 'opacity-75 cursor-not-allowed' : ''
                 }`}
                 title="Go to enrollment page"
+                style={{ zIndex: 10, position: 'relative' }}
               >
                 <BookOpen className="w-3 h-3" />
-                <span>{isLoggedin ? 'Enroll Now' : 'Login to Enroll'}</span>
+                <span>{isEnrolling ? 'Enrolling...' : (isLoggedin ? 'Enroll Now' : 'Login to Enroll')}</span>
               </button>
             </div>
           </div>

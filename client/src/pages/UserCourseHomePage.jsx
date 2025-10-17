@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import UserCourseCard from "../components/UserCourseCard";
 import CoursesNotFound from "../components/CoursesNotFound";
 import api from '../lib/axios';
-import toast from "react-hot-toast";
+import { toast } from "react-toastify";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { LikedCoursesProvider, useLikedCourses } from '../context/LikedCoursesContext';

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router';
 import { Trash2, User, Mail, Hash, BookOpen, Calendar, Eye, XCircle } from 'lucide-react';
 import api from '../lib/axios';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 
 // Simple date formatter
 const formatDate = (date) => date.toLocaleDateString();
@@ -19,8 +19,13 @@ const EnrollmentCard = ({ enrollment, setEnrollments }) => {
 
     setIsCanceling(true);
     try {
-      await api.delete(`/enrollments/${id}`);
-      setEnrollments((prev) => prev.filter((enrollment) => enrollment._id !== id));
+      // Remove from localStorage
+      const storedEnrollments = JSON.parse(localStorage.getItem('enrollments') || '[]');
+      const updatedEnrollments = storedEnrollments.filter((enrollment) => enrollment.id !== id);
+      localStorage.setItem('enrollments', JSON.stringify(updatedEnrollments));
+      
+      // Update state
+      setEnrollments((prev) => prev.filter((enrollment) => enrollment.id !== id));
       toast.success("Enrollment canceled successfully");
     } catch (error) {
       console.log("Error in handleCancel", error);
@@ -37,7 +42,7 @@ const EnrollmentCard = ({ enrollment, setEnrollments }) => {
       onMouseLeave={() => setIsHovered(false)}
     >
       <Link
-        to={`/enrollments/${enrollment._id}`}
+        to={`/enrollments/${enrollment.id}`}
         className="block relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border-2 border-[#FEF4F1] hover:border-[#FBAA99]"
       >
         {/* Gradient overlay on hover */}
@@ -54,19 +59,19 @@ const EnrollmentCard = ({ enrollment, setEnrollments }) => {
             <div className="flex items-center space-x-4 flex-1 min-w-0">
               {/* Student Avatar */}
               <div className="w-14 h-14 bg-gradient-to-br from-[#FBAA99] to-[#4D423A] rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
-                {enrollment.name?.charAt(0)?.toUpperCase() || 'S'}
+                {enrollment.userName?.charAt(0)?.toUpperCase() || 'S'}
               </div>
 
               {/* Student Info */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center space-x-3 mb-1">
                   <h3 className="text-xl font-bold text-[#4D423A] group-hover:text-[#FBAA99] transition-colors duration-300 truncate">
-                    {enrollment.name}
+                    {enrollment.userName}
                   </h3>
                 </div>
                 <div className="flex items-center text-sm text-[#4D423A]/60">
                   <Calendar className="w-4 h-4 mr-1 flex-shrink-0" />
-                  <span>Enrolled: {enrollment.createdAt ? formatDate(new Date(enrollment.createdAt)) : "Recently"}</span>
+                  <span>Enrolled: {enrollment.enrollmentDate ? formatDate(new Date(enrollment.enrollmentDate)) : "Recently"}</span>
                 </div>
               </div>
             </div>
@@ -80,7 +85,7 @@ const EnrollmentCard = ({ enrollment, setEnrollments }) => {
                 </div>
                 <div className="min-w-0">
                   <div className="text-xs text-[#4D423A]/60 font-medium">Username</div>
-                  <div className="text-sm font-bold text-[#4D423A] truncate">{enrollment.name}</div>
+                  <div className="text-sm font-bold text-[#4D423A] truncate">{enrollment.userName}</div>
                 </div>
               </div>
 
@@ -91,7 +96,7 @@ const EnrollmentCard = ({ enrollment, setEnrollments }) => {
                 </div>
                 <div className="min-w-0">
                   <div className="text-xs text-[#4D423A]/60 font-medium">User ID</div>
-                  <div className="text-sm font-bold text-[#4D423A] truncate">{enrollment.userID}</div>
+                  <div className="text-sm font-bold text-[#4D423A] truncate">{enrollment.userId}</div>
                 </div>
               </div>
 
@@ -102,7 +107,7 @@ const EnrollmentCard = ({ enrollment, setEnrollments }) => {
                 </div>
                 <div className="min-w-0">
                   <div className="text-xs text-[#4D423A]/60 font-medium">Course ID</div>
-                  <div className="text-sm font-bold text-[#4D423A] truncate">{enrollment.courseID}</div>
+                  <div className="text-sm font-bold text-[#4D423A] truncate">{enrollment.courseId}</div>
                 </div>
               </div>
 
@@ -156,7 +161,7 @@ const EnrollmentCard = ({ enrollment, setEnrollments }) => {
                 <User className="w-4 h-4 text-[#4D423A] flex-shrink-0" />
                 <div className="min-w-0">
                   <div className="text-xs text-[#4D423A]/60 font-medium">Username</div>
-                  <div className="text-sm font-bold text-[#4D423A] truncate">{enrollment.name}</div>
+                  <div className="text-sm font-bold text-[#4D423A] truncate">{enrollment.userName}</div>
                 </div>
               </div>
 
@@ -183,7 +188,7 @@ const EnrollmentCard = ({ enrollment, setEnrollments }) => {
                 <Hash className="w-4 h-4 text-[#4D423A] flex-shrink-0" />
                 <div className="min-w-0">
                   <div className="text-xs text-[#4D423A]/60 font-medium">User ID</div>
-                  <div className="text-sm font-bold text-[#4D423A] truncate">{enrollment.userID}</div>
+                  <div className="text-sm font-bold text-[#4D423A] truncate">{enrollment.userId}</div>
                 </div>
               </div>
 
@@ -192,7 +197,7 @@ const EnrollmentCard = ({ enrollment, setEnrollments }) => {
                 <Hash className="w-4 h-4 text-[#4D423A] flex-shrink-0" />
                 <div className="min-w-0">
                   <div className="text-xs text-[#4D423A]/60 font-medium">Course ID</div>
-                  <div className="text-sm font-bold text-[#4D423A] truncate">{enrollment.courseID}</div>
+                  <div className="text-sm font-bold text-[#4D423A] truncate">{enrollment.courseId}</div>
                 </div>
               </div>
             </div>

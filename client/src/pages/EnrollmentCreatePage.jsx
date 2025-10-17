@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { ArrowLeft, BookOpen, User, Mail, Hash, Sparkles, Save, X, UserCheck, Search, Users, BookMarked } from "lucide-react";
-import toast from "react-hot-toast";
+import { toast } from "react-toastify";
 import { Link, useNavigate, useLocation } from "react-router";
 import api from "../lib/axios";
 import { AppContext } from "../context/AppContext"; 

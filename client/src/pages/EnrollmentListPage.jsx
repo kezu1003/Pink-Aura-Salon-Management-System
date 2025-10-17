@@ -2,7 +2,7 @@ import {useEffect, useState } from "react";
 import { Link } from 'react-router';
 import EnrollmentCard from '../components/EnrollmentCard'; 
 import api from '../lib/axios';
-import toast from "react-hot-toast";
+import { toast } from "react-toastify";
 import { 
   SearchIcon, 
   XIcon, 
@@ -77,22 +77,26 @@ const EnrollmentListPage = () => {
   const goToPrevSlide = () => setCurrentSlide((prev) => (prev - 1 + enrollmentSlideImages.length) % enrollmentSlideImages.length);
   const goToNextSlide = () => setCurrentSlide((prev) => (prev + 1) % enrollmentSlideImages.length);
 
-  // Fetch enrollments
+  // Fetch enrollments from localStorage
   useEffect(() => {
-    const fetchEnrollments = async () => {
+    const fetchEnrollments = () => {
       try {
-        const res = await api.get("/enrollments");
-        console.log(res.data);
-        setEnrollments(res.data);
-        setFilteredEnrollments(res.data);
+        // Get enrollments from localStorage
+        const storedEnrollments = JSON.parse(localStorage.getItem('enrollments') || '[]');
+        console.log('Stored enrollments:', storedEnrollments);
+        setEnrollments(storedEnrollments);
+        setFilteredEnrollments(storedEnrollments);
       } catch (error) {
-        console.log("Error fetching enrollments");
-        console.log(error.response);
+        console.log("Error fetching enrollments from localStorage");
+        console.log(error);
         toast.error("Failed to fetch enrollments");
+        setEnrollments([]);
+        setFilteredEnrollments([]);
       } finally {
         setLoading(false);
       }
     };
+
     fetchEnrollments();
   }, []);
 
@@ -104,7 +108,7 @@ const EnrollmentListPage = () => {
     return () => clearTimeout(delayedSearch);
   }, [searchQuery]);
 
-  const handleSearch = async () => {
+  const handleSearch = () => {
     if (!searchQuery.trim()) {
       setFilteredEnrollments(enrollments);
       return;
@@ -113,27 +117,14 @@ const EnrollmentListPage = () => {
     setSearching(true);
 
     try {
-      let filtered = enrollments;
-
-      // Filter by search query
-      if (searchQuery.trim()) {
-        if (enrollments.length > 0) {
-          // Try backend search first if available
-          try {
-            const res = await api.get(`/enrollments/search?q=${encodeURIComponent(searchQuery)}`);
-            filtered = res.data;
-          } catch (error) {
-            // Fall back to client-side search
-            filtered = filtered.filter(enrollment =>
-              enrollment.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              enrollment.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              enrollment.courseName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              enrollment.courseID?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              enrollment.userID?.toLowerCase().includes(searchQuery.toLowerCase())
-            );
-          }
-        }
-      }
+      // Client-side search for localStorage data
+      const filtered = enrollments.filter(enrollment =>
+        enrollment.userName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        enrollment.userEmail?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        enrollment.courseName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        enrollment.courseId?.toString().includes(searchQuery) ||
+        enrollment.userId?.toString().includes(searchQuery)
+      );
 
       setFilteredEnrollments(filtered);
     } catch (error) {

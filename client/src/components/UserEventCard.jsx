@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router';
 import { CalendarCheck, Clock, MapPin, Calendar, Users, Star, Heart, Sparkles } from "lucide-react";
 import api from '../lib/axios';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import { useLikedEvents } from '../context/LikedEventsContext';
 
 // Simple date formatter

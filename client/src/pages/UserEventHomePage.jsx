@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import UserEventCard from '../components/UserEventCard';
 import EventsNotFound from "../components/EventNotFound";
 import api from '../lib/axios';
-import toast from "react-hot-toast";
+import { toast } from "react-toastify";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { LikedEventsProvider, useLikedEvents } from '../context/LikedEventsContext';
