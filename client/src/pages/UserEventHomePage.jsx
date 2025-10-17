@@ -5,6 +5,8 @@ import api from '../lib/axios';
 import toast from "react-hot-toast";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { LikedEventsProvider, useLikedEvents } from '../context/LikedEventsContext';
+import LikedEventsIndicator from '../components/LikedEventsIndicator';
 import { 
   MessageCircle, 
   ChevronLeft, 
@@ -272,8 +274,9 @@ const EventHeroSection = () => {
   );
 };
 
-// Search Section
-const EventSearchFilterSection = ({ searchTerm, setSearchTerm }) => {
+// Search and Filter Section
+const EventSearchFilterSection = ({ searchTerm, setSearchTerm, showLikedOnly, setShowLikedOnly }) => {
+  const { getLikedEventsCount } = useLikedEvents();
 
   return (
     <div className="mb-12">
@@ -294,16 +297,38 @@ const EventSearchFilterSection = ({ searchTerm, setSearchTerm }) => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
+          
+          {/* Filter Buttons */}
+          <div className="flex gap-3">
+            <button
+              onClick={() => setShowLikedOnly(!showLikedOnly)}
+              className={`px-6 py-4 rounded-2xl font-semibold transition-all duration-300 flex items-center space-x-2 ${
+                showLikedOnly
+                  ? 'bg-[#FBAA99] text-white shadow-lg'
+                  : 'bg-[#FEF4F1] text-[#4D423A] hover:bg-[#FBAA99]/20 hover:text-[#FBAA99] border-2 border-[#FEF4F1] hover:border-[#FBAA99]/30'
+              }`}
+            >
+              <Heart className={`w-5 h-5 ${showLikedOnly ? 'fill-current' : ''}`} />
+              <span>Liked Events</span>
+              {getLikedEventsCount() > 0 && (
+                <span className="bg-white/20 text-xs px-2 py-1 rounded-full">
+                  {getLikedEventsCount()}
+                </span>
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-const UserEventHomePage = () => {
+const UserEventHomePageContent = () => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showLikedOnly, setShowLikedOnly] = useState(false);
+  const { likedEvents, isEventLiked, clearAllLikedEvents } = useLikedEvents();
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -323,14 +348,16 @@ const UserEventHomePage = () => {
     fetchEvents();
   }, []);
 
-  // Filter events based on search
+  // Filter events based on search and liked filter
   const filteredEvents = events.filter((event) => {
     const matchesSearch = !searchTerm || 
       event.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       event.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       event.venue?.toLowerCase().includes(searchTerm.toLowerCase());
     
-    return matchesSearch;
+    const matchesLikedFilter = !showLikedOnly || isEventLiked(event._id);
+    
+    return matchesSearch && matchesLikedFilter;
   });
 
   if (loading) {
@@ -365,27 +392,45 @@ const UserEventHomePage = () => {
           {/* Stats Section */}
           <UserEventStatsSection />
           
-          {/* Search */}
+          {/* Search and Filter */}
           <EventSearchFilterSection 
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
+            showLikedOnly={showLikedOnly}
+            setShowLikedOnly={setShowLikedOnly}
           />
 
           {/* Event Results Header */}
           <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <h2 className="text-3xl font-bold text-[#4D423A] mb-2">
-                {searchTerm 
-                  ? `${filteredEvents.length} Event${filteredEvents.length !== 1 ? 's' : ''} Found`
-                  : "Upcoming Events"}
+                {showLikedOnly 
+                  ? `Your Liked Events (${filteredEvents.length})`
+                  : searchTerm 
+                    ? `${filteredEvents.length} Event${filteredEvents.length !== 1 ? 's' : ''} Found`
+                    : "Upcoming Events"}
               </h2>
               <p className="text-[#4D423A]/70">
-                {searchTerm
-                  ? "Matching your search criteria"
-                  : "Join us for exciting beauty experiences and learning opportunities"}
+                {showLikedOnly
+                  ? "Events you've marked as favorites"
+                  : searchTerm
+                    ? "Matching your search criteria"
+                    : "Join us for exciting beauty experiences and learning opportunities"}
               </p>
             </div>
             <div className="flex items-center gap-3">
+              <LikedEventsIndicator className="bg-[#FEF4F1] px-4 py-2 rounded-full border-2 border-[#FBAA99]/30" />
+              {showLikedOnly && likedEvents.length > 0 && (
+                <button
+                  onClick={() => {
+                    clearAllLikedEvents();
+                    toast.success("All liked events cleared!");
+                  }}
+                  className="text-sm font-medium text-red-600 bg-red-50 px-4 py-2 rounded-full border-2 border-red-200 hover:bg-red-100 transition-colors duration-200"
+                >
+                  Clear All
+                </button>
+              )}
               <div className="text-sm font-medium text-[#4D423A] bg-[#FEF4F1] px-4 py-2 rounded-full border-2 border-[#FBAA99]/30">
                 {events.length} Total Events Available
               </div>
@@ -471,6 +516,14 @@ const UserEventHomePage = () => {
       `}</style>
       <Footer />
     </div>
+  );
+};
+
+const UserEventHomePage = () => {
+  return (
+    <LikedEventsProvider>
+      <UserEventHomePageContent />
+    </LikedEventsProvider>
   );
 };
 

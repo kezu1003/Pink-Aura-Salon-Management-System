@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import { CalendarCheck, Clock, MapPin, Calendar, Users, Star, Heart, Sparkles } from "lucide-react";
 import api from '../lib/axios';
 import toast from 'react-hot-toast';
+import { useLikedEvents } from '../context/LikedEventsContext';
 
 // Simple date formatter
 const formatDate = (date) => date.toLocaleDateString();
@@ -10,7 +11,8 @@ const formatDate = (date) => date.toLocaleDateString();
 const UserEventCard = ({ event, onRegister }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
+  const { toggleLike, isEventLiked } = useLikedEvents();
+  const isLiked = isEventLiked(event._id);
 
   const handleRegistration = async (e) => {
     e.preventDefault();
@@ -32,7 +34,7 @@ const UserEventCard = ({ event, onRegister }) => {
   const handleLike = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsLiked(!isLiked);
+    toggleLike(event._id);
     toast.success(isLiked ? "Removed from wishlist" : "Added to wishlist!");
   };
 
