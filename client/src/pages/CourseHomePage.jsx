@@ -168,6 +168,25 @@ const CourseHomePage = () => {
     setSelectedCategory("All Categories");
   };
 
+  const handleDeleteCourse = async (courseId) => {
+    if (!window.confirm("Are you sure you want to delete this course? This action cannot be undone.")) {
+      return;
+    }
+
+    try {
+      await api.delete(`/courses/${courseId}`);
+      toast.success("Course deleted successfully");
+      
+      // Refresh the courses list
+      const res = await api.get("/courses");
+      setCourses(res.data);
+      setFilteredCourses(res.data);
+    } catch (error) {
+      console.error("Delete error:", error);
+      toast.error("Failed to delete course");
+    }
+  };
+
   // Admin Stats Component
   const AdminStatsGrid = () => {
     const stats = [
@@ -410,22 +429,29 @@ const CourseHomePage = () => {
                 <div className="flex border-2 border-[#FEF4F1] rounded-xl overflow-hidden bg-[#FEF4F1]/50 backdrop-blur-sm">
                   <button
                     onClick={() => setViewMode('grid')}
-                    className={`px-4 py-4 transition-all duration-200 ${
-                      viewMode === 'grid' ? 'bg-gradient-to-r from-[#FBAA99] to-[#4D423A] text-white' : 'text-[#4D423A] hover:bg-[#FBAA99]/10'
+                    className={`px-4 py-4 transition-all duration-200 flex items-center justify-center ${
+                      viewMode === 'grid' ? 'bg-gradient-to-r from-[#FBAA99] to-[#4D423A] text-white shadow-lg' : 'text-[#4D423A] hover:bg-[#FBAA99]/10'
                     }`}
+                    title="Grid View"
                   >
-                    <div className="w-5 h-5 border-2 border-current rounded"></div>
+                    <div className="grid grid-cols-2 gap-1 w-5 h-5">
+                      <div className="bg-current rounded-sm"></div>
+                      <div className="bg-current rounded-sm"></div>
+                      <div className="bg-current rounded-sm"></div>
+                      <div className="bg-current rounded-sm"></div>
+                    </div>
                   </button>
                   <button
                     onClick={() => setViewMode('list')}
-                    className={`px-4 py-4 transition-all duration-200 ${
-                      viewMode === 'list' ? 'bg-gradient-to-r from-[#FBAA99] to-[#4D423A] text-white' : 'text-[#4D423A] hover:bg-[#FBAA99]/10'
+                    className={`px-4 py-4 transition-all duration-200 flex items-center justify-center ${
+                      viewMode === 'list' ? 'bg-gradient-to-r from-[#FBAA99] to-[#4D423A] text-white shadow-lg' : 'text-[#4D423A] hover:bg-[#FBAA99]/10'
                     }`}
+                    title="List View"
                   >
-                    <div className="space-y-1">
-                      <div className="w-5 h-1 bg-current rounded"></div>
-                      <div className="w-5 h-1 bg-current rounded"></div>
-                      <div className="w-5 h-1 bg-current rounded"></div>
+                    <div className="space-y-1 w-5 h-5">
+                      <div className="w-full h-1 bg-current rounded"></div>
+                      <div className="w-full h-1 bg-current rounded"></div>
+                      <div className="w-full h-1 bg-current rounded"></div>
                     </div>
                   </button>
                 </div>
@@ -545,12 +571,68 @@ const CourseHomePage = () => {
             </div>
           </div>
 
-          {/* Courses Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mb-8">
-            {filteredCourses.map((course) => (
-              <CourseCard key={course._id} course={course} />
-            ))}
-          </div>
+          {/* Courses Grid/List View */}
+          {viewMode === 'grid' ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mb-8">
+              {filteredCourses.map((course) => (
+                <CourseCard key={course._id} course={course} />
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-4 mb-8">
+              {filteredCourses.map((course) => (
+                <div key={course._id} className="bg-white/80 backdrop-blur-sm rounded-2xl border-2 border-[#FEF4F1] shadow-lg hover:shadow-xl transition-all duration-300 p-6">
+                  <div className="flex items-center space-x-6">
+                    {/* Course Image/Icon */}
+                    <div className="w-20 h-20 bg-gradient-to-br from-[#FBAA99] to-[#4D423A] rounded-xl flex items-center justify-center flex-shrink-0">
+                      <BookOpen className="w-8 h-8 text-white" />
+                    </div>
+                    
+                    {/* Course Info */}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-xl font-bold text-[#4D423A] mb-2 truncate">{course.courseName}</h3>
+                      <p className="text-[#4D423A]/70 mb-3 line-clamp-2">{course.description}</p>
+                      
+                      {/* Course Details */}
+                      <div className="flex flex-wrap items-center gap-4 text-sm text-[#4D423A]/60">
+                        <div className="flex items-center space-x-1">
+                          <Clock className="w-4 h-4" />
+                          <span>{course.duration}</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <Users className="w-4 h-4" />
+                          <span>{course.instructorName}</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <Globe className="w-4 h-4" />
+                          <span>{course.location}</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Action Buttons */}
+                    <div className="flex space-x-2 flex-shrink-0">
+                      <button className="px-4 py-2 bg-gradient-to-r from-[#FBAA99] to-[#4D423A] text-white rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 flex items-center space-x-1 shadow-lg">
+                        <Edit3 className="w-4 h-4" />
+                        <span>Edit</span>
+                      </button>
+                      <button className="px-4 py-2 bg-gradient-to-r from-[#4D423A] to-[#000000] text-white rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 flex items-center space-x-1 shadow-lg">
+                        <Eye className="w-4 h-4" />
+                        <span>View</span>
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteCourse(course._id)}
+                        className="px-4 py-2 bg-gradient-to-r from-red-500 to-red-700 hover:from-red-600 hover:to-red-800 text-white rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 flex items-center space-x-1 shadow-lg"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        <span>Delete</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* Empty States */}
           {filteredCourses.length === 0 && !loading && !searching && (

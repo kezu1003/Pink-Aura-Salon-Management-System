@@ -54,27 +54,27 @@ const CourseCard = ({ course, setCourses }) => {
           <div className={`absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[200%] transition-transform duration-700`}></div>
         </div>
 
-        <div className="p-6 relative z-20">
+        <div className="p-6 relative z-20 min-h-[400px]">
           {/* Header Section */}
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center space-x-3">
+          <div className="flex items-start justify-between mb-5">
+            <div className="flex items-center space-x-3 flex-1 min-w-0">
               {/* Course Avatar */}
-              <div className="w-12 h-12 bg-gradient-to-br from-[#FBAA99] to-[#4D423A] rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg group-hover:scale-110 transition-transform duration-300">
+              <div className="w-12 h-12 bg-gradient-to-br from-[#FBAA99] to-[#4D423A] rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
                 {course.courseName?.charAt(0) || 'C'}
               </div>
-              <div>
-                <h3 className="text-xl font-bold text-[#4D423A] group-hover:text-[#FBAA99] transition-colors duration-300 line-clamp-1">
+              <div className="flex-1 min-w-0">
+                <h3 className="text-xl font-bold text-[#4D423A] group-hover:text-[#FBAA99] transition-colors duration-300 line-clamp-2 leading-tight">
                   {course.courseName}
                 </h3>
                 <div className="flex items-center text-sm text-[#4D423A]/60 mt-1">
-                  <Calendar className="w-4 h-4 mr-1" />
-                  <span>{course.createdAt ? formatDate(new Date(course.createdAt)) : "Recently added"}</span>
+                  <Calendar className="w-4 h-4 mr-1 flex-shrink-0" />
+                  <span className="truncate">{course.createdAt ? formatDate(new Date(course.createdAt)) : "Recently added"}</span>
                 </div>
               </div>
             </div>
             
             {/* Status Badge */}
-            <div className="flex items-center space-x-1">
+            <div className="flex items-center space-x-1 flex-shrink-0 ml-2">
               <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
               <span className="text-xs text-green-600 font-medium bg-green-50 px-2 py-1 rounded-full">Active</span>
             </div>
@@ -82,64 +82,64 @@ const CourseCard = ({ course, setCourses }) => {
 
           {/* Description */}
           <div className="mb-6">
-            <p className="text-[#4D423A]/80 line-clamp-2 leading-relaxed text-sm">
+            <p className="text-[#4D423A]/80 line-clamp-3 leading-relaxed text-sm">
               {course.description || "Comprehensive beauty course designed to enhance your professional skills and career opportunities."}
             </p>
           </div>
 
           {/* Course Details Grid */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="grid grid-cols-2 gap-3 mb-6">
             {/* Duration */}
-            <div className="flex items-center space-x-2 p-3 bg-[#FEF4F1] rounded-xl hover:bg-[#FBAA99]/10 transition-colors duration-200 border border-[#FBAA99]/20">
-              <div className="w-8 h-8 bg-gradient-to-br from-[#FBAA99]/20 to-[#4D423A]/20 rounded-lg flex items-center justify-center">
-                <Clock className="w-4 h-4 text-[#4D423A]" />
+            <div className="flex items-start space-x-3 p-4 bg-[#FEF4F1] rounded-xl hover:bg-[#FBAA99]/10 transition-colors duration-200 border border-[#FBAA99]/20 min-h-[80px]">
+              <div className="w-10 h-10 bg-gradient-to-br from-[#FBAA99]/20 to-[#4D423A]/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Clock className="w-5 h-5 text-[#4D423A]" />
               </div>
-              <div>
-                <div className="text-xs text-[#4D423A]/60 font-medium">Duration</div>
-                <div className="text-sm font-bold text-[#4D423A] truncate">{course.duration || "12 weeks"}</div>
+              <div className="flex-1 min-w-0">
+                <div className="text-xs text-[#4D423A]/60 font-medium mb-1">Duration</div>
+                <div className="text-sm font-bold text-[#4D423A] leading-tight break-words">{course.duration || "12 weeks"}</div>
               </div>
             </div>
 
             {/* Instructor */}
-            <div className="flex items-center space-x-2 p-3 bg-[#FEF4F1] rounded-xl hover:bg-[#FBAA99]/10 transition-colors duration-200 border border-[#FBAA99]/20">
-              <div className="w-8 h-8 bg-gradient-to-br from-[#FBAA99]/20 to-[#4D423A]/20 rounded-lg flex items-center justify-center">
-                <User className="w-4 h-4 text-[#4D423A]" />
+            <div className="flex items-start space-x-3 p-4 bg-[#FEF4F1] rounded-xl hover:bg-[#FBAA99]/10 transition-colors duration-200 border border-[#FBAA99]/20 min-h-[80px]">
+              <div className="w-10 h-10 bg-gradient-to-br from-[#FBAA99]/20 to-[#4D423A]/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <User className="w-5 h-5 text-[#4D423A]" />
               </div>
-              <div>
-                <div className="text-xs text-[#4D423A]/60 font-medium">Instructor</div>
-                <div className="text-sm font-bold text-[#4D423A] truncate">{course.instructorName || "Expert Tutor"}</div>
+              <div className="flex-1 min-w-0">
+                <div className="text-xs text-[#4D423A]/60 font-medium mb-1">Instructor</div>
+                <div className="text-sm font-bold text-[#4D423A] leading-tight break-words">{course.instructorName || "Expert Tutor"}</div>
               </div>
             </div>
 
             {/* Location */}
-            <div className="flex items-center space-x-2 p-3 bg-[#FEF4F1] rounded-xl hover:bg-[#FBAA99]/10 transition-colors duration-200 border border-[#FBAA99]/20">
-              <div className="w-8 h-8 bg-gradient-to-br from-[#FBAA99]/20 to-[#4D423A]/20 rounded-lg flex items-center justify-center">
-                <MapPin className="w-4 h-4 text-[#4D423A]" />
+            <div className="flex items-start space-x-3 p-4 bg-[#FEF4F1] rounded-xl hover:bg-[#FBAA99]/10 transition-colors duration-200 border border-[#FBAA99]/20 min-h-[80px]">
+              <div className="w-10 h-10 bg-gradient-to-br from-[#FBAA99]/20 to-[#4D423A]/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <MapPin className="w-5 h-5 text-[#4D423A]" />
               </div>
-              <div>
-                <div className="text-xs text-[#4D423A]/60 font-medium">Location</div>
-                <div className="text-sm font-bold text-[#4D423A] truncate">{course.location || "Beauty Academy"}</div>
+              <div className="flex-1 min-w-0">
+                <div className="text-xs text-[#4D423A]/60 font-medium mb-1">Location</div>
+                <div className="text-sm font-bold text-[#4D423A] leading-tight break-words">{course.location || "Beauty Academy"}</div>
               </div>
             </div>
 
             {/* Schedule */}
-            <div className="flex items-center space-x-2 p-3 bg-[#FEF4F1] rounded-xl hover:bg-[#FBAA99]/10 transition-colors duration-200 border border-[#FBAA99]/20">
-              <div className="w-8 h-8 bg-gradient-to-br from-[#FBAA99]/20 to-[#4D423A]/20 rounded-lg flex items-center justify-center">
-                <BookOpen className="w-4 h-4 text-[#4D423A]" />
+            <div className="flex items-start space-x-3 p-4 bg-[#FEF4F1] rounded-xl hover:bg-[#FBAA99]/10 transition-colors duration-200 border border-[#FBAA99]/20 min-h-[80px]">
+              <div className="w-10 h-10 bg-gradient-to-br from-[#FBAA99]/20 to-[#4D423A]/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <BookOpen className="w-5 h-5 text-[#4D423A]" />
               </div>
-              <div>
-                <div className="text-xs text-[#4D423A]/60 font-medium">Schedule</div>
-                <div className="text-sm font-bold text-[#4D423A] truncate">{course.schedule || "Weekdays"}</div>
+              <div className="flex-1 min-w-0">
+                <div className="text-xs text-[#4D423A]/60 font-medium mb-1">Schedule</div>
+                <div className="text-sm font-bold text-[#4D423A] leading-tight break-words">{course.schedule || "Weekdays"}</div>
               </div>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mt-auto">
             {/* View Course Button */}
             <button className="flex-1 px-4 py-3 bg-gradient-to-r from-[#FBAA99] to-[#4D423A] hover:from-[#4D423A] hover:to-[#000000] text-white rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2 shadow-lg mr-3">
               <Eye className="w-4 h-4" />
-              <span>View Course</span>
+              <span className="text-sm">View Course</span>
             </button>
 
             {/* Action Buttons */}
