@@ -4,6 +4,7 @@ import { Clock, User, MapPin, Calendar, BookOpen, Users, Award, Heart, Sparkles 
 import api from '../lib/axios';
 import toast from 'react-hot-toast';
 import { AppContext } from '../context/AppContext';
+import { useLikedCourses } from '../context/LikedCoursesContext';
 
 // Simple date formatter
 const formatDate = (date) => date.toLocaleDateString();
@@ -11,7 +12,8 @@ const formatDate = (date) => date.toLocaleDateString();
 const UserCourseCard = ({ course, onRegister }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isEnrolling, setIsEnrolling] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
+  const { toggleLike, isCourseLiked } = useLikedCourses();
+  const isLiked = isCourseLiked(course._id);
   
   const navigate = useNavigate();
   const { userData, isLoggedin } = useContext(AppContext);
@@ -94,7 +96,7 @@ const UserCourseCard = ({ course, onRegister }) => {
   const handleLike = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsLiked(!isLiked);
+    toggleLike(course._id);
     toast.success(isLiked ? "Removed from favorites" : "Added to favorites!");
   };
 

@@ -5,6 +5,8 @@ import api from '../lib/axios';
 import toast from "react-hot-toast";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { LikedCoursesProvider, useLikedCourses } from '../context/LikedCoursesContext';
+import LikedCoursesIndicator from '../components/LikedCoursesIndicator';
 import { 
   MessageCircle, 
   ChevronLeft, 
@@ -272,8 +274,10 @@ const HeroSection = () => {
   );
 };
 
-// Search Section
-const SearchFilterSection = ({ searchTerm, setSearchTerm }) => {
+// Search and Filter Section
+const SearchFilterSection = ({ searchTerm, setSearchTerm, showLikedOnly, setShowLikedOnly }) => {
+  const { getLikedCoursesCount } = useLikedCourses();
+
   return (
     <div className="mb-12">
       <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border-2 border-[#FEF4F1] p-8">
@@ -293,16 +297,38 @@ const SearchFilterSection = ({ searchTerm, setSearchTerm }) => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
+          
+          {/* Filter Buttons */}
+          <div className="flex gap-3">
+            <button
+              onClick={() => setShowLikedOnly(!showLikedOnly)}
+              className={`px-6 py-4 rounded-2xl font-semibold transition-all duration-300 flex items-center space-x-2 ${
+                showLikedOnly
+                  ? 'bg-[#FBAA99] text-white shadow-lg'
+                  : 'bg-[#FEF4F1] text-[#4D423A] hover:bg-[#FBAA99]/20 hover:text-[#FBAA99] border-2 border-[#FEF4F1] hover:border-[#FBAA99]/30'
+              }`}
+            >
+              <Heart className={`w-5 h-5 ${showLikedOnly ? 'fill-current' : ''}`} />
+              <span>Liked Courses</span>
+              {getLikedCoursesCount() > 0 && (
+                <span className="bg-white/20 text-xs px-2 py-1 rounded-full">
+                  {getLikedCoursesCount()}
+                </span>
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 
-const UserCourseHomePage = () => {
+const UserCourseHomePageContent = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [showLikedOnly, setShowLikedOnly] = useState(false);
+  const { likedCourses, isCourseLiked, clearAllLikedCourses } = useLikedCourses();
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -322,13 +348,15 @@ const UserCourseHomePage = () => {
     fetchCourses();
   }, []);
 
-  // Filter courses based on search
+  // Filter courses based on search and liked filter
   const filteredCourses = courses.filter((course) => {
     const matchesSearch = !searchTerm || 
       course.courseName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       course.description?.toLowerCase().includes(searchTerm.toLowerCase());
     
-    return matchesSearch;
+    const matchesLikedFilter = !showLikedOnly || isCourseLiked(course._id);
+    
+    return matchesSearch && matchesLikedFilter;
   });
 
   if (loading) {
@@ -364,27 +392,45 @@ const UserCourseHomePage = () => {
           {/* Stats Section */}
           <UserStatsSection />
           
-          {/* Search */}
+          {/* Search and Filter */}
           <SearchFilterSection 
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
+            showLikedOnly={showLikedOnly}
+            setShowLikedOnly={setShowLikedOnly}
           />
 
           {/* Course Results Header */}
           <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <h2 className="text-3xl font-bold text-[#4D423A] mb-2">
-                {searchTerm 
-                  ? `${filteredCourses.length} Course${filteredCourses.length !== 1 ? 's' : ''} Found`
-                  : "Available Courses"}
+                {showLikedOnly 
+                  ? `Your Liked Courses (${filteredCourses.length})`
+                  : searchTerm 
+                    ? `${filteredCourses.length} Course${filteredCourses.length !== 1 ? 's' : ''} Found`
+                    : "Available Courses"}
               </h2>
               <p className="text-[#4D423A]/70">
-                {searchTerm
-                  ? "Matching your search criteria"
-                  : "Choose from our comprehensive beauty training programs"}
+                {showLikedOnly
+                  ? "Courses you've marked as favorites"
+                  : searchTerm
+                    ? "Matching your search criteria"
+                    : "Choose from our comprehensive beauty training programs"}
               </p>
             </div>
             <div className="flex items-center gap-3">
+              <LikedCoursesIndicator className="bg-[#FEF4F1] px-4 py-2 rounded-full border-2 border-[#FBAA99]/30" />
+              {showLikedOnly && likedCourses.length > 0 && (
+                <button
+                  onClick={() => {
+                    clearAllLikedCourses();
+                    toast.success("All liked courses cleared!");
+                  }}
+                  className="text-sm font-medium text-red-600 bg-red-50 px-4 py-2 rounded-full border-2 border-red-200 hover:bg-red-100 transition-colors duration-200"
+                >
+                  Clear All
+                </button>
+              )}
               <div className="text-sm font-medium text-[#4D423A] bg-[#FEF4F1] px-4 py-2 rounded-full border-2 border-[#FBAA99]/30">
                 {courses.length} Total Courses Available
               </div>
@@ -470,6 +516,14 @@ const UserCourseHomePage = () => {
       `}</style>
       <Footer />
     </div>
+  );
+};
+
+const UserCourseHomePage = () => {
+  return (
+    <LikedCoursesProvider>
+      <UserCourseHomePageContent />
+    </LikedCoursesProvider>
   );
 };
 
