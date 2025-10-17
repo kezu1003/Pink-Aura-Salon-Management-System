@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from 'react-router-dom'; 
 import CourseCard from '../components/CourseCard'; 
 import CoursesNotFound from '../components/CoursesNotFound';
+import Footer from '../components/Footer';
 import api from '../lib/axios';
 import toast from "react-hot-toast";
 import { useScrollAnimationMultiple } from '../hooks/useScrollAnimation';
@@ -207,27 +208,48 @@ const CourseHomePage = () => {
       { icon: <BookOpen className="w-8 h-8" />, label: "Total Courses", value: courses.length || "0", color: "text-[#FBAA99]", bg: "bg-[#FEF4F1]" },
       { icon: <Users className="w-8 h-8" />, label: "Active Students", value: "1,247", color: "text-[#4D423A]", bg: "bg-[#FEF4F1]" },
       { icon: <Award className="w-8 h-8" />, label: "Certificates Issued", value: "892", color: "text-[#FBAA99]", bg: "bg-[#FEF4F1]" },
-      { icon: <TrendingUp className="w-8 h-8" />, label: "Success Rate", value: "94%", color: "text-[#4D423A]", bg: "bg-[#FEF4F1]" }
+      { icon: <FileText className="w-8 h-8" />, label: "Issue Certificates", value: "24", color: "text-[#4D423A]", bg: "bg-[#FEF4F1]" }
     ];
 
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {stats.map((stat, index) => (
-          <div key={index} className={`${stat.bg} rounded-2xl p-6 border-2 border-white/60 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group relative overflow-hidden`}>
-            <div className="absolute inset-0 bg-gradient-to-br from-[#FBAA99]/5 to-[#4D423A]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div className="relative z-10">
-              <div className="flex items-center justify-between mb-4">
-                <div className={`p-3 rounded-xl ${stat.color} bg-white/80 shadow-sm group-hover:scale-110 transition-transform duration-300`}>
-                  {stat.icon}
+        {stats.map((stat, index) => {
+          // Check if this is the "Issue Certificates" tile
+          const isCertificatesTile = stat.label === "Issue Certificates";
+          
+          const tileContent = (
+            <div className={`${stat.bg} rounded-2xl p-6 border-2 border-white/60 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group relative overflow-hidden ${isCertificatesTile ? 'cursor-pointer' : ''} h-32 flex flex-col justify-between`}>
+              <div className="absolute inset-0 bg-gradient-to-br from-[#FBAA99]/5 to-[#4D423A]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="relative z-10 flex flex-col justify-between h-full">
+                <div className="flex items-center justify-between mb-4">
+                  <div className={`p-3 rounded-xl ${stat.color} bg-white/80 shadow-sm group-hover:scale-110 transition-transform duration-300`}>
+                    {stat.icon}
+                  </div>
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-[#4D423A]">{stat.value}</div>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <div className="text-2xl font-bold text-[#4D423A]">{stat.value}</div>
-                </div>
+                <div className="text-[#4D423A] font-semibold text-sm">{stat.label}</div>
               </div>
-              <div className="text-[#4D423A] font-semibold text-sm">{stat.label}</div>
             </div>
-          </div>
-        ))}
+          );
+
+          // If it's the certificates tile, wrap it with Link
+          if (isCertificatesTile) {
+            return (
+              <Link key={index} to="/courses/certificate">
+                {tileContent}
+              </Link>
+            );
+          }
+
+          // For other tiles, return as is
+          return (
+            <div key={index}>
+              {tileContent}
+            </div>
+          );
+        })}
       </div>
     );
   };
@@ -719,38 +741,6 @@ const CourseHomePage = () => {
             </div>
           )}
 
-          {/* Quick Actions Panel */}
-          <div className="mt-12 bg-gradient-to-r from-[#FEF4F1] to-white rounded-3xl shadow-lg border-2 border-[#FBAA99]/20 p-8" data-scroll-animation>
-            <div className="text-center mb-8">
-              <h3 className="text-2xl font-bold text-[#4D423A] mb-2">Quick Actions</h3>
-              <p className="text-[#4D423A]/70">Streamline your administrative tasks</p>
-            </div>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[
-                { icon: <Plus className="w-6 h-6" />, label: "Create New Course", desc: "Add new course", color: "from-[#FBAA99] to-[#4D423A]", link: "/courses/create" },
-                { icon: <Users className="w-6 h-6" />, label: "Manage Students", desc: "View enrollment", color: "from-[#4D423A] to-[#000000]", link: "#" },
-                { icon: <Award className="w-6 h-6" />, label: "Issue Certificates", desc: "Bulk certificates", color: "from-[#FBAA99] to-[#4D423A]", link: "/courses/certificate" },
-                { icon: <BarChart3 className="w-6 h-6" />, label: "View Analytics", desc: "Performance metrics", color: "from-[#4D423A] to-[#000000]", link: "#" },
-              ].map((action, index) => (
-                <Link
-                  key={index}
-                  to={action.link}
-                  className="group p-6 rounded-2xl border-2 border-[#FEF4F1] hover:border-[#FBAA99] transition-all duration-300 hover:scale-105 bg-white/80 backdrop-blur-sm hover:shadow-xl block"
-                >
-                  <div className={`w-12 h-12 bg-gradient-to-r ${action.color} rounded-xl flex items-center justify-center text-white mb-4 mx-auto group-hover:scale-110 transition-transform duration-200 shadow-lg`}>
-                    {action.icon}
-                  </div>
-                  <div className="text-[#4D423A] font-semibold group-hover:text-[#FBAA99] transition-colors duration-200 mb-1">
-                    {action.label}
-                  </div>
-                  <div className="text-xs text-[#4D423A]/60">
-                    {action.desc}
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
 
           {/* Floating Action Button */}
           <div className="fixed bottom-8 right-8 z-50">
@@ -772,6 +762,9 @@ const CourseHomePage = () => {
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <Footer />
 
       {/* Custom Styles */}
       <style jsx>{`
