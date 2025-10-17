@@ -102,7 +102,7 @@ export default function QuickView({ id, open, onClose }) {
               <button
                 ref={firstFocusRef}
                 onClick={onClose}
-                className="p-2 rounded-lg hover:bg-gray-100"
+                className="p-2 rounded-lg hover:bg-[#FEF4F1]/70 focus:outline-none focus:ring-2 focus:ring-rosePrimary/40 transition"
                 aria-label="Close quick view"
               >
                 <X size={18} />
@@ -165,24 +165,25 @@ export default function QuickView({ id, open, onClose }) {
                     </div>
 
                     <div className="mt-5 flex items-center gap-3">
-                      <div className="inline-flex items-center border rounded-xl overflow-hidden">
+                      <div className="inline-flex items-center bg-white/80 border border-gray-200 rounded-xl overflow-hidden">
                         <button
-                          className="px-3 py-2 hover:bg-gray-50 disabled:opacity-50"
+                          className="px-3 py-2 hover:bg-[#FEF4F1]/70 transition focus:outline-none focus:ring-2 focus:ring-rosePrimary/30 disabled:opacity-50 disabled:cursor-not-allowed"
                           onClick={() => setQty((q) => Math.max(1, q - 1))}
                           disabled={qty <= 1}
                           aria-label="Decrease quantity"
                         >
                           <Minus size={16} />
                         </button>
-                        <div className="px-4 py-2 min-w-[48px] text-center">
+                        <div className="px-4 py-2 min-w-[48px] text-center select-none">
                           {qty}
                         </div>
                         <button
-                          className="px-3 py-2 hover:bg-gray-50"
+                          className="px-3 py-2 hover:bg-[#FEF4F1]/70 transition focus:outline-none focus:ring-2 focus:ring-rosePrimary/30 disabled:opacity-50 disabled:cursor-not-allowed"
                           onClick={() =>
                             setQty((q) => Math.min(p.stock || 1, q + 1))
                           }
                           aria-label="Increase quantity"
+                          disabled={!p?.stock}
                         >
                           <Plus size={16} />
                         </button>
@@ -191,14 +192,27 @@ export default function QuickView({ id, open, onClose }) {
                       <button
                         onClick={handleAdd}
                         disabled={out}
-                        className={`px-5 py-3 rounded-xl font-medium transition
-                          ${
-                            out
-                              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                              : "bg-onyx text-white hover:opacity-95 active:scale-[0.99]"
-                          }`}
+                        className={`relative inline-flex items-center justify-center gap-2 rounded-xl font-semibold px-5 py-3 transition select-none focus:outline-none focus:ring-2 focus:ring-rosePrimary/40 ${
+                          out
+                            ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                            : "bg-emerald-600 text-white hover:bg-emerald-700 active:scale-[0.99]"
+                        }`}
                       >
-                        {out ? "Unavailable" : `Add ${qty} to Cart`}
+                        <span className="relative z-10">
+                          {out ? "Unavailable" : `Add ${qty} to Cart`}
+                        </span>
+
+                        {/* subtle sheen sweep on hover  */}
+                        {!out && (
+                          <span className="pointer-events-none absolute inset-0 overflow-hidden">
+                            <span
+                              className="absolute -left-1/3 top-0 h-full w-1/3
+                                bg-gradient-to-r from-transparent via-white/40 to-transparent
+                                translate-x-[-120%] hover:translate-x-[260%]
+                                transition-transform duration-700 ease-out"
+                            />
+                          </span>
+                        )}
                       </button>
                     </div>
                   </>

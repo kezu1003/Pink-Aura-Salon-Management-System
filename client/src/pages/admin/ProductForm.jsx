@@ -23,7 +23,6 @@ const todayLocalISO = () => {
   return `${y}-${m}-${day}`;
 };
 
-
 const CATS = [
   "Hair Care Products",
   "Nail Care Products",
@@ -56,7 +55,6 @@ const BRANDS = [
   "Seren Cosmetics",
 ];
 
-
 const container = {
   hidden: { opacity: 0, y: 8 },
   show: {
@@ -80,7 +78,6 @@ function FieldShell({ label, icon, children, required }) {
       </div>
       <div className="relative">
         {children}
-      
         <div className="pointer-events-none absolute inset-0 rounded-xl ring-0 group-focus-within:ring-2 group-focus-within:ring-rosePrimary/40 transition" />
       </div>
     </motion.div>
@@ -152,7 +149,7 @@ function ImageRow({ url, onChange, onRemove }) {
       <button
         type="button"
         onClick={onRemove}
-        className="px-3 py-2 rounded-lg border hover:bg-white transition"
+        className="px-3 py-2 rounded-lg border bg-white/80 hover:bg-[#FEF4F1]/90 text-[#4D423A] transition focus:outline-none focus:ring-2 focus:ring-rosePrimary/40"
       >
         Remove
       </button>
@@ -275,18 +272,18 @@ export default function ProductForm() {
                 value={form.category}
                 onChange={(v) => set("category", v)}
                 required
-                options={CATS.map(c => ({label: c, value: c}))}
+                options={CATS.map((c) => ({ label: c, value: c }))}
               />
             </FieldShell>
 
             <FieldShell label="Brand" icon={<CheckCircle2 size={16} />} required>
-            <FancySelect
-               required
-               value={form.brand}
-               onChange={(v) => set("brand", v)}
-               options={BRANDS.map((b) => ({ label: b, value: b }))}
-               placeholder="Select…"
-             />
+              <FancySelect
+                required
+                value={form.brand}
+                onChange={(v) => set("brand", v)}
+                options={BRANDS.map((b) => ({ label: b, value: b }))}
+                placeholder="Select…"
+              />
             </FieldShell>
 
             <FieldShell label="Price (LKR)" icon={<CreditCard size={16} />} required>
@@ -307,7 +304,7 @@ export default function ProductForm() {
             <FancySelect
               value={form.skinType}
               onChange={(v) => set("skinType", v)}
-              options={SKIN_TYPES.map(s => ({label: s, value: s}))}
+              options={SKIN_TYPES.map((s) => ({ label: s, value: s }))}
             />
           </FieldShell>
 
@@ -343,7 +340,7 @@ export default function ProductForm() {
               <button
                 type="button"
                 onClick={() => set("images", [...form.images, ""])}
-                className="self-start px-3 py-2 rounded-lg border bg-white/70 hover:bg-white transition"
+                className="self-start px-3 py-2 rounded-lg border bg-white/80 hover:bg-[#FEF4F1]/90 text-[#4D423A] transition focus:outline-none focus:ring-2 focus:ring-rosePrimary/40"
               >
                 + Add image URL
               </button>
@@ -363,24 +360,21 @@ export default function ProductForm() {
               />
             </FieldShell>
 
-             <FieldShell label="Expiry Date" icon={<Calendar size={16} />}> 
-                <Input 
-                  type="date" 
-                  min={todayLocalISO()}                   
-                  value={form.expiryDate} 
-                  onChange={(e) => { 
-                    const v = e.target.value; 
-                  
-                    if (v && v < todayLocalISO()) { 
-                      set("expiryDate", todayLocalISO()); 
-                    } else { 
-                      set("expiryDate", v); 
-                    } 
-                  }} 
-                /> 
-              </FieldShell>
-
-
+            <FieldShell label="Expiry Date" icon={<Calendar size={16} />}>
+              <Input
+                type="date"
+                min={todayLocalISO()}
+                value={form.expiryDate}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  if (v && v < todayLocalISO()) {
+                    set("expiryDate", todayLocalISO());
+                  } else {
+                    set("expiryDate", v);
+                  }
+                }}
+              />
+            </FieldShell>
 
             <motion.div variants={item} className="flex items-end">
               <label className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border bg-white/70 hover:bg-white transition cursor-pointer">
@@ -395,22 +389,36 @@ export default function ProductForm() {
           </div>
 
           {/* Actions */}
-          <motion.div
-            variants={item}
-            className="mt-2 flex items-center gap-3 justify-end"
-          >
+          <motion.div variants={item} className="mt-2 flex items-center gap-3 justify-end">
             <button
               type="button"
-              className="px-4 py-2 rounded-lg border bg-white/70 hover:bg-white transition"
+              className="px-4 py-2 rounded-lg border bg-white/80 hover:bg-[#FEF4F1]/90 text-[#4D423A] transition focus:outline-none focus:ring-2 focus:ring-rosePrimary/40"
               onClick={() => history.back()}
             >
               Cancel
             </button>
+
             <button
-              className="px-5 py-2.5 rounded-lg bg-onyx text-white font-medium hover:opacity-95 active:scale-[0.99] transition"
+              className="relative inline-flex items-center justify-center gap-2 rounded-lg font-semibold px-5 py-2.5
+                         text-white bg-gradient-to-r from-[#D63384] via-[#E24C9A] to-[#D63384]
+                         shadow-[0_8px_20px_rgba(214,51,132,0.25)]
+                         hover:shadow-[0_12px_28px_rgba(214,51,132,0.32)]
+                         hover:-translate-y-0.5 active:translate-y-0 ease-out
+                         transition focus:outline-none focus:ring-2 focus:ring-rosePrimary/40 overflow-hidden"
               type="submit"
             >
-              {id ? "Save Changes" : "Create Product"}
+              <span className="relative z-10">
+                {id ? "Save Changes" : "Create Product"}
+              </span>
+              {/* sheen sweep */}
+              <span className="pointer-events-none absolute inset-0 overflow-hidden">
+                <span
+                  className="absolute -left-1/3 top-0 h-full w-1/3
+                             bg-gradient-to-r from-transparent via-white/40 to-transparent
+                             translate-x-[-120%] hover:translate-x-[260%]
+                             transition-transform duration-700 ease-out"
+                />
+              </span>
             </button>
           </motion.div>
         </motion.form>
