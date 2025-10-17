@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router';
 import { Clock, User, MapPin, Calendar, BookOpen, Users, Award, Heart, Sparkles } from "lucide-react";
 import { toast } from 'react-toastify';
 import { AppContext } from '../context/AppContext';
+import { useLikedCourses } from '../context/LikedCoursesContext';
 
 // Simple date formatter
 const formatDate = (date) => date.toLocaleDateString();
@@ -15,7 +16,8 @@ const generateAutoIncrementId = () => {
 const UserCourseCard = ({ course, onRegister }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isEnrolling, setIsEnrolling] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
+  const { toggleLike, isCourseLiked } = useLikedCourses();
+  const isLiked = isCourseLiked(course._id);
   
   const navigate = useNavigate();
   const { userData, isLoggedin } = useContext(AppContext);
@@ -133,7 +135,7 @@ const UserCourseCard = ({ course, onRegister }) => {
   const handleLike = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsLiked(!isLiked);
+    toggleLike(course._id);
     toast.success(isLiked ? "Removed from favorites" : "Added to favorites!");
   };
 
@@ -177,13 +179,13 @@ const UserCourseCard = ({ course, onRegister }) => {
             {/* Like Button */}
             <button
               onClick={handleLike}
-              className={`p-2 rounded-full transition-all duration-300 ${
+              className={`p-2 rounded-full transition-all duration-300 border-2 ${
                 isLiked 
-                  ? 'bg-red-100 text-red-500 scale-110' 
-                  : 'bg-[#FEF4F1] text-[#4D423A] hover:bg-[#FBAA99]/20 hover:text-[#FBAA99]'
+                  ? 'bg-red-100 text-red-500 scale-110 border-red-300 shadow-lg' 
+                  : 'bg-[#FEF4F1] text-[#4D423A] hover:bg-[#FBAA99]/20 hover:text-[#FBAA99] border-[#FEF4F1] hover:border-[#FBAA99]/30'
               }`}
             >
-              <Heart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
+              <Heart className={`w-5 h-5 transition-all duration-200 ${isLiked ? 'fill-red-500 text-red-500' : 'text-[#4D423A] hover:text-red-500'}`} />
             </button>
           </div>
 

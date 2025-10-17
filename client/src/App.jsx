@@ -90,6 +90,7 @@ import UserEventHomePage from './pages/UserEventHomePage.jsx';
 import EnrollmentCreatePage from './pages/EnrollmentCreatePage.jsx';
 import EnrollmentDetailsPage from './pages/EnrollmentDetailsPage.jsx';
 import EnrollmentListpage from './pages/EnrollmentListPage.jsx';
+import EnrollmentReportsPage from './pages/EnrollmentReportsPage.jsx';
 
 const App = () => {
   return (
@@ -179,6 +180,7 @@ const App = () => {
         <Route path="/enrollments" element={<EnrollmentListpage />} />
         <Route path="/enrollments/create" element={<EnrollmentCreatePage/>} />
         <Route path="/enrollments/:id" element={<EnrollmentDetailsPage />} />
+        <Route path="/enrollments/reports" element={<EnrollmentReportsPage />} />
 
         <Route path="/courses" element={<CourseHomePage />} />
         <Route path="/courses/create" element={<CourseCreatePage />} />
