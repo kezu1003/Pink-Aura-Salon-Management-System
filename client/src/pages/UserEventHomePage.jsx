@@ -275,7 +275,7 @@ const EventHeroSection = () => {
 };
 
 // Search and Filter Section
-const EventSearchFilterSection = ({ searchTerm, setSearchTerm, showLikedOnly, setShowLikedOnly }) => {
+const EventSearchFilterSection = ({ searchTerm, setSearchTerm, showLikedOnly, setShowLikedOnly, viewMode, setViewMode }) => {
   const { getLikedEventsCount } = useLikedEvents();
 
   return (
@@ -298,8 +298,40 @@ const EventSearchFilterSection = ({ searchTerm, setSearchTerm, showLikedOnly, se
             />
           </div>
           
-          {/* Filter Buttons */}
+          {/* Filter and View Controls */}
           <div className="flex gap-3">
+            {/* View Toggle */}
+            <div className="flex border-2 border-[#FEF4F1] rounded-xl overflow-hidden bg-[#FEF4F1]/50 backdrop-blur-sm">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`px-4 py-4 transition-all duration-200 flex items-center justify-center ${
+                  viewMode === 'grid' ? 'bg-gradient-to-r from-[#FBAA99] to-[#4D423A] text-white shadow-lg' : 'text-[#4D423A] hover:bg-[#FBAA99]/10'
+                }`}
+                title="Grid View"
+              >
+                <div className="grid grid-cols-2 gap-1 w-5 h-5">
+                  <div className="bg-current rounded-sm"></div>
+                  <div className="bg-current rounded-sm"></div>
+                  <div className="bg-current rounded-sm"></div>
+                  <div className="bg-current rounded-sm"></div>
+                </div>
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`px-4 py-4 transition-all duration-200 flex items-center justify-center ${
+                  viewMode === 'list' ? 'bg-gradient-to-r from-[#FBAA99] to-[#4D423A] text-white shadow-lg' : 'text-[#4D423A] hover:bg-[#FBAA99]/10'
+                }`}
+                title="List View"
+              >
+                <div className="space-y-1 w-5 h-5">
+                  <div className="w-full h-1 bg-current rounded"></div>
+                  <div className="w-full h-1 bg-current rounded"></div>
+                  <div className="w-full h-1 bg-current rounded"></div>
+                </div>
+              </button>
+            </div>
+
+            {/* Liked Events Filter */}
             <button
               onClick={() => setShowLikedOnly(!showLikedOnly)}
               className={`px-6 py-4 rounded-2xl font-semibold transition-all duration-300 flex items-center space-x-2 ${
@@ -328,7 +360,14 @@ const UserEventHomePageContent = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [showLikedOnly, setShowLikedOnly] = useState(false);
-  const { likedEvents, isEventLiked, clearAllLikedEvents } = useLikedEvents();
+  const [viewMode, setViewMode] = useState("grid");
+  const { likedEvents, isEventLiked, clearAllLikedEvents, toggleLike } = useLikedEvents();
+
+  // Handle like toggle for list view
+  const handleLikeToggle = (eventId) => {
+    toggleLike(eventId);
+    toast.success(isEventLiked(eventId) ? "Event removed from favorites" : "Event added to favorites");
+  };
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -398,6 +437,8 @@ const UserEventHomePageContent = () => {
             setSearchTerm={setSearchTerm}
             showLikedOnly={showLikedOnly}
             setShowLikedOnly={setShowLikedOnly}
+            viewMode={viewMode}
+            setViewMode={setViewMode}
           />
 
           {/* Event Results Header */}
@@ -437,12 +478,71 @@ const UserEventHomePageContent = () => {
             </div>
           </div>
 
-          {/* Events Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mb-12">
-            {filteredEvents.map((event) => (
-              <UserEventCard key={event._id} event={event} setEvents={setEvents} />
-            ))}
-          </div>
+          {/* Events Grid/List View */}
+          {viewMode === 'grid' ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mb-12">
+              {filteredEvents.map((event) => (
+                <UserEventCard key={event._id} event={event} setEvents={setEvents} />
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-4 mb-12">
+              {filteredEvents.map((event) => (
+                <div key={event._id} className="bg-white/80 backdrop-blur-sm rounded-2xl border-2 border-[#FEF4F1] shadow-lg hover:shadow-xl transition-all duration-300 p-6">
+                  <div className="flex flex-col lg:flex-row lg:items-center space-y-4 lg:space-y-0 lg:space-x-6">
+                    {/* Event Image/Icon */}
+                    <div className="w-20 h-20 bg-gradient-to-br from-[#FBAA99] to-[#4D423A] rounded-xl flex items-center justify-center flex-shrink-0 mx-auto lg:mx-0">
+                      <Calendar className="w-8 h-8 text-white" />
+                    </div>
+                    
+                    {/* Event Info */}
+                    <div className="flex-1 min-w-0 text-center lg:text-left">
+                      <h3 className="text-xl font-bold text-[#4D423A] mb-2 break-words">{event.title}</h3>
+                      <p className="text-[#4D423A]/70 mb-3 line-clamp-2">{event.content}</p>
+                      
+                      {/* Event Details */}
+                      <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 text-sm text-[#4D423A]/60">
+                        <div className="flex items-center space-x-1">
+                          <MapPin className="w-4 h-4" />
+                          <span className="truncate max-w-32">{event.venue}</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <Clock className="w-4 h-4" />
+                          <span>{event.eventDate ? new Date(event.eventDate).toLocaleDateString() : 'TBA'}</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <Users className="w-4 h-4" />
+                          <span>Event</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Action Buttons */}
+                    <div className="flex flex-col sm:flex-row gap-2 justify-center lg:justify-end flex-shrink-0">
+                      <button 
+                        onClick={() => window.open(`/events/${event._id}`, '_blank')}
+                        className="px-4 py-2 bg-gradient-to-r from-[#FBAA99] to-[#4D423A] text-white rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-1 shadow-lg"
+                      >
+                        <Calendar className="w-4 h-4" />
+                        <span>View</span>
+                      </button>
+                      <button 
+                        onClick={() => handleLikeToggle(event._id)}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-1 shadow-lg ${
+                          isEventLiked(event._id) 
+                            ? 'bg-gradient-to-r from-red-500 to-red-700 text-white' 
+                            : 'bg-gradient-to-r from-[#4D423A] to-[#000000] text-white'
+                        }`}
+                      >
+                        <Heart className={`w-4 h-4 ${isEventLiked(event._id) ? 'fill-current' : ''}`} />
+                        <span>{isEventLiked(event._id) ? 'Liked' : 'Like'}</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* No Events Found */}
           {filteredEvents.length === 0 && !loading && (
