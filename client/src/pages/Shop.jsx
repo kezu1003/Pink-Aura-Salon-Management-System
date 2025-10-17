@@ -116,9 +116,9 @@ const categoryTiles = [
 ];
 
 const brandTiles = [
-  { value: "Seren Cosmetics",       label: "Seren Cosmetics", image: "/brands/Seren_Cosmetics.webp" },
+  { value: "Seren Cosmetics",       label: "Seren Cosmetics", image: "/brands/Seren_Cosmetics.jpg" },
   { value: "Basicare",              label: "Basicare",        image: "/brands/Basicare.png" },
-  { value: "Maybelline",            label: "Maybelline",      image: "/brands/Maybelline.webp" },
+  { value: "Maybelline",            label: "Maybelline",      image: "/brands/Maybelline.jpg" },
   { value: "Oreal",                 label: "Oreal",           image: "/brands/Oreal.jpg" },
   { value: "Dove",                  label: "Dove",            image: "/brands/Dove.jpg" },
   { value: "Dr. Rashel",            label: "Dr. Rashel",      image: "/brands/Rashel.webp" },

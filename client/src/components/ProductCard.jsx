@@ -4,11 +4,15 @@ import { useCart } from "../context/CartContext";
 import CountdownBadge from "./CountdownBadge";
 import { fadeUp } from "./motion";
 import { Plus } from "lucide-react";
+import useFlyToCart from "../utils/useFlyToCart";
+import { useNavigate } from "react-router-dom";
 
 export default function ProductCard({ product, onQuickView }) {
+  const navigate = useNavigate();
   const { addItem } = useCart();
   const out = product.stock <= 0 || (product.expiryDaysLeft !== null && product.expiryDaysLeft < 0);
   const imgRef = useRef(null);
+  const flyToCart = useFlyToCart();
 
   return (
     <motion.div
@@ -78,8 +82,14 @@ export default function ProductCard({ product, onQuickView }) {
         </div>
 
         <button
-          onClick={() => addItem(product, 1)}
-          disabled={out}
+           whileTap={{ scale: out ? 1 : 0.98 }}
+           onClick={() => {
+          if (!out) {
+            flyToCart(imgRef.current);
+            addItem(product, 1);
+          }
+        }}
+        disabled={out}
           className={`mt-3 w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition
           ${out
               ? "bg-gray-100 text-gray-400 cursor-not-allowed"

@@ -4,6 +4,7 @@ import { useNavigate, NavLink, Link } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import { ShoppingCart } from 'lucide-react';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -132,7 +133,19 @@ const Navbar = () => {
                   }`
                 }
               >
-                Cart
+                <Link
+                to="/cart"
+                className="relative hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-full
+                           bg-white/70 hover:bg-[#FEF4F1]/90 border border-[#FBAA99]/50
+                           text-[#4D423A] transition backdrop-blur-sm"
+                aria-label="Cart"
+              >
+                {/* Invisible anchor for fly-to-cart landing */}
+                <span id="cart-fly-anchor" className="absolute inset-0 m-auto w-0 h-0 pointer-events-none" />
+                <ShoppingCart className="w-5 h-5" />
+                <span className="text-base">Cart</span>
+
+              </Link>
               </NavLink>
 
               <NavLink
