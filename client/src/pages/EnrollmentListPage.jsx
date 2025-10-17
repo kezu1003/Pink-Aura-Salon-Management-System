@@ -1,8 +1,10 @@
 import {useEffect, useState } from "react";
 import { Link } from 'react-router';
 import EnrollmentCard from '../components/EnrollmentCard'; 
+import Footer from '../components/Footer';
 import api from '../lib/axios';
 import { toast } from "react-toastify";
+import { useScrollAnimationMultiple } from '../hooks/useScrollAnimation';
 import { 
   SearchIcon, 
   XIcon, 
@@ -35,6 +37,7 @@ const EnrollmentListPage = () => {
   const [searching, setSearching] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [downloading, setDownloading] = useState(false);
+  const visibleElements = useScrollAnimationMultiple(0.1);
 
   // Enhanced slideshow data for enrollment management
   const enrollmentSlideImages = [
@@ -71,6 +74,18 @@ const EnrollmentListPage = () => {
     }, 6000);
     return () => clearInterval(timer);
   }, [enrollmentSlideImages.length]);
+
+  // Handle scroll animations
+  useEffect(() => {
+    const elements = document.querySelectorAll('[data-scroll-animation]');
+    elements.forEach((element, index) => {
+      if (visibleElements.has(index)) {
+        element.classList.add('animate-in');
+      } else {
+        element.classList.remove('animate-in');
+      }
+    });
+  }, [visibleElements]);
 
   // Navigation functions
   const goToSlide = (index) => setCurrentSlide(index);
@@ -372,11 +387,11 @@ const EnrollmentListPage = () => {
       { icon: <UserCheck className="w-8 h-8" />, label: "Total Enrollments", value: enrollments.length || "0", color: "text-[#FBAA99]", bg: "bg-[#FEF4F1]" },
       { icon: <Users className="w-8 h-8" />, label: "Active Students", value: enrollments.length || "0", color: "text-[#4D423A]", bg: "bg-[#FEF4F1]" },
       { icon: <BookOpen className="w-8 h-8" />, label: "Courses Enrolled", value: new Set(enrollments.map(e => e.courseID)).size || "0", color: "text-[#FBAA99]", bg: "bg-[#FEF4F1]" },
-      { icon: <TrendingUp className="w-8 h-8" />, label: "Completion Rate", value: "87%", color: "text-[#4D423A]", bg: "bg-[#FEF4F1]" }
+      { icon: <Calendar className="w-8 h-8" />, label: "Recent Enrollments", value: "12", color: "text-[#4D423A]", bg: "bg-[#FEF4F1]" }
     ];
 
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8" data-scroll-animation>
         {stats.map((stat, index) => (
           <div key={index} className={`${stat.bg} rounded-2xl p-6 border-2 border-white/60 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group relative overflow-hidden`}>
             <div className="absolute inset-0 bg-gradient-to-br from-[#FBAA99]/5 to-[#4D423A]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -423,7 +438,7 @@ const EnrollmentListPage = () => {
       <div className="relative z-10 p-6">
         <div className="max-w-7xl mx-auto">
           {/* Admin Hero Header */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-8" data-scroll-animation>
             <div className="inline-flex items-center space-x-3 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full border-2 border-[#FBAA99]/20 mb-4">
               <UserCheck className="w-6 h-6 text-[#4D423A]" />
               <span className="text-[#4D423A] font-bold">Enrollment Management</span>
@@ -442,7 +457,7 @@ const EnrollmentListPage = () => {
           <EnrollmentStatsGrid />
 
           {/* Advanced Search Section */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border-2 border-[#FEF4F1] p-6 mb-8">
+          <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border-2 border-[#FEF4F1] p-6 mb-8" data-scroll-animation>
             <div className="flex flex-col lg:flex-row gap-4 items-center">
               <div className="flex-1 relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -509,7 +524,7 @@ const EnrollmentListPage = () => {
           </div>
 
           {/* Enhanced Slideshow */}
-          <div className="mb-12">
+          <div className="mb-12" data-scroll-animation>
             <div className="max-w-6xl mx-auto">
               <div className="relative overflow-hidden rounded-3xl shadow-2xl bg-white border-4 border-[#FEF4F1]">
                 <div 
@@ -569,7 +584,7 @@ const EnrollmentListPage = () => {
           </div>
 
           {/* Results Header */}
-          <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4" data-scroll-animation>
             <div>
               <h2 className="text-3xl font-bold text-[#4D423A] mb-2">
                 All Enrollments
@@ -588,7 +603,7 @@ const EnrollmentListPage = () => {
           </div>
 
           {/* Enrollments List - Stripe Layout */}
-          <div className="space-y-6 mb-8">
+          <div className="space-y-6 mb-8" data-scroll-animation>
             {filteredEnrollments.map((enrollment) => (
               <EnrollmentCard key={enrollment._id} enrollment={enrollment} setEnrollments={setEnrollments} />
             ))}
@@ -596,7 +611,7 @@ const EnrollmentListPage = () => {
 
           {/* Empty States */}
           {filteredEnrollments.length === 0 && !loading && !searching && (
-            <div className="text-center py-16 bg-white/80 backdrop-blur-sm rounded-3xl border-2 border-[#FEF4F1] shadow-lg">
+            <div className="text-center py-16 bg-white/80 backdrop-blur-sm rounded-3xl border-2 border-[#FEF4F1] shadow-lg" data-scroll-animation>
               {searchQuery ? (
                 <div className="max-w-md mx-auto">
                   <div className="w-24 h-24 bg-[#FEF4F1] rounded-full flex items-center justify-center mx-auto mb-6">
@@ -636,7 +651,7 @@ const EnrollmentListPage = () => {
 
           {/* Search Tips */}
           {searchQuery && filteredEnrollments.length === 0 && !searching && (
-            <div className="max-w-3xl mx-auto mt-8 p-8 bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border-2 border-[#FEF4F1]">
+            <div className="max-w-3xl mx-auto mt-8 p-8 bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border-2 border-[#FEF4F1]" data-scroll-animation>
               <div className="text-center mb-6">
                 <Target className="w-12 h-12 text-[#FBAA99] mx-auto mb-4" />
                 <h4 className="text-xl font-bold text-[#4D423A] mb-2">Search Optimization Tips</h4>
@@ -679,7 +694,7 @@ const EnrollmentListPage = () => {
           )}
 
           {/* Quick Actions Panel */}
-          <div className="mt-12 bg-gradient-to-r from-[#FEF4F1] to-white rounded-3xl shadow-lg border-2 border-[#FBAA99]/20 p-8">
+          <div className="mt-12 bg-gradient-to-r from-[#FEF4F1] to-white rounded-3xl shadow-lg border-2 border-[#FBAA99]/20 p-8" data-scroll-animation>
             <div className="text-center mb-8">
               <h3 className="text-2xl font-bold text-[#4D423A] mb-2">Quick Actions</h3>
               <p className="text-[#4D423A]/70">Streamline your enrollment management</p>
@@ -713,8 +728,33 @@ const EnrollmentListPage = () => {
         </div>
       </div>
 
+      {/* Footer */}
+      <Footer />
+
       {/* Custom Styles */}
       <style jsx>{`
+        /* Scroll Animation Styles */
+        [data-scroll-animation] {
+          opacity: 0;
+          transform: translateY(30px);
+          transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        
+        [data-scroll-animation].animate-in {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        
+        /* Staggered animations for grid items */
+        [data-scroll-animation].animate-in .grid > * {
+          animation: fadeInUp 0.6s ease-out forwards;
+        }
+        
+        [data-scroll-animation].animate-in .grid > *:nth-child(1) { animation-delay: 0.1s; }
+        [data-scroll-animation].animate-in .grid > *:nth-child(2) { animation-delay: 0.2s; }
+        [data-scroll-animation].animate-in .grid > *:nth-child(3) { animation-delay: 0.3s; }
+        [data-scroll-animation].animate-in .grid > *:nth-child(4) { animation-delay: 0.4s; }
+        
         @keyframes fadeInUp {
           from {
             opacity: 0;
