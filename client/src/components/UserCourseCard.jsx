@@ -142,11 +142,11 @@ const UserCourseCard = ({ course, onRegister }) => {
 
   return (
     <div 
-      className="group relative transform transition-all duration-500 hover:scale-105"
+      className="group relative transform transition-all duration-500 hover:scale-105 h-full"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border-2 border-[#FEF4F1] hover:border-[#FBAA99] relative">
+      <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border-2 border-[#FEF4F1] hover:border-[#FBAA99] relative h-full flex flex-col">
         {/* Gradient overlay on hover */}
         <div className={`absolute inset-0 bg-gradient-to-br from-[#FEF4F1]/50 to-[#FBAA99]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10`}></div>
         
@@ -155,16 +155,16 @@ const UserCourseCard = ({ course, onRegister }) => {
           <div className={`absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[200%] transition-transform duration-700`}></div>
         </div>
 
-        <div className="p-6 relative z-20">
+        <div className="p-6 relative z-20 flex-1 flex flex-col">
           {/* Header Section */}
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center space-x-3">
+          <div className="flex items-start justify-between mb-5">
+            <div className="flex items-center space-x-3 flex-1 min-w-0">
               {/* Course Avatar */}
-              <div className="w-12 h-12 bg-gradient-to-br from-[#FBAA99] to-[#4D423A] rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg group-hover:scale-110 transition-transform duration-300">
+              <div className="w-12 h-12 bg-gradient-to-br from-[#FBAA99] to-[#4D423A] rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
                 {course.courseName?.charAt(0) || 'C'}
               </div>
-              <div>
-                <h3 className="text-xl font-bold text-[#4D423A] group-hover:text-[#FBAA99] transition-colors duration-300 line-clamp-1">
+              <div className="flex-1 min-w-0">
+                <h3 className="text-xl font-bold text-[#4D423A] group-hover:text-[#FBAA99] transition-colors duration-300 line-clamp-2 leading-tight">
                   {course.courseName}
                 </h3>
                 <div className="flex items-center space-x-4 text-sm text-[#4D423A]/60 mt-1">
@@ -179,7 +179,7 @@ const UserCourseCard = ({ course, onRegister }) => {
             {/* Like Button */}
             <button
               onClick={handleLike}
-              className={`p-2 rounded-full transition-all duration-300 border-2 ${
+              className={`p-2 rounded-full transition-all duration-300 border-2 flex-shrink-0 ml-2 ${
                 isLiked 
                   ? 'bg-red-100 text-red-500 scale-110 border-red-300 shadow-lg' 
                   : 'bg-[#FEF4F1] text-[#4D423A] hover:bg-[#FBAA99]/20 hover:text-[#FBAA99] border-[#FEF4F1] hover:border-[#FBAA99]/30'
@@ -197,48 +197,48 @@ const UserCourseCard = ({ course, onRegister }) => {
           </div>
 
           {/* Course Details Grid */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="grid grid-cols-2 gap-3 mb-6">
             {/* Duration */}
-            <div className="flex items-center space-x-2 p-3 bg-[#FEF4F1] rounded-xl hover:bg-[#FBAA99]/10 transition-colors duration-200 border border-[#FBAA99]/20">
-              <div className="w-8 h-8 bg-gradient-to-br from-[#FBAA99]/20 to-[#4D423A]/20 rounded-lg flex items-center justify-center">
-                <Clock className="w-4 h-4 text-[#4D423A]" />
+            <div className="flex items-start space-x-3 p-4 bg-[#FEF4F1] rounded-xl hover:bg-[#FBAA99]/10 transition-colors duration-200 border border-[#FBAA99]/20 min-h-[80px]">
+              <div className="w-10 h-10 bg-gradient-to-br from-[#FBAA99]/20 to-[#4D423A]/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Clock className="w-5 h-5 text-[#4D423A]" />
               </div>
-              <div>
-                <div className="text-xs text-[#4D423A]/60 font-medium">Duration</div>
-                <div className="text-sm font-bold text-[#4D423A] truncate">{course.duration || "12 weeks"}</div>
+              <div className="flex-1 min-w-0">
+                <div className="text-xs text-[#4D423A]/60 font-medium mb-1">Duration</div>
+                <div className="text-sm font-bold text-[#4D423A] leading-tight break-words">{course.duration || "12 weeks"}</div>
               </div>
             </div>
 
             {/* Instructor */}
-            <div className="flex items-center space-x-2 p-3 bg-[#FEF4F1] rounded-xl hover:bg-[#FBAA99]/10 transition-colors duration-200 border border-[#FBAA99]/20">
-              <div className="w-8 h-8 bg-gradient-to-br from-[#FBAA99]/20 to-[#4D423A]/20 rounded-lg flex items-center justify-center">
-                <User className="w-4 h-4 text-[#4D423A]" />
+            <div className="flex items-start space-x-3 p-4 bg-[#FEF4F1] rounded-xl hover:bg-[#FBAA99]/10 transition-colors duration-200 border border-[#FBAA99]/20 min-h-[80px]">
+              <div className="w-10 h-10 bg-gradient-to-br from-[#FBAA99]/20 to-[#4D423A]/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <User className="w-5 h-5 text-[#4D423A]" />
               </div>
-              <div>
-                <div className="text-xs text-[#4D423A]/60 font-medium">Instructor</div>
-                <div className="text-sm font-bold text-[#4D423A] truncate">{course.instructorName || "Expert Tutor"}</div>
+              <div className="flex-1 min-w-0">
+                <div className="text-xs text-[#4D423A]/60 font-medium mb-1">Instructor</div>
+                <div className="text-sm font-bold text-[#4D423A] leading-tight break-words">{course.instructorName || "Expert Tutor"}</div>
               </div>
             </div>
 
             {/* Location */}
-            <div className="flex items-center space-x-2 p-3 bg-[#FEF4F1] rounded-xl hover:bg-[#FBAA99]/10 transition-colors duration-200 border border-[#FBAA99]/20">
-              <div className="w-8 h-8 bg-gradient-to-br from-[#FBAA99]/20 to-[#4D423A]/20 rounded-lg flex items-center justify-center">
-                <MapPin className="w-4 h-4 text-[#4D423A]" />
+            <div className="flex items-start space-x-3 p-4 bg-[#FEF4F1] rounded-xl hover:bg-[#FBAA99]/10 transition-colors duration-200 border border-[#FBAA99]/20 min-h-[80px]">
+              <div className="w-10 h-10 bg-gradient-to-br from-[#FBAA99]/20 to-[#4D423A]/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <MapPin className="w-5 h-5 text-[#4D423A]" />
               </div>
-              <div>
-                <div className="text-xs text-[#4D423A]/60 font-medium">Location</div>
-                <div className="text-sm font-bold text-[#4D423A] truncate">{course.location || "Pink Aura Academy"}</div>
+              <div className="flex-1 min-w-0">
+                <div className="text-xs text-[#4D423A]/60 font-medium mb-1">Location</div>
+                <div className="text-sm font-bold text-[#4D423A] leading-tight break-words">{course.location || "Pink Aura Academy"}</div>
               </div>
             </div>
 
             {/* Schedule */}
-            <div className="flex items-center space-x-2 p-3 bg-[#FEF4F1] rounded-xl hover:bg-[#FBAA99]/10 transition-colors duration-200 border border-[#FBAA99]/20">
-              <div className="w-8 h-8 bg-gradient-to-br from-[#FBAA99]/20 to-[#4D423A]/20 rounded-lg flex items-center justify-center">
-                <Calendar className="w-4 h-4 text-[#4D423A]" />
+            <div className="flex items-start space-x-3 p-4 bg-[#FEF4F1] rounded-xl hover:bg-[#FBAA99]/10 transition-colors duration-200 border border-[#FBAA99]/20 min-h-[80px]">
+              <div className="w-10 h-10 bg-gradient-to-br from-[#FBAA99]/20 to-[#4D423A]/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Calendar className="w-5 h-5 text-[#4D423A]" />
               </div>
-              <div>
-                <div className="text-xs text-[#4D423A]/60 font-medium">Schedule</div>
-                <div className="text-sm font-bold text-[#4D423A] truncate">{course.schedule || "Flexible"}</div>
+              <div className="flex-1 min-w-0">
+                <div className="text-xs text-[#4D423A]/60 font-medium mb-1">Schedule</div>
+                <div className="text-sm font-bold text-[#4D423A] leading-tight break-words">{course.schedule || "Flexible"}</div>
               </div>
             </div>
           </div>
@@ -262,7 +262,7 @@ const UserCourseCard = ({ course, onRegister }) => {
           </div>
 
           {/* Footer Section */}
-          <div className="flex items-center justify-between pt-4 border-t-2 border-[#FEF4F1]">
+          <div className="flex items-center justify-between pt-4 border-t-2 border-[#FEF4F1] mt-auto">
             {/* Course Date */}
             <div className="text-xs text-[#4D423A]/60">
               <span className="font-medium">Added:</span> {course.createdAt ? formatDate(new Date(course.createdAt)) : "Recently"}

@@ -27,8 +27,11 @@ import {
 // Enhanced Floating WhatsApp Component
 const FloatingWhatsApp = () => {
   const [showTooltip, setShowTooltip] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isClicked, setIsClicked] = useState(false);
 
   const handleWhatsAppClick = () => {
+    setIsClicked(true);
     const phoneNumber = "94784596755";
     const message = "Hi! I'm interested in your salon courses. Could you please provide more information about course schedules, pricing, and enrollment process?";
     const encodedMessage = encodeURIComponent(message);
@@ -37,6 +40,7 @@ const FloatingWhatsApp = () => {
     try {
       if (window.open(whatsappUrl, '_blank')) {
         console.log("WhatsApp opened successfully");
+        toast.success("Opening WhatsApp...");
       } else {
         window.location.href = whatsappUrl;
       }
@@ -48,32 +52,72 @@ const FloatingWhatsApp = () => {
         toast.error("Please contact us at +94 78 459 6755");
       });
     }
+    
+    setTimeout(() => setIsClicked(false), 200);
   };
 
   return (
     <div className="fixed bottom-8 right-8 z-50">
+      {/* Enhanced Tooltip */}
       {showTooltip && (
-        <div className="absolute bottom-full right-0 mb-4 bg-[#4D423A] text-white px-4 py-3 rounded-2xl text-sm whitespace-nowrap shadow-2xl animate-bounce-in border-2 border-[#FBAA99]/20">
-          <div className="flex items-center space-x-2">
-            <Sparkles className="w-4 h-4 text-[#FBAA99]" />
-            <span>Ask about our courses!</span>
+        <div className="absolute bottom-full right-0 mb-4 bg-gradient-to-r from-[#4D423A] to-[#2D1B1B] text-white px-6 py-4 rounded-2xl text-sm whitespace-nowrap shadow-2xl animate-bounce-in border-2 border-[#FBAA99]/30 backdrop-blur-sm">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+              <MessageCircle className="w-4 h-4 text-white" />
+            </div>
+            <div>
+              <div className="font-semibold text-[#FBAA99]">Get Course Info!</div>
+              <div className="text-xs text-white/80">Click to chat with us</div>
+            </div>
           </div>
-          <div className="absolute top-full right-6 w-0 h-0 border-l-4 border-r-4 border-t-6 border-transparent border-t-[#4D423A]"></div>
+          <div className="absolute top-full right-8 w-0 h-0 border-l-4 border-r-4 border-t-6 border-transparent border-t-[#4D423A]"></div>
         </div>
       )}
 
-      <button
-        onMouseEnter={() => setShowTooltip(true)}
-        onMouseLeave={() => setShowTooltip(false)}
-        onClick={handleWhatsAppClick}
-        className="w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 rounded-full shadow-2xl hover:shadow-3xl transform hover:scale-110 transition-all duration-300 flex items-center justify-center text-white relative overflow-hidden group"
-        title="Contact us on WhatsApp about courses"
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
-        <MessageCircle className="w-8 h-8 relative z-10" />
-      </button>
+      {/* Enhanced WhatsApp Button */}
+      <div className="relative">
+        {/* Pulsing Ring Animation */}
+        <div className={`absolute inset-0 rounded-full bg-green-400 animate-ping ${isHovered ? 'opacity-30' : 'opacity-20'} pointer-events-none`}></div>
+        
+        {/* Secondary Ring */}
+        <div className={`absolute inset-0 rounded-full bg-green-300 animate-pulse ${isHovered ? 'opacity-40' : 'opacity-10'} pointer-events-none`}></div>
 
-      <div className="absolute inset-0 rounded-full bg-green-400 animate-ping opacity-20 pointer-events-none"></div>
+        <button
+          onMouseEnter={() => {
+            setShowTooltip(true);
+            setIsHovered(true);
+          }}
+          onMouseLeave={() => {
+            setShowTooltip(false);
+            setIsHovered(false);
+          }}
+          onClick={handleWhatsAppClick}
+          className={`w-20 h-20 bg-gradient-to-br from-green-400 via-green-500 to-green-600 hover:from-green-500 hover:via-green-600 hover:to-green-700 rounded-full shadow-2xl hover:shadow-3xl transform transition-all duration-300 flex items-center justify-center text-white relative overflow-hidden group ${
+            isHovered ? 'scale-110' : 'scale-100'
+          } ${isClicked ? 'scale-95' : ''}`}
+          title="Contact us on WhatsApp about courses"
+        >
+          {/* Shimmer Effect */}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[200%] transition-transform duration-700"></div>
+          
+          {/* WhatsApp Icon */}
+          <div className="relative z-10 flex items-center justify-center">
+            <MessageCircle className={`w-10 h-10 transition-all duration-300 ${isHovered ? 'scale-110' : 'scale-100'}`} />
+          </div>
+
+          {/* Notification Badge */}
+          <div className="absolute -top-2 -right-2 w-7 h-7 bg-red-500 rounded-full flex items-center justify-center text-sm font-bold text-white animate-bounce">
+            1
+          </div>
+
+          {/* Hover Glow Effect */}
+          <div className={`absolute inset-0 rounded-full bg-green-300 opacity-0 group-hover:opacity-20 transition-opacity duration-300 ${isHovered ? 'opacity-20' : ''}`}></div>
+        </button>
+
+        {/* Floating Particles */}
+        <div className="absolute -top-3 -left-3 w-3 h-3 bg-[#FBAA99] rounded-full animate-float opacity-60"></div>
+        <div className="absolute -bottom-2 -right-2 w-2 h-2 bg-[#FBAA99] rounded-full animate-float-delayed opacity-40"></div>
+      </div>
     </div>
   );
 };
@@ -106,12 +150,12 @@ const UserStatsSection = () => {
       description: "Career success rate"
     },
     {
-      icon: <Star className="w-8 h-8" />,
-      value: "4.9",
-      label: "Student Rating",
+      icon: <Clock className="w-8 h-8" />,
+      value: "12+",
+      label: "Course Duration",
       color: "text-[#4D423A]",
       bg: "bg-[#FEF4F1]",
-      description: "Excellent feedback"
+      description: "Weeks of training"
     },
   ];
 
@@ -275,7 +319,7 @@ const HeroSection = () => {
 };
 
 // Search and Filter Section
-const SearchFilterSection = ({ searchTerm, setSearchTerm, showLikedOnly, setShowLikedOnly }) => {
+const SearchFilterSection = ({ searchTerm, setSearchTerm, showLikedOnly, setShowLikedOnly, viewMode, setViewMode }) => {
   const { getLikedCoursesCount } = useLikedCourses();
 
   return (
@@ -298,8 +342,40 @@ const SearchFilterSection = ({ searchTerm, setSearchTerm, showLikedOnly, setShow
             />
           </div>
           
-          {/* Filter Buttons */}
+          {/* Filter and View Controls */}
           <div className="flex gap-3">
+            {/* View Toggle */}
+            <div className="flex border-2 border-[#FEF4F1] rounded-xl overflow-hidden bg-[#FEF4F1]/50 backdrop-blur-sm">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`px-4 py-4 transition-all duration-200 flex items-center justify-center ${
+                  viewMode === 'grid' ? 'bg-gradient-to-r from-[#FBAA99] to-[#4D423A] text-white shadow-lg' : 'text-[#4D423A] hover:bg-[#FBAA99]/10'
+                }`}
+                title="Grid View"
+              >
+                <div className="grid grid-cols-2 gap-1 w-5 h-5">
+                  <div className="bg-current rounded-sm"></div>
+                  <div className="bg-current rounded-sm"></div>
+                  <div className="bg-current rounded-sm"></div>
+                  <div className="bg-current rounded-sm"></div>
+                </div>
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`px-4 py-4 transition-all duration-200 flex items-center justify-center ${
+                  viewMode === 'list' ? 'bg-gradient-to-r from-[#FBAA99] to-[#4D423A] text-white shadow-lg' : 'text-[#4D423A] hover:bg-[#FBAA99]/10'
+                }`}
+                title="List View"
+              >
+                <div className="space-y-1 w-5 h-5">
+                  <div className="w-full h-1 bg-current rounded"></div>
+                  <div className="w-full h-1 bg-current rounded"></div>
+                  <div className="w-full h-1 bg-current rounded"></div>
+                </div>
+              </button>
+            </div>
+
+            {/* Liked Courses Filter */}
             <button
               onClick={() => setShowLikedOnly(!showLikedOnly)}
               className={`px-6 py-4 rounded-2xl font-semibold transition-all duration-300 flex items-center space-x-2 ${
@@ -328,7 +404,14 @@ const UserCourseHomePageContent = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [showLikedOnly, setShowLikedOnly] = useState(false);
-  const { likedCourses, isCourseLiked, clearAllLikedCourses } = useLikedCourses();
+  const [viewMode, setViewMode] = useState("grid");
+  const { likedCourses, isCourseLiked, clearAllLikedCourses, toggleLike } = useLikedCourses();
+
+  // Handle like toggle for list view
+  const handleLikeToggle = (courseId) => {
+    toggleLike(courseId);
+    toast.success(isCourseLiked(courseId) ? "Course removed from favorites" : "Course added to favorites");
+  };
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -398,6 +481,8 @@ const UserCourseHomePageContent = () => {
             setSearchTerm={setSearchTerm}
             showLikedOnly={showLikedOnly}
             setShowLikedOnly={setShowLikedOnly}
+            viewMode={viewMode}
+            setViewMode={setViewMode}
           />
 
           {/* Course Results Header */}
@@ -437,12 +522,71 @@ const UserCourseHomePageContent = () => {
             </div>
           </div>
 
-          {/* Courses Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mb-12">
-            {filteredCourses.map((course) => (
-              <UserCourseCard key={course._id} course={course} setCourses={setCourses} />
-            ))}
-          </div>
+          {/* Courses Grid/List View */}
+          {viewMode === 'grid' ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 mb-12">
+              {filteredCourses.map((course) => (
+                <UserCourseCard key={course._id} course={course} setCourses={setCourses} />
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-4 mb-12">
+              {filteredCourses.map((course) => (
+                <div key={course._id} className="bg-white/80 backdrop-blur-sm rounded-2xl border-2 border-[#FEF4F1] shadow-lg hover:shadow-xl transition-all duration-300 p-6">
+                  <div className="flex flex-col lg:flex-row lg:items-center space-y-4 lg:space-y-0 lg:space-x-6">
+                    {/* Course Image/Icon */}
+                    <div className="w-20 h-20 bg-gradient-to-br from-[#FBAA99] to-[#4D423A] rounded-xl flex items-center justify-center flex-shrink-0 mx-auto lg:mx-0">
+                      <BookOpen className="w-8 h-8 text-white" />
+                    </div>
+                    
+                    {/* Course Info */}
+                    <div className="flex-1 min-w-0 text-center lg:text-left">
+                      <h3 className="text-xl font-bold text-[#4D423A] mb-2 break-words">{course.courseName}</h3>
+                      <p className="text-[#4D423A]/70 mb-3 line-clamp-2">{course.description}</p>
+                      
+                      {/* Course Details */}
+                      <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 text-sm text-[#4D423A]/60">
+                        <div className="flex items-center space-x-1">
+                          <Clock className="w-4 h-4" />
+                          <span>{course.duration}</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <Users className="w-4 h-4" />
+                          <span className="truncate max-w-32">{course.instructorName}</span>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <MapPin className="w-4 h-4" />
+                          <span className="truncate max-w-32">{course.location}</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Action Buttons */}
+                    <div className="flex flex-col sm:flex-row gap-2 justify-center lg:justify-end flex-shrink-0">
+                      <button 
+                        onClick={() => window.open(`/courses/${course._id}`, '_blank')}
+                        className="px-4 py-2 bg-gradient-to-r from-[#FBAA99] to-[#4D423A] text-white rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-1 shadow-lg"
+                      >
+                        <BookOpen className="w-4 h-4" />
+                        <span>View</span>
+                      </button>
+                      <button 
+                        onClick={() => handleLikeToggle(course._id)}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-1 shadow-lg ${
+                          isCourseLiked(course._id) 
+                            ? 'bg-gradient-to-r from-red-500 to-red-700 text-white' 
+                            : 'bg-gradient-to-r from-[#4D423A] to-[#000000] text-white'
+                        }`}
+                      >
+                        <Heart className={`w-4 h-4 ${isCourseLiked(course._id) ? 'fill-current' : ''}`} />
+                        <span>{isCourseLiked(course._id) ? 'Liked' : 'Like'}</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* No Courses Found */}
           {filteredCourses.length === 0 && !loading && (
@@ -495,11 +639,32 @@ const UserCourseHomePageContent = () => {
 
         @keyframes float {
           0%, 100% {
-            transform: translateY(0px);
+            transform: translateY(0px) rotate(0deg);
+            opacity: 0.6;
           }
           50% {
-            transform: translateY(-20px);
+            transform: translateY(-10px) rotate(180deg);
+            opacity: 1;
           }
+        }
+
+        @keyframes float-delayed {
+          0%, 100% {
+            transform: translateY(0px) rotate(0deg);
+            opacity: 0.4;
+          }
+          50% {
+            transform: translateY(-8px) rotate(-180deg);
+            opacity: 0.8;
+          }
+        }
+
+        .animate-float {
+          animation: float 3s ease-in-out infinite;
+        }
+
+        .animate-float-delayed {
+          animation: float-delayed 3s ease-in-out infinite 1.5s;
         }
 
         /* Enhanced focus styles */
