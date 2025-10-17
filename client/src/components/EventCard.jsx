@@ -103,7 +103,7 @@ const EventCard = ({ event, setEvents }) => {
           </div>
 
           {/* Event Metrics */}
-          <div className="grid grid-cols-3 gap-3 mb-6">
+          <div className="grid grid-cols-2 gap-3 mb-6">
             <div className="text-center p-3 bg-[#FEF4F1] rounded-xl hover:bg-[#FBAA99]/20 transition-colors duration-200 border border-[#FBAA99]/20">
               <Users className="w-5 h-5 mx-auto mb-1 text-[#4D423A]" />
               <div className="text-lg font-bold text-[#4D423A]">45</div>
@@ -113,11 +113,6 @@ const EventCard = ({ event, setEvents }) => {
               <Clock className="w-5 h-5 mx-auto mb-1 text-[#4D423A]" />
               <div className="text-lg font-bold text-[#4D423A]">3h</div>
               <div className="text-xs text-gray-500 font-medium">Duration</div>
-            </div>
-            <div className="text-center p-3 bg-[#FEF4F1] rounded-xl hover:bg-[#FBAA99]/20 transition-colors duration-200 border border-[#FBAA99]/20">
-              <Star className="w-5 h-5 mx-auto mb-1 text-[#4D423A]" />
-              <div className="text-lg font-bold text-[#4D423A]">4.9</div>
-              <div className="text-xs text-gray-500 font-medium">Rating</div>
             </div>
           </div>
 
@@ -176,14 +171,6 @@ const EventCard = ({ event, setEvents }) => {
         {/* Corner Decorative Element */}
         <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-br from-[#FBAA99] to-[#4D423A] rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-0 group-hover:scale-100"></div>
 
-        {/* Priority Badge for Important Events */}
-        {Math.random() > 0.6 && (
-          <div className="absolute top-4 left-4">
-            <div className="bg-gradient-to-r from-orange-400 to-orange-600 text-white px-3 py-1 rounded-full text-xs font-bold transform -rotate-12 shadow-lg">
-              FEATURED
-            </div>
-          </div>
-        )}
       </Link>
 
       {/* Enhanced Shadow Effect */}

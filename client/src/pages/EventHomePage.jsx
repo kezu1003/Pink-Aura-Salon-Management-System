@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import EventNavbar from '../components/EventNavbar';
 import EventCard from '../components/EventCard';
 import EventsNotFound from "../components/EventNotFound";
+import Footer from '../components/Footer';
 import api from '../lib/axios';
 import toast from "react-hot-toast";
 import { useScrollAnimationMultiple } from '../hooks/useScrollAnimation';
@@ -163,7 +164,7 @@ const EventHomePage = () => {
       { icon: <Calendar className="w-8 h-8" />, label: "Total Events", value: events.length || "0", color: "text-[#FBAA99]", bg: "bg-[#FEF4F1]" },
       { icon: <Users className="w-8 h-8" />, label: "Total Attendees", value: "2,847", color: "text-[#4D423A]", bg: "bg-[#FEF4F1]" },
       { icon: <Award className="w-8 h-8" />, label: "Completed Events", value: "156", color: "text-[#FBAA99]", bg: "bg-[#FEF4F1]" },
-      { icon: <TrendingUp className="w-8 h-8" />, label: "Success Rate", value: "96%", color: "text-[#4D423A]", bg: "bg-[#FEF4F1]" }
+      { icon: <Clock className="w-8 h-8" />, label: "Upcoming Events", value: "12", color: "text-[#4D423A]", bg: "bg-[#FEF4F1]" }
     ];
 
     return (
@@ -388,10 +389,6 @@ const EventHomePage = () => {
               <div className="text-sm font-medium text-[#4D423A] bg-[#FEF4F1] px-4 py-2 rounded-full border-2 border-[#FBAA99]/30">
                 {events.length} Total Events
               </div>
-              <button className="px-6 py-3 bg-gradient-to-r from-[#FBAA99] to-[#4D423A] hover:from-[#4D423A] hover:to-[#000000] text-white rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center space-x-2">
-                <BarChart3 className="w-4 h-4" />
-                <span>Export Report</span>
-              </button>
             </div>
           </div>
 
@@ -463,40 +460,11 @@ const EventHomePage = () => {
             </div>
           )}
 
-          {/* Quick Actions Panel */}
-          <div className="mt-12 bg-gradient-to-r from-[#FEF4F1] to-white rounded-3xl shadow-lg border-2 border-[#FBAA99]/20 p-8" data-scroll-animation>
-            <div className="text-center mb-8">
-              <h3 className="text-2xl font-bold text-[#4D423A] mb-2">Quick Actions</h3>
-              <p className="text-[#4D423A]/70">Streamline your event management tasks</p>
-            </div>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[
-                { icon: <Plus className="w-6 h-6" />, label: "Create New Event", desc: "Add new event", color: "from-[#FBAA99] to-[#4D423A]", link: "/events/create" },
-                { icon: <Users className="w-6 h-6" />, label: "Manage Attendees", desc: "View registrations", color: "from-[#4D423A] to-[#000000]", link: "#" },
-                { icon: <Calendar className="w-6 h-6" />, label: "Event Calendar", desc: "Schedule overview", color: "from-[#FBAA99] to-[#4D423A]", link: "#" },
-                { icon: <BarChart3 className="w-6 h-6" />, label: "Analytics", desc: "Performance metrics", color: "from-[#4D423A] to-[#000000]", link: "#" },
-              ].map((action, index) => (
-                <Link
-                  key={index}
-                  to={action.link}
-                  className="group p-6 rounded-2xl border-2 border-[#FEF4F1] hover:border-[#FBAA99] transition-all duration-300 hover:scale-105 bg-white/80 backdrop-blur-sm hover:shadow-xl block"
-                >
-                  <div className={`w-12 h-12 bg-gradient-to-r ${action.color} rounded-xl flex items-center justify-center text-white mb-4 mx-auto group-hover:scale-110 transition-transform duration-200 shadow-lg`}>
-                    {action.icon}
-                  </div>
-                  <div className="text-[#4D423A] font-semibold group-hover:text-[#FBAA99] transition-colors duration-200 mb-1">
-                    {action.label}
-                  </div>
-                  <div className="text-xs text-[#4D423A]/60">
-                    {action.desc}
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <Footer />
 
       {/* Custom Styles */}
       <style jsx>{`
