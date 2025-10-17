@@ -5,6 +5,7 @@ import EventCard from '../components/EventCard';
 import EventsNotFound from "../components/EventNotFound";
 import api from '../lib/axios';
 import toast from "react-hot-toast";
+import { useScrollAnimationMultiple } from '../hooks/useScrollAnimation';
 import { 
   Search, 
   X, 
@@ -36,6 +37,7 @@ const EventHomePage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searching, setSearching] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const visibleElements = useScrollAnimationMultiple(0.1);
 
   // Enhanced slideshow images with admin context
   const slideImages = [
@@ -83,6 +85,18 @@ const EventHomePage = () => {
     }, 5000);
     return () => clearInterval(timer);
   }, [slideImages.length]);
+
+  // Handle scroll animations
+  useEffect(() => {
+    const elements = document.querySelectorAll('[data-scroll-animation]');
+    elements.forEach((element, index) => {
+      if (visibleElements.has(index)) {
+        element.classList.add('animate-in');
+      } else {
+        element.classList.remove('animate-in');
+      }
+    });
+  }, [visibleElements]);
 
   const goToSlide = (index) => setCurrentSlide(index);
   const goToPrevSlide = () => setCurrentSlide((prev) => (prev - 1 + slideImages.length) % slideImages.length);
@@ -200,7 +214,7 @@ const EventHomePage = () => {
       <div className="relative z-10 event-home-page p-6">
         <div className="max-w-7xl mx-auto">
           {/* Admin Hero Header */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-8" data-scroll-animation>
             <div className="flex flex-wrap gap-4 justify-center mb-6">
               <Link 
                 to="/admin" 
@@ -232,10 +246,12 @@ const EventHomePage = () => {
           </div>
 
           {/* Stats Grid */}
-          <AdminEventStatsGrid />
+          <div data-scroll-animation>
+            <AdminEventStatsGrid />
+          </div>
 
           {/* Enhanced Search Section */}
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border-2 border-[#FEF4F1] p-6 mb-8">
+          <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border-2 border-[#FEF4F1] p-6 mb-8" data-scroll-animation>
             <div className="flex flex-col lg:flex-row gap-4 items-center">
               <div className="flex-1 relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -294,7 +310,7 @@ const EventHomePage = () => {
           </div>
 
           {/* Enhanced Slideshow Section */}
-          <div className="mb-12">
+          <div className="mb-12" data-scroll-animation>
             <div className="max-w-6xl mx-auto">
               <div className="relative overflow-hidden rounded-3xl shadow-2xl bg-white border-4 border-[#FEF4F1]">
                 <div 
@@ -357,7 +373,7 @@ const EventHomePage = () => {
           </div>
 
           {/* Results Header */}
-          <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4" data-scroll-animation>
             <div>
               <h2 className="text-3xl font-bold text-[#4D423A] mb-2">
                 Event Management
@@ -380,7 +396,7 @@ const EventHomePage = () => {
           </div>
 
           {/* Events Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8" data-scroll-animation>
             {filteredEvents.map((event) => (
               <EventCard key={event._id} event={event} setEvents={setEvents} />
             ))}
@@ -388,7 +404,7 @@ const EventHomePage = () => {
 
           {/* No Events Found */}
           {filteredEvents.length === 0 && !loading && !searching && (
-            <div className="text-center py-16 bg-white/80 backdrop-blur-sm rounded-3xl border-2 border-[#FEF4F1] shadow-lg">
+            <div className="text-center py-16 bg-white/80 backdrop-blur-sm rounded-3xl border-2 border-[#FEF4F1] shadow-lg" data-scroll-animation>
               {searchQuery ? (
                 <div className="max-w-md mx-auto">
                   <div className="w-24 h-24 bg-[#FEF4F1] rounded-full flex items-center justify-center mx-auto mb-6">
@@ -413,7 +429,7 @@ const EventHomePage = () => {
 
           {/* Search Tips */}
           {searchQuery && filteredEvents.length === 0 && !searching && (
-            <div className="max-w-3xl mx-auto mt-8 p-8 bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border-2 border-[#FEF4F1]">
+            <div className="max-w-3xl mx-auto mt-8 p-8 bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border-2 border-[#FEF4F1]" data-scroll-animation>
               <div className="text-center mb-6">
                 <Target className="w-12 h-12 text-[#FBAA99] mx-auto mb-4" />
                 <h4 className="text-xl font-bold text-[#4D423A] mb-2">Search Optimization Tips</h4>
@@ -448,7 +464,7 @@ const EventHomePage = () => {
           )}
 
           {/* Quick Actions Panel */}
-          <div className="mt-12 bg-gradient-to-r from-[#FEF4F1] to-white rounded-3xl shadow-lg border-2 border-[#FBAA99]/20 p-8">
+          <div className="mt-12 bg-gradient-to-r from-[#FEF4F1] to-white rounded-3xl shadow-lg border-2 border-[#FBAA99]/20 p-8" data-scroll-animation>
             <div className="text-center mb-8">
               <h3 className="text-2xl font-bold text-[#4D423A] mb-2">Quick Actions</h3>
               <p className="text-[#4D423A]/70">Streamline your event management tasks</p>
@@ -520,6 +536,37 @@ const EventHomePage = () => {
         
         ::-webkit-scrollbar-thumb:hover {
           background: linear-gradient(to bottom, #4D423A, #000000);
+        }
+
+        /* Scroll Animation Classes */
+        [data-scroll-animation] {
+          opacity: 0;
+          transform: translateY(50px);
+          transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        [data-scroll-animation].animate-in {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        /* Staggered animations for grid items */
+        [data-scroll-animation] .grid > * {
+          opacity: 0;
+          transform: translateY(30px);
+          transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        [data-scroll-animation].animate-in .grid > *:nth-child(1) { transition-delay: 0.1s; }
+        [data-scroll-animation].animate-in .grid > *:nth-child(2) { transition-delay: 0.2s; }
+        [data-scroll-animation].animate-in .grid > *:nth-child(3) { transition-delay: 0.3s; }
+        [data-scroll-animation].animate-in .grid > *:nth-child(4) { transition-delay: 0.4s; }
+        [data-scroll-animation].animate-in .grid > *:nth-child(5) { transition-delay: 0.5s; }
+        [data-scroll-animation].animate-in .grid > *:nth-child(6) { transition-delay: 0.6s; }
+
+        [data-scroll-animation].animate-in .grid > * {
+          opacity: 1;
+          transform: translateY(0);
         }
       `}</style>
     </div>
