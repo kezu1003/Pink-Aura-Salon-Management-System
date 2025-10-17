@@ -73,23 +73,75 @@ const CourseDetailsPage = () => {
       
       // Header Section with brand colors
       doc.setFillColor(...colors.primary);
-      doc.rect(0, 0, pageWidth, 35, 'F');
+      doc.rect(0, 0, pageWidth, 40, 'F');
       
-      // Salon name in header
+      // Load and process logo image (same as enrollment report)
+      try {
+        // Load the logo image
+        const logoImg = new Image();
+        logoImg.crossOrigin = 'anonymous';
+        
+        // Convert logo to white color using canvas
+        const whiteLogoBase64 = await new Promise((resolve) => {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          const img = new Image();
+          img.onload = () => {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            
+            // Get image data and convert to white
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            
+            for (let i = 0; i < data.length; i += 4) {
+              // If pixel is not transparent, make it white
+              if (data[i + 3] > 0) {
+                data[i] = 255;     // Red
+                data[i + 1] = 255; // Green
+                data[i + 2] = 255; // Blue
+                // Keep alpha as is
+              }
+            }
+            
+            ctx.putImageData(imageData, 0, 0);
+            resolve(canvas.toDataURL('image/png'));
+          };
+          img.src = '/logo-removebg.png'; // Use the logo file from public folder
+        });
+        
+        if (whiteLogoBase64) {
+          doc.addImage(whiteLogoBase64, 'PNG', 10, 5, 30, 30);
+        }
+      } catch (error) {
+        console.log('Logo loading failed, using text fallback:', error);
+        // Fallback to text if logo loading fails
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(20);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Pink Aura', 20, 15);
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Beauty Salon', 20, 25);
+      }
+      
+      // Add main title in center
       doc.setTextColor(255, 255, 255);
       doc.setFontSize(24);
-      doc.setFont(undefined, 'bold');
-      doc.text('Pink Aura', margin, 20);
-      
-      // Tagline
+      doc.setFont('helvetica', 'bold');
+      doc.text('Pink Aura', pageWidth / 2, 15, { align: 'center' });
       doc.setFontSize(12);
-      doc.setFont(undefined, 'normal');
-      doc.text('Beauty Academy & Professional Training', margin, 28);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Beauty Academy & Professional Training', pageWidth / 2, 25, { align: 'center' });
       
-      // Decorative line
-      doc.setDrawColor(...colors.secondary);
-      doc.setLineWidth(2);
-      doc.line(margin, 40, pageWidth - margin, 40);
+      // Decorative circle on the right
+      doc.setFillColor(...colors.secondary);
+      doc.circle(pageWidth - 20, 20, 8, 'F');
+      
+      // Separator line
+      doc.setFillColor(...colors.secondary);
+      doc.rect(0, 40, pageWidth, 3, 'F');
       
       yPosition = 55;
       
@@ -154,44 +206,7 @@ const CourseDetailsPage = () => {
         }
       });
       
-      // Statistics Section (if space allows)
-      if (yPosition < pageHeight - 80) {
-        yPosition += 15;
-        
-        // Section header
-        doc.setFillColor(...colors.secondary);
-        doc.rect(margin + 2, yPosition - 5, pageWidth - (margin * 2) - 4, 20, 'F');
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(14);
-        doc.setFont(undefined, 'bold');
-        doc.text('Course Statistics', margin + 8, yPosition + 8);
-        
-        yPosition += 25;
-        
-        const stats = [
-          ['Current Enrollment', '24 students'],
-          ['Average Rating', '4.8/5.0'],
-          ['Completion Rate', '92%'],
-          ['Course Status', 'Active']
-        ];
-        
-        stats.forEach(([label, value], index) => {
-          if (index % 2 === 0) {
-            doc.setFillColor(...colors.light);
-            doc.rect(margin + 2, yPosition - 8, pageWidth - (margin * 2) - 4, 16, 'F');
-          }
-          
-          doc.setTextColor(...colors.secondary);
-          doc.setFont(undefined, 'bold');
-          doc.text(`${label}:`, margin + 8, yPosition);
-          
-          doc.setTextColor(...colors.dark);
-          doc.setFont(undefined, 'normal');
-          doc.text(value, margin + 80, yPosition);
-          
-          yPosition += 18;
-        });
-      }
+      // Note: Course statistics section removed as requested
       
       // Footer Section
       const footerY = pageHeight - 25;
