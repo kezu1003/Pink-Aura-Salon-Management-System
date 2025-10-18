@@ -125,28 +125,36 @@ const Navbar = () => {
                 Shop
               </NavLink>
 
-              <NavLink
-                to="/cart"
-                className={({ isActive }) =>
-                  `hidden sm:block text-base sm:text-lg transition ${
-                    isActive ? 'text-[#4D423A] font-medium' : 'text-black hover:text-[#4D423A]'
-                  }`
-                }
+              {/* Cart  */}
+            <div
+              className="fixed right-3 sm:right-5 z-40"
+              style={{ top: scrolled ? 76 : 96 }}  //  small gap
+            >
+              
+              <div
+                className="fixed right-3 sm:right-5 z-40"
+                style={{ top: scrolled ? 76 : 96 }}
               >
                 <Link
-                to="/cart"
-                className="relative hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-full
-                           bg-white/70 hover:bg-[#FEF4F1]/90 border border-[#FBAA99]/50
-                           text-[#4D423A] transition backdrop-blur-sm"
-                aria-label="Cart"
-              >
-                {/* Invisible anchor for fly-to-cart landing */}
-                <span id="cart-fly-anchor" className="absolute inset-0 m-auto w-0 h-0 pointer-events-none" />
-                <ShoppingCart className="w-5 h-5" />
-                <span className="text-base">Cart</span>
+    to="/cart"
+    className="group relative inline-flex items-center gap-2 pl-3 pr-4 py-2 rounded-full
+               bg-white/95 backdrop-blur-md text-gray-900 font-medium
+               shadow-lg shadow-gray-300/50
+               hover:bg-white hover:shadow-xl hover:shadow-gray-300/60
+               transition-all duration-300
+               outline outline-1 outline-gray-300
+               hover:outline-[#FBAA99] hover:animate-pulse"
+    aria-label="Cart"
+  >
+                  <span id="cart-fly-anchor" className="absolute inset-0 m-auto w-0 h-0 pointer-events-none" />
 
-              </Link>
-              </NavLink>
+                  <ShoppingCart className="w-5 h-5" />
+                  <span className="text-base">Cart</span>
+                  
+                </Link>
+              </div>
+            </div>
+
 
               <NavLink
                 to="/reviews"
