@@ -22,12 +22,40 @@
               roseSoft: '#F3A6C7',
               onyx: '#0E0E10',
               porcelain: '#F7F5F2',
+              cartPink: '#FBAA99',
+              cartPinkDark: '#F98B8B',
+              roseDark: '#C2185B',
             },
             boxShadow: {
               silk: '0 10px 30px rgba(214,51,132,0.08)',
+              'cart-soft': '0 10px 24px rgba(251,170,153,0.35)',
+              'cart-hover': '0 14px 30px rgba(251,170,153,0.45)',
+              'badge-soft': '0 4px 12px rgba(214,51,132,0.4)',
             },
             backdropBlur: {
               12: '12px',
+            },
+            animation: {
+              'pulse-subtle': 'pulse-subtle 2s infinite',
+              'bounce-subtle': 'bounce-subtle 1s infinite',
+              'shimmer': 'shimmer 2s linear infinite',
+            },
+            keyframes: {
+              'pulse-subtle': {
+                '0%, 100%': { opacity: 1 },
+                '50%': { opacity: 0.85 },
+              },
+              'bounce-subtle': {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-2px)' },
+              },
+              'shimmer': {
+                '0%': { transform: 'translateX(-100%)' },
+                '100%': { transform: 'translateX(100%)' },
+              },
+            },
+            transitionProperty: {
+              'shadow': 'box-shadow',
             },
           },
         },

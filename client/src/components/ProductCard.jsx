@@ -93,7 +93,7 @@ export default function ProductCard({ product, onQuickView }) {
           className={`mt-3 w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition
           ${out
               ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-              :  "bg-emerald-600 text-white hover:bg-emerald-700 active:scale-[0.99]"
+              :  "bg-[#FBAA99] text-white hover:opacity-95 active:scale-[0.99]"
             }`}
           aria-live="polite"
         >
