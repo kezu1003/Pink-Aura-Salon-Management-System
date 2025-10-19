@@ -69,21 +69,37 @@ export default function Packages() {
         <img
           src="/pkg02.jpg"
           alt="Salon Packages"
-          className="w-full h-[450px] md:h-[600px] lg:h-[600px] object-cover rounded-lg shadow-lg"
+          className="w-full h-[450px] md:h-[600px] lg:h-[510px] object-cover rounded-lg shadow-lg object-cover brightness-60"
         />
-        <div className="absolute inset-0 flex flex-col justify-center items-center text-center px-4">
-          <h1 className="text-3xl md:text-4xl font-serif text-[#F57C5B] drop-shadow-md">
+
+        {/* Text + Glass Button */}
+        <div className="absolute inset-0 flex flex-col justify-center items-center text-center px-4 space-y-4">
+          <h1 className="text-3xl md:text-4xl font-serif text-white drop-shadow-lg">
             Salon Packages
           </h1>
-          <p className="text-lg md:text-xl text-[#7A4B3A] mt-2 max-w-2xl">
-            Explore our carefully curated salon packages to pamper your hair, nails, and overall wellness. Luxurious care tailored just for you.
+          <p className="text-lg md:text-xl text-gray-200 max-w-2xl drop-shadow-md">
+            Explore our carefully curated salon packages to pamper your hair,
+            nails, and overall wellness. Luxurious care tailored just for you.
           </p>
+
+          {/* Glass-style button */}
+          <button
+            onClick={() => {
+              const categorySection = document.querySelector("#category-tabs");
+              if (categorySection) {
+                categorySection.scrollIntoView({ behavior: "smooth" });
+              }
+            }}
+            className="px-6 py-2 mt-4 text-white backdrop-blur-md bg-white/20 border border-white/40 rounded-full shadow-lg hover:bg-white/30 transition-all duration-300"
+          >
+            Explore Now
+          </button>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-16">
-        {/* Category Tabs with 3D Effect */}
-        <div className="mb-6 flex flex-wrap gap-3 justify-center">
+        {/* Category Tabs */}
+        <div id="category-tabs" className="mb-6 flex flex-wrap gap-3 justify-center">
           {categories.map((c) => (
             <button
               key={c}
@@ -100,24 +116,13 @@ export default function Packages() {
         </div>
 
         {/* Filters */}
-        <div className="mb-6 grid sm:grid-cols-2 lg:grid-cols-5 gap-3">
+        <div className="mb-6 grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search packages..."
             className="px-3 py-2 rounded-lg border border-[#F57C5B]"
           />
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="px-3 py-2 rounded-lg border border-[#F57C5B]"
-          >
-            {categories.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
           <input
             value={minPrice}
             onChange={(e) => setMinPrice(e.target.value)}
@@ -142,7 +147,6 @@ export default function Packages() {
             <option value="new">Newest</option>
             <option value="price_asc">Price: Low to High</option>
             <option value="price_desc">Price: High to Low</option>
-            <option value="popularity">Popularity</option>
           </select>
         </div>
 
