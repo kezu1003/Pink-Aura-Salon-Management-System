@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate  } from 'react-router-dom';
 
 
 import Home from './pages/Home.jsx';
@@ -15,6 +15,8 @@ import 'react-toastify/dist/ReactToastify.css';
 // Auth / Admin layout
 import RequireRole from './components/Protected.jsx';
 import AdminLayout from './pages/admin/AdminLayout.jsx';
+import AdminStaffNew from "./pages/admin/staff/AdminStaffNew";
+import AdminStaffList from "./pages/admin/staff/AdminStaffList";
 import AdminOverview from './pages/admin/AdminOverview.jsx';
 import StaffDirectory from './pages/admin/StaffDirectory.jsx';
 import AdminLogin from './pages/admin/AdminLogin.jsx';
@@ -120,10 +122,8 @@ const App = () => {
         <Route path='/packages' element={<Packages />} />
 
         
-
-        {/* Staff/Admin auth */}
-        <Route path='/admin/login' element={<AdminLogin />} />
-        <Route path='/staff-auth' element={<StaffAuth />} />
+        <Route path='/admin/login' element={<Navigate to="/login" replace />} />
+        <Route path='/staff-auth' element={<Navigate to="/login" replace />} />
 
         {/* Staff & Supplier dashboard */}
         <Route
@@ -150,6 +150,9 @@ const App = () => {
         >
           <Route index element={<AdminOverview />} />
           <Route path='staff' element={<StaffDirectory />} />
+          <Route path='staff' element={<AdminStaffList />} />
+          <Route path='staff/new' element={<AdminStaffNew />} />
+          <Route path='staff-notices' element={<StaffNoticesAdmin />} />
           <Route path='products' element={<ProductsAdmin />} />
           <Route path='products/new' element={<ProductForm />} />
           <Route path='products/:id/edit' element={<ProductForm />} />
