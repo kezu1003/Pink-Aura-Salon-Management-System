@@ -12,33 +12,24 @@ const __dirname = path.dirname(__filename);
 import connectDB from "./config/mongodb.js";
 import authRouter from "./routes/authRoutes.js";
 import userRouter from "./routes/userRoutes.js";
+import requireAuth from "./middleware/userAuth.js";
 import productRoutes from "./routes/productsRoutes.js";
-
-
 import adminRoutes from "./routes/adminRoutes.js";
 import staffRoutes from "./routes/staffRoutes.js";
-
 import paymentRoutes from "./routes/paymentRoutes.js";
-
 import orderRoutes from "./routes/ordersRoutes.js";
-
 import reviewsRoutes from "./routes/reviewsRoutes.js";
 import reviewReportsRoutes from "./routes/reviewReportsRoutes.js";
 import publicRoutes from "./routes/publicRoutes.js";
 import stripeRoutes from "./routes/stripeRoutes.js";
 import servicesRoutes from "./routes/servicesRoutes.js";
 import transactionRoutes from "./routes/transactionRoutes.js";
-
 import appointmentsRoutes from "./routes/appointmentsRoutes.js";
-
 import packagesRoutes from "./routes/packagesRoutes.js";
 import serviceReportsRoutes from "./routes/serviceReportsRoutes.js";
-
 import eventsRoutes from "./routes/eventsRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
-
 import advertisementRoutes from "./routes/advertisementRoutes.js";
-
 import enrollmentRoutes from "./routes/enrollmentRoutes.js";
 
 
@@ -108,6 +99,8 @@ app.use("/api/ads", advertisementRoutes);
 
 
 app.use("/api/enrollments", enrollmentRoutes);
+
+app.get('/api/staff/me', requireAuth, (req, res) => res.redirect(307, '/api/auth/me'));
 
 
 // 404

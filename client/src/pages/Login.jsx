@@ -1,4 +1,3 @@
-
 import React, { useState, useContext } from "react";
 import { assets } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
@@ -15,51 +14,69 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [reveal, setReveal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const onSubmitHandler = async (e) => {
-    try {
-      e.preventDefault();
-      axios.defaults.withCredentials = true;
+    e.preventDefault();
+    if (!backendUrl) {
+      toast.error("Missing backendUrl in AppContext");
+      return;
+    }
+    if (loading) return;
+    setLoading(true);
+    axios.defaults.withCredentials = true;
 
+    try {
       if (state === "Sign Up") {
-        const { data } = await axios.post(backendUrl + "/api/auth/register", {
+        const { data } = await axios.post(`${backendUrl}/api/auth/register`, {
           name,
           email,
           password,
         });
-        if (data.success) {
-          setIsLoggedin(true);
-          getUserData?.();
-          navigate("/");
-        } else {
-          toast.error(data.message);
+
+        if (!data?.success) {
+          throw new Error(data?.message || "Registration failed");
         }
+
+        setIsLoggedin?.(true);
+        getUserData?.();
+        toast.success("Account created. Welcome!");
+        navigate("/");
       } else {
-        const { data } = await axios.post(backendUrl + "/api/auth/login", {
+        // Unified login for all roles
+        const { data } = await axios.post(`${backendUrl}/api/auth/login`, {
           email,
           password,
         });
 
-        if (data.success) {
-          setIsLoggedin(true);
-          getUserData?.();
-
-          // redirect by role from server response 
-          const r = data?.user?.role;
-          if (r === "staff" || r === "supplier") navigate("/staff");
-          else if (r === "admin") navigate("/admin");
-          else navigate("/");
-        } else {
-          toast.error(data.message);
+        if (!data?.success) {
+          throw new Error(data?.message || "Login failed");
         }
+
+        setIsLoggedin?.(true);
+        getUserData?.();
+
+        const role = data?.user?.role;
+        if (role === "admin") navigate("/admin");
+        else if (role === "staff" || role === "supplier") navigate("/staff");
+        else navigate("/");
+
+        toast.success("Welcome back!");
       }
-    } catch (error) {
-      toast.error(error.message);
+    } catch (err) {
+      const msg =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Something went wrong";
+      toast.error(msg);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-[url('/bg1.jpg')] bg-cover bg-center relative">
+      {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 flex h-25 items-center justify-between bg-white/70 backdrop-blur-md shadow px-4 sm:px-6">
         <img
           onClick={() => navigate("/")}
@@ -76,10 +93,12 @@ const Login = () => {
         </button>
       </header>
 
+      {/* Body */}
       <main className="relative mx-auto max-w-7xl px-5 lg:px-10 pt-40 md:pt-44 pb-24 min-h-[calc(100vh-4rem)]">
         <div className="relative z-10 flex items-start justify-start">
           <div className="w-full max-w-md">
             <div className="relative rounded-3xl border border-white/40 bg-white/65 p-6 shadow-2xl backdrop-blur-xl sm:p-7">
+              {/* Heading */}
               <div className="mb-5 text-center">
                 <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-rose-900">
                   {state === "Sign Up" ? "Create Account" : "Welcome Back"}
@@ -89,8 +108,10 @@ const Login = () => {
                     ? "Join our beauty community"
                     : "Login to continue your glow journey"}
                 </p>
+                
               </div>
 
+              {/* Tabs */}
               <div className="mb-5 grid grid-cols-2 gap-2 rounded-full bg-white/70 p-1 shadow-sm">
                 <button
                   type="button"
@@ -116,6 +137,7 @@ const Login = () => {
                 </button>
               </div>
 
+              {/* Form */}
               <form onSubmit={onSubmitHandler} className="space-y-3.5">
                 {state === "Sign Up" && (
                   <div className="group flex w-full items-center gap-3 rounded-2xl bg-white/80 px-4 py-3 ring-1 ring-rose-200/60 transition-all hover:ring-rose-300 focus-within:bg-white focus-within:ring-rose-400">
@@ -176,9 +198,14 @@ const Login = () => {
 
                 <button
                   type="submit"
-                  className="group relative w-full overflow-hidden rounded-2xl bg-gradient-to-b from-[#FBAA99] to-[#FDE8E4] px-6 py-3 text-base font-semibold text-rose-900 shadow-lg transition-all hover:scale-[1.01] hover:shadow-rose-200/80 active:scale-[0.99]"
+                  disabled={loading}
+                  className={`group relative w-full overflow-hidden rounded-2xl bg-gradient-to-b from-[#FBAA99] to-[#FDE8E4] px-6 py-3 text-base font-semibold text-rose-900 shadow-lg transition-all hover:scale-[1.01] hover:shadow-rose-200/80 active:scale-[0.99] ${
+                    loading ? "opacity-70 cursor-not-allowed" : ""
+                  }`}
                 >
-                  <span className="relative z-10">{state}</span>
+                  <span className="relative z-10">
+                    {loading ? "Please wait..." : state}
+                  </span>
                   <span className="absolute inset-0 -translate-y-full bg-white/30 transition-all duration-500 group-hover:translate-y-0" />
                 </button>
               </form>
@@ -209,16 +236,7 @@ const Login = () => {
                 )}
               </div>
 
-              <p className="mt-4 text-center text-xs text-rose-600">
-                Are you a staff member or admin?{" "}
-                <button
-                  onClick={() => navigate("/staff-auth")}
-                  className="font-medium text-rose-700 underline underline-offset-4 hover:text-rose-900"
-                  type="button"
-                >
-                  Go to Staff/Admin Login
-                </button>
-              </p>
+             
             </div>
           </div>
         </div>

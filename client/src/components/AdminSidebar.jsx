@@ -138,6 +138,7 @@ export default function AdminSidebar({ expanded, onClose }) {
           {hasRole("admin") && (
             <Group title="Staff" expanded={expanded}>
               <Item to="/admin/staff" label="Staff Directory" icon={Users} expanded={expanded} />
+              <Item to="/admin/staff/new" label="Add Staff" icon={Settings} expanded={expanded} />
               <Item to="/admin/staff-notices" label="Staff Notices" icon={Bell} expanded={expanded} />
             </Group>
           )}
