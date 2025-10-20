@@ -133,7 +133,7 @@ const brandTiles = [
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-rose-50 via-pink-50 to-white">
+    <div className="min-h-screen bg-white">
       <Navbar /> 
       <div className="h-16 md:h-20" />
 
@@ -154,6 +154,55 @@ const brandTiles = [
 
         </div>
       </section>
+
+        {/* category  */}
+
+      <SectionRibbon text="SHOP BY CATEGORY"  className=" mb-8" />
+      <section className="px-4 md:px-8 lg:px-12">
+        <CategoryGallery
+          value={category}
+          items={categoryTiles}
+          onChange={(c) => {
+           setCategory(c);
+           setPage(1);
+     
+      setTimeout(() => document.getElementById("shop-grid")?.scrollIntoView({ behavior: "smooth", block: "start" }), 0);
+    }}
+    />
+      </section>
+
+    <SectionRibbon text="SHOP BY BRAND" className="mt-10 mb-8" />
+
+    <section className="px-4 md:px-8 lg:px-12 ">
+      <BrandGallery
+  items={[
+    { value: "", label: "All", image: "/brands/all.jpg" },
+    { value: "Seren Cosmetics", label: "Seren Cosmetics", image: "/brands/Seren_Cosmetics.jpg" },
+    { value: "Basicare", label: "Basicare", image: "/brands/Basicare.png" },
+    { value: "Maybelline", label: "Maybelline", image: "/brands/Maybelline.png" },
+    { value: "Oreal", label: "Oreal", image: "/brands/Oreal.jpg" },
+    { value: "Dove", label: "Dove", image: "/brands/Dove.jpg" },
+    { value: "Dr. Rashel", label: "Dr. Rashel", image: "/brands/Rashel.webp" },
+    { value: "Aussie", label: "Aussie", image: "/brands/Aussie.webp" },
+    { value: "Femfresh", label: "Femfresh", image: "/brands/Femfresh.png" },
+    { value: "Anua", label: "Anua", image: "/brands/Anua.webp" },
+    { value: "CeraVe", label: "CeraVe", image: "/brands/CeraVe.webp" },
+    { value: "Banana Boat", label: "Banana Boat", image: "/brands/Banana_Boat.jpg" },
+    { value: "Boots", label: "Boots", image: "/brands/Boots.png" },
+  ]}
+  value={brand}
+  onChange={(val) => {
+    setBrand(val);
+    setPage(1);
+    
+    setTimeout(() => document.getElementById("shop-grid")?.scrollIntoView({ behavior: "smooth", block: "start" }), 0);
+  }}
+/>
+    </section>
+
+      <div className="mt-10 md:mt-14">
+        <ProToolsPanel />
+      </div>
 
       {/* FILTER DOCK  */}
       <div className=" top-16 md:top-20 z-10 w-full mb-8">
@@ -220,44 +269,6 @@ const brandTiles = [
               {loading ? "Loading products…" : `${total} item${total === 1 ? "" : "s"} found`}
             </p>
           </motion.div>
-
-
-        {/* category  */}
-
-      <SectionRibbon text="SHOP BY CATEGORY"  className=" mb-8" />
-      <section className="px-4 md:px-8 lg:px-12">
-        <CategoryGallery
-          value={category}
-          items={categoryTiles}
-          onChange={(c) => {
-           setCategory(c);
-           setPage(1);
-     
-      setTimeout(() => document.getElementById("shop-grid")?.scrollIntoView({ behavior: "smooth", block: "start" }), 0);
-    }}
-    />
-      </section>
-
-    <SectionRibbon text="SHOP BY BRAND" className="mt-10 mb-8" />
-
-    <section className="px-4 md:px-8 lg:px-12 ">
-      <div className="max-w-6xl mx-auto">
-      <BrandGallery
-        value={brand}
-        items={brandTiles}
-        onChange={(b) => {
-          setBrand(b);         
-          setPage(1);
-          document.getElementById("shop-grid")
-            ?.scrollIntoView({ behavior: "smooth", block: "start" });
-        }}
-      />
-      </div>
-    </section>
-
-      <div className="mt-10 md:mt-14">
-        <ProToolsPanel />
-      </div>
 
       <main className="w-full py-6">
         <div className="px-4 md:px-8 lg:px-12">
