@@ -43,7 +43,7 @@ export default function Home() {
               style={{ backgroundImage: "url('/bg05.jpg')" }}
             >
 
-              <div className="absolute inset-0 flex items-center justify-cente">
+              <div className="absolute inset-0 flex items-center justify-center">
                 <Header />
               </div>
 
