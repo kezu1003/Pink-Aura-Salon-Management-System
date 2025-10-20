@@ -4,12 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Login = () => {
   const navigate = useNavigate();
   const { backendUrl, setIsLoggedin, getUserData } = useContext(AppContext);
 
-  const [state, setState] = useState("Login"); 
+  const [state, setState] = useState("Login");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,10 +19,6 @@ const Login = () => {
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
-    if (!backendUrl) {
-      toast.error("Missing backendUrl in AppContext");
-      return;
-    }
     if (loading) return;
     setLoading(true);
     axios.defaults.withCredentials = true;
@@ -33,49 +30,54 @@ const Login = () => {
           email,
           password,
         });
-
-        if (!data?.success) {
-          throw new Error(data?.message || "Registration failed");
-        }
+        if (!data?.success) throw new Error(data?.message || "Registration failed");
 
         setIsLoggedin?.(true);
         getUserData?.();
         toast.success("Account created. Welcome!");
         navigate("/");
       } else {
-        // Unified login for all roles
         const { data } = await axios.post(`${backendUrl}/api/auth/login`, {
           email,
           password,
         });
-
-        if (!data?.success) {
-          throw new Error(data?.message || "Login failed");
-        }
+        if (!data?.success) throw new Error(data?.message || "Login failed");
 
         setIsLoggedin?.(true);
         getUserData?.();
-
         const role = data?.user?.role;
         if (role === "admin") navigate("/admin");
         else if (role === "staff" || role === "supplier") navigate("/staff");
         else navigate("/");
-
         toast.success("Welcome back!");
       }
     } catch (err) {
-      const msg =
-        err?.response?.data?.message ||
-        err?.message ||
-        "Something went wrong";
-      toast.error(msg);
+      toast.error(err?.response?.data?.message || err?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
   };
 
+  // Flip animation variants
+  const flipVariants = {
+    initial: { rotateY: 90, opacity: 0 },
+    animate: { rotateY: 0, opacity: 1 },
+    exit: { rotateY: -90, opacity: 0 },
+  };
+
   return (
-    <div className="min-h-screen bg-[url('/bg1.jpg')] bg-cover bg-center relative">
+    <div
+      className={`min-h-screen relative transition-colors duration-700 ${
+        state === "Sign Up"
+          ? "bg-gradient-to-br from-rose-50 via-pink-50 to-rose-100"
+          : "bg-gradient-to-br from-pink-50 via-rose-50 to-pink-100"
+      }`}
+      style={{
+        backgroundImage: "url('/bg1.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 flex h-25 items-center justify-between bg-white/70 backdrop-blur-md shadow px-4 sm:px-6">
         <img
@@ -93,11 +95,17 @@ const Login = () => {
         </button>
       </header>
 
-      {/* Body */}
+      {/* Main */}
       <main className="relative mx-auto max-w-7xl px-5 lg:px-10 pt-40 md:pt-44 pb-24 min-h-[calc(100vh-4rem)]">
         <div className="relative z-10 flex items-start justify-start">
           <div className="w-full max-w-md">
-            <div className="relative rounded-3xl border border-white/40 bg-white/65 p-6 shadow-2xl backdrop-blur-xl sm:p-7">
+            <motion.div
+              key={state}
+              className="relative rounded-3xl border border-white/40 bg-white/65 p-6 shadow-2xl backdrop-blur-xl sm:p-7 overflow-hidden"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+            >
               {/* Heading */}
               <div className="mb-5 text-center">
                 <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-rose-900">
@@ -108,108 +116,109 @@ const Login = () => {
                     ? "Join our beauty community"
                     : "Login to continue your glow journey"}
                 </p>
-                
               </div>
 
-              {/* Tabs */}
+              {/* Toggle buttons */}
               <div className="mb-5 grid grid-cols-2 gap-2 rounded-full bg-white/70 p-1 shadow-sm">
-                <button
-                  type="button"
-                  onClick={() => setState("Login")}
-                  className={`rounded-full py-2 text-sm font-medium transition-all ${
-                    state === "Login"
-                      ? "bg-gradient-to-r from-rose-300 to-rose-200 text-rose-900 shadow"
-                      : "text-rose-600 hover:bg-white"
-                  }`}
-                >
-                  Login
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setState("Sign Up")}
-                  className={`rounded-full py-2 text-sm font-medium transition-all ${
-                    state === "Sign Up"
-                      ? "bg-gradient-to-r from-rose-300 to-rose-200 text-rose-900 shadow"
-                      : "text-rose-600 hover:bg-white"
-                  }`}
-                >
-                  Sign Up
-                </button>
+                {["Login", "Sign Up"].map((tab) => (
+                  <motion.button
+                    key={tab}
+                    type="button"
+                    onClick={() => setState(tab)}
+                    className={`rounded-full py-2 text-sm font-medium transition-all ${
+                      state === tab
+                        ? "bg-gradient-to-r from-rose-300 to-rose-200 text-rose-900 shadow"
+                        : "text-rose-600 hover:bg-white"
+                    }`}
+                    whileTap={{ scale: 0.96 }}
+                  >
+                    {tab}
+                  </motion.button>
+                ))}
               </div>
 
-              {/* Form */}
-              <form onSubmit={onSubmitHandler} className="space-y-3.5">
-                {state === "Sign Up" && (
-                  <div className="group flex w-full items-center gap-3 rounded-2xl bg-white/80 px-4 py-3 ring-1 ring-rose-200/60 transition-all hover:ring-rose-300 focus-within:bg-white focus-within:ring-rose-400">
-                    <img src={assets.person_icon} alt="" className="h-5 w-5" />
-                    <input
-                      onChange={(e) => setName(e.target.value)}
-                      value={name}
-                      className="w-full bg-transparent text-rose-900 placeholder-rose-400 outline-none"
-                      type="text"
-                      placeholder="Full Name"
-                      required
+              {/* Animated flip forms */}
+              <AnimatePresence mode="wait">
+                {state === "Sign Up" ? (
+                  <motion.form
+                    key="signup"
+                    variants={flipVariants}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    transition={{ duration: 0.55, ease: [0.65, 0, 0.35, 1] }}
+                    onSubmit={onSubmitHandler}
+                    className="space-y-3.5"
+                  >
+                    <Field icon={assets.person_icon}>
+                      <input
+                        onChange={(e) => setName(e.target.value)}
+                        value={name}
+                        className="w-full bg-transparent text-rose-900 placeholder-rose-400 outline-none"
+                        type="text"
+                        placeholder="Full Name"
+                        required
+                      />
+                    </Field>
+                    <Field icon={assets.mail_icon}>
+                      <input
+                        onChange={(e) => setEmail(e.target.value)}
+                        value={email}
+                        className="w-full bg-transparent text-rose-900 placeholder-rose-400 outline-none"
+                        type="email"
+                        placeholder="Email address"
+                        required
+                      />
+                    </Field>
+                    <PasswordField
+                      reveal={reveal}
+                      setReveal={setReveal}
+                      value={password}
+                      onChange={setPassword}
                     />
-                  </div>
+                    <FooterActions
+                      loading={loading}
+                      onForgot={() => navigate("/reset-password")}
+                      ctaLabel="Sign Up"
+                    />
+                  </motion.form>
+                ) : (
+                  <motion.form
+                    key="login"
+                    variants={flipVariants}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                    transition={{ duration: 0.55, ease: [0.65, 0, 0.35, 1] }}
+                    onSubmit={onSubmitHandler}
+                    className="space-y-3.5"
+                  >
+                    <Field icon={assets.mail_icon}>
+                      <input
+                        onChange={(e) => setEmail(e.target.value)}
+                        value={email}
+                        className="w-full bg-transparent text-rose-900 placeholder-rose-400 outline-none"
+                        type="email"
+                        placeholder="Email address"
+                        required
+                      />
+                    </Field>
+                    <PasswordField
+                      reveal={reveal}
+                      setReveal={setReveal}
+                      value={password}
+                      onChange={setPassword}
+                    />
+                    <FooterActions
+                      loading={loading}
+                      onForgot={() => navigate("/reset-password")}
+                      ctaLabel="Login"
+                    />
+                  </motion.form>
                 )}
+              </AnimatePresence>
 
-                <div className="group flex w-full items-center gap-3 rounded-2xl bg-white/80 px-4 py-3 ring-1 ring-rose-200/60 transition-all hover:ring-rose-300 focus-within:bg-white focus-within:ring-rose-400">
-                  <img src={assets.mail_icon} alt="" className="h-5 w-5" />
-                  <input
-                    onChange={(e) => setEmail(e.target.value)}
-                    value={email}
-                    className="w-full bg-transparent text-rose-900 placeholder-rose-400 outline-none"
-                    type="email"
-                    placeholder="Email address"
-                    required
-                  />
-                </div>
-
-                <div className="group flex w-full items-center gap-3 rounded-2xl bg-white/80 px-4 py-3 ring-1 ring-rose-200/60 transition-all hover:ring-rose-300 focus-within:bg-white focus-within:ring-rose-400">
-                  <img src={assets.lock_icon} alt="" className="h-5 w-5" />
-                  <input
-                    onChange={(e) => setPassword(e.target.value)}
-                    value={password}
-                    className="w-full bg-transparent text-rose-900 placeholder-rose-400 outline-none"
-                    type={reveal ? "text" : "password"}
-                    placeholder="Password"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setReveal((v) => !v)}
-                    className="rounded-full px-2 py-1 text-[11px] font-medium text-rose-600 hover:bg-rose-50"
-                    aria-label={reveal ? "Hide password" : "Show password"}
-                  >
-                    {reveal ? "Hide" : "Show"}
-                  </button>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <button
-                    type="button"
-                    onClick={() => navigate("/reset-password")}
-                    className="text-sm font-medium text-rose-700 hover:text-rose-900"
-                  >
-                    Forgot Password?
-                  </button>
-                  <span className="text-xs text-rose-500">Secure • Private • Safe</span>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className={`group relative w-full overflow-hidden rounded-2xl bg-gradient-to-b from-[#FBAA99] to-[#FDE8E4] px-6 py-3 text-base font-semibold text-rose-900 shadow-lg transition-all hover:scale-[1.01] hover:shadow-rose-200/80 active:scale-[0.99] ${
-                    loading ? "opacity-70 cursor-not-allowed" : ""
-                  }`}
-                >
-                  <span className="relative z-10">
-                    {loading ? "Please wait..." : state}
-                  </span>
-                  <span className="absolute inset-0 -translate-y-full bg-white/30 transition-all duration-500 group-hover:translate-y-0" />
-                </button>
-              </form>
-
+              {/* Switch hint */}
               <div className="mt-5 text-center text-sm">
                 {state === "Sign Up" ? (
                   <p className="text-rose-700">
@@ -235,9 +244,7 @@ const Login = () => {
                   </p>
                 )}
               </div>
-
-             
-            </div>
+            </motion.div>
           </div>
         </div>
       </main>
@@ -248,5 +255,55 @@ const Login = () => {
     </div>
   );
 };
+
+
+const Field = ({ icon, children }) => (
+  <div className="group flex w-full items-center gap-3 rounded-2xl bg-white/80 px-4 py-3 ring-1 ring-rose-200/60 transition-all hover:ring-rose-300 focus-within:bg-white focus-within:ring-rose-400">
+    {icon && <img src={icon} alt="" className="h-5 w-5" />}
+    {children}
+  </div>
+);
+
+const PasswordField = ({ reveal, setReveal, value, onChange }) => (
+  <div className="group flex w-full items-center gap-3 rounded-2xl bg-white/80 px-4 py-3 ring-1 ring-rose-200/60 transition-all hover:ring-rose-300 focus-within:bg-white focus-within:ring-rose-400">
+    <img src={assets.lock_icon} alt="" className="h-5 w-5" />
+    <input
+      onChange={(e) => onChange(e.target.value)}
+      value={value}
+      className="w-full bg-transparent text-rose-900 placeholder-rose-400 outline-none"
+      type={reveal ? "text" : "password"}
+      placeholder="Password"
+      required
+    />
+    <button
+      type="button"
+      onClick={() => setReveal((v) => !v)}
+      className="rounded-full px-2 py-1 text-[11px] font-medium text-rose-600 hover:bg-rose-50"
+    >
+      {reveal ? "Hide" : "Show"}
+    </button>
+  </div>
+);
+
+const FooterActions = ({ loading, onForgot, ctaLabel }) => (
+  <>
+    <div className="flex items-center justify-between">
+      <button type="button" onClick={onForgot} className="text-sm font-medium text-rose-700 hover:text-rose-900">
+        Forgot Password?
+      </button>
+      <span className="text-xs text-rose-500">Secure • Private • Safe</span>
+    </div>
+    <button
+      type="submit"
+      disabled={loading}
+      className={`group relative w-full overflow-hidden rounded-2xl bg-gradient-to-b from-[#FBAA99] to-[#FDE8E4] px-6 py-3 text-base font-semibold text-rose-900 shadow-lg transition-all hover:scale-[1.01] hover:shadow-rose-200/80 active:scale-[0.99] ${
+        loading ? "opacity-70 cursor-not-allowed" : ""
+      }`}
+    >
+      <span className="relative z-10">{loading ? "Please wait..." : ctaLabel}</span>
+      <span className="absolute inset-0 -translate-y-full bg-white/30 transition-all duration-500 group-hover:translate-y-0" />
+    </button>
+  </>
+);
 
 export default Login;
