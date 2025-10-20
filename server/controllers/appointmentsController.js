@@ -6,22 +6,34 @@ import userModel from "../models/userModel.js";
 import StaffTimeOff from "../models/StaffTimeOff.js";
 
 // timing defaults
-
 const BIZ_TZ_OFFSET_MIN = 0; 
 const DEFAULT_BUFFER_MIN = 5;
 const HOLD_MINUTES = 10;
+
+// per-slot capacity 
+const MAX_PER_SLOT = Number(process.env.MAX_BOOKINGS_PER_SLOT || 1);
 
 function endFromStart(start, durationMin, bufferMin = DEFAULT_BUFFER_MIN) {
   return addMinutes(new Date(start), durationMin + bufferMin);
 }
 
-/** CUSTOMER: list own appointments */
+/* capacity check for a given slot  */
+async function slotIsFull({ date, startTime, excludeId = null }) {
+  const q = {
+    date, 
+    startTime,
+    status: { $in: ["pending", "confirmed"] },
+  };
+  if (excludeId) q._id = { $ne: excludeId };
+  const count = await Appointment.countDocuments(q);
+  return count >= MAX_PER_SLOT;
+}
 
+/*list own appointments */
 export async function listMine(req, res) {
   try {
     const { status, from, to, page = 1, limit = 10 } = req.query;
 
-    
     const customerId =
       (req.user && (req.user._id || req.user.id)) ||
       req.userId ||
@@ -53,8 +65,7 @@ export async function listMine(req, res) {
   }
 }
 
-/** ADMIN list all */
-
+/* list all */
 export async function listAdmin(req, res) {
   try {
     const { status, staffId, serviceId, from, to } = req.query;
@@ -80,8 +91,7 @@ export async function listAdmin(req, res) {
   }
 }
 
-/** CUSTOMER: create booking  */
-
+/* create booking  */
 export async function createAppointment(req, res) {
   try {
     const {
@@ -93,7 +103,6 @@ export async function createAppointment(req, res) {
       notes = "",
     } = req.body;
 
-  
     const customerId =
       (req.user && (req.user._id || req.user.id)) ||
       req.userId ||
@@ -117,10 +126,14 @@ export async function createAppointment(req, res) {
     }
 
     // total duration = sum of service durations
-
     const durationMin = services.reduce((a, s) => a + Number(s.durationMins || 0), 0);
     const startTime = new Date(start);
     const endTime = endFromStart(startTime, durationMin);
+
+    //  capacity guard
+    if (await slotIsFull({ date, startTime })) {
+      return res.json({ success: false, message: "This time slot is fully booked." });
+    }
 
     // If staff chosen, ensure not overlapping & not time-off
     let staff = null;
@@ -146,18 +159,18 @@ export async function createAppointment(req, res) {
     }
 
     const doc = await Appointment.create({
-      customer: customerId,                                
+      customer: customerId,
       services: services.map((s) => s._id),
-      staff: staff ? staff._id : null,                    
+      staff: staff ? staff._id : null,
       date,
       startTime,
       endTime,
       status: "pending",
-      paymentStatus: paymentMode === "online" ? "unpaid" : "paid", 
+      paymentStatus: paymentMode === "online" ? "unpaid" : "paid",
       paymentMode,
       holdExpiresAt: paymentMode === "online" ? addMinutes(new Date(), HOLD_MINUTES) : null,
       notes,
-      createdBy: customerId,                               
+      createdBy: customerId,
     });
 
     res.status(201).json({ success: true, appointment: doc });
@@ -166,8 +179,7 @@ export async function createAppointment(req, res) {
   }
 }
 
-/** CUSTOMER/ADMIN: reschedule, reassign, or update notes */
-
+/*  reschedule, reassign, update status */
 export async function updateAppointment(req, res) {
   try {
     const { id } = req.params;
@@ -181,16 +193,43 @@ export async function updateAppointment(req, res) {
     const { start, staffId, notes } = req.body;
     if (notes != null) appt.notes = String(notes);
 
+    if (req.body.status != null) {
+      const nextStatus = String(req.body.status);
+      const allowed = ["pending", "confirmed", "completed", "cancelled", "no_show"];
+
+      if (!allowed.includes(nextStatus)) {
+        return res.json({ success: false, message: "Invalid status" });
+      }
+
+      if (appt.status === "cancelled" && nextStatus !== "cancelled") {
+        return res.json({ success: false, message: "Cancelled appointments are locked." });
+      }
+
+      const role =
+        (req.user && req.user.role) ||
+        (req.auth && req.auth.role) ||
+        null;
+
+      if (!role || !["admin", "staff"].includes(role)) {
+        return res.status(403).json({ success: false, message: "Not allowed to change status" });
+      }
+
+      appt.status = nextStatus;
+    }
+
+    /* Reschedule */
     if (start) {
-
-      // recompute end time using existing services sum
-
       const services = await Service.find({ _id: { $in: appt.services } });
       const durationMin = services.reduce((a, s) => a + Number(s.durationMins || 0), 0);
       const newStart = new Date(start);
       const newEnd = endFromStart(newStart, durationMin);
 
-    
+      //  capacity guard on reschedule 
+      const newDateStr = newStart.toISOString().slice(0, 10);
+      if (await slotIsFull({ date: newDateStr, startTime: newStart, excludeId: appt._id })) {
+        return res.json({ success: false, message: "This time slot is fully booked." });
+      }
+
       if (appt.staff) {
         const overlaps = await Appointment.overlaps({
           staff: appt.staff,
@@ -205,9 +244,10 @@ export async function updateAppointment(req, res) {
 
       appt.startTime = newStart;
       appt.endTime = newEnd;
-      appt.date = newStart.toISOString().slice(0, 10);
+      appt.date = newDateStr;
     }
 
+    /* Reassign staff */
     if (staffId !== undefined) {
       if (staffId === null) {
         appt.staff = null;
@@ -232,7 +272,6 @@ export async function updateAppointment(req, res) {
       }
     }
 
-    
     const updaterId =
       (req.user && (req.user._id || req.user.id)) ||
       req.userId ||
@@ -253,8 +292,7 @@ export async function updateAppointment(req, res) {
   }
 }
 
-/** CUSTOMER/ADMIN: cancel appointment */
-
+/* cancel appointment */
 export async function cancelAppointment(req, res) {
   try {
     const { id } = req.params;
@@ -277,8 +315,7 @@ export async function cancelAppointment(req, res) {
   }
 }
 
-/** ADMIN/RECEPTION: mark paid -> confirmed */
-
+/* mark paid, confirmed */
 export async function markPaidAndConfirm(req, res) {
   try {
     const { id } = req.params;
@@ -302,10 +339,10 @@ export async function markPaidAndConfirm(req, res) {
   }
 }
 
-// admin grouped list 
+/** ADMIN grouped list **/
 export async function listAdminGrouped(req, res) {
   try {
-    const { by = "date" } = req.query; 
+    const { by = "date" } = req.query;
 
     const groupExpr =
       by === "type"
@@ -315,8 +352,6 @@ export async function listAdminGrouped(req, res) {
         : { $dateToString: { date: "$startTime", format: "%Y-%m-%d" } };
 
     const pipeline = [
-
-      // Services for names + category
       { $lookup: { from: "services", localField: "services", foreignField: "_id", as: "servicesPop" } },
       {
         $addFields: {

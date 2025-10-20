@@ -44,11 +44,12 @@ export function makeApi(baseUrl) {
     update: (id, body) => patch(`${root}/${id}`, body),
     cancel: (id) => del(`${root}/${id}`),
 
+    //  admin status update
+    updateStatus: (id, status) => patch(`${root}/${id}`, { status }),
+
     // admin
-    listAdmin: (qs = {}) =>
-      get(`${root}?${new URLSearchParams(qs).toString()}`),
-    adminGrouped: (by = "date") =>
-      get(`${root}/grouped?by=${encodeURIComponent(by)}`),
+    listAdmin: (qs = {}) => get(`${root}?${new URLSearchParams(qs).toString()}`),
+    adminGrouped: (by = "date") => get(`${root}/grouped?by=${encodeURIComponent(by)}`),
     markPaid: (id) => post(`${root}/${id}/mark-paid`),
 
     // staff

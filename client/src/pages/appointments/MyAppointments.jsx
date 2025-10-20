@@ -11,19 +11,21 @@ export default function MyAppointments() {
   const { backendUrl } = useContext(AppContext);
   const api = useMemo(() => makeApi(backendUrl), [backendUrl]);
   const [items, setItems] = useState([]);
-  const [sortOrder, setSortOrder] = useState("new-to-old"); // default sort
+  const [sortOrder, setSortOrder] = useState("new-to-old"); 
 
-  async function load() {
+  const load = async () => {
     const { success, appointments, message } = await api.mine({});
     if (!success) {
       toast.error(message || "Failed to load appointments");
       return;
     }
     setItems(appointments || []);
-  }
+  };
 
   useEffect(() => {
     load();
+    const id = setInterval(load, 15000);
+    return () => clearInterval(id);
   }, []);
 
   const cancel = async (id) => {
@@ -57,12 +59,10 @@ export default function MyAppointments() {
         backgroundPosition: "center",
       }}
     >
-      {/* Dark overlay */}
       <div className="absolute inset-0 bg-black/30 pointer-events-none" />
 
       <Navbar />
 
-      {/* Spacer between navbar and heading */}
       <div className="h-32 md:h-40 relative z-10" />
 
       <div className="max-w-5xl mx-auto px-4 pb-16 relative z-10">
@@ -70,7 +70,6 @@ export default function MyAppointments() {
           My Appointments
         </h1>
 
-        {/* Sort button */}
         <div className="flex justify-center mb-8">
           <button
             onClick={() =>
@@ -89,8 +88,9 @@ export default function MyAppointments() {
           <div className="space-y-6">
             {[...items]
               .sort((a, b) => {
-                const aTime = new Date(a.date + " " + a.startTime).getTime();
-                const bTime = new Date(b.date + " " + b.startTime).getTime();
+                //  sort only by startTime (ISO), not by "date + startTime"
+                const aTime = new Date(a.startTime).getTime();
+                const bTime = new Date(b.startTime).getTime();
                 return sortOrder === "new-to-old" ? bTime - aTime : aTime - bTime;
               })
               .map((a) => {
@@ -105,7 +105,6 @@ export default function MyAppointments() {
                                transform transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:bg-[#FFF0E5]"
                   >
                     <div>
-                      {/* Title */}
                       <div className="font-semibold flex items-center gap-2 text-[#4D423A] text-lg">
                         {pkg ? (
                           <>
@@ -120,8 +119,8 @@ export default function MyAppointments() {
                       </div>
 
                       <div className="text-sm text-gray-600 mt-1">
-                        {a.date} &middot; {format(new Date(a.startTime), "p")} –{" "}
-                        {format(new Date(a.endTime), "p")}
+                        {format(new Date(a.startTime), "PP")} &middot;{" "}
+                        {format(new Date(a.startTime), "p")} – {format(new Date(a.endTime), "p")}
                       </div>
 
                       {pkg && names.length > 0 && (
@@ -137,6 +136,8 @@ export default function MyAppointments() {
                             a.status === "pending"
                               ? "bg-yellow-500"
                               : a.status === "confirmed"
+                              ? "bg-blue-600"
+                              : a.status === "completed"
                               ? "bg-green-600"
                               : a.status === "cancelled"
                               ? "bg-gray-500"
@@ -148,7 +149,6 @@ export default function MyAppointments() {
                       </div>
                     </div>
 
-                    {/* Actions */}
                     {a.status !== "cancelled" && (
                       <button
                         onClick={() => cancel(a._id)}
