@@ -10,6 +10,14 @@ import { saveAs } from 'file-saver';
 import 'react-datepicker/dist/react-datepicker.css';
 
 
+const CalendarIcon = () => <span>📅</span>;
+const RevenueIcon = () => <span>💰</span>;
+const UsersIcon = () => <span>👥</span>;
+const StaffIcon = () => <span>⚡</span>;
+const AlertIcon = () => <span>⚠️</span>;
+const StarIcon = () => <span>⭐</span>;
+const DownloadIcon = () => <span>📥</span>;
+
 ChartJS.register(LineElement, BarElement, PieController, ArcElement, CategoryScale, LinearScale, PointElement, Title, Tooltip, Legend);
 
 export default function AdminOverview() {
@@ -32,6 +40,7 @@ export default function AdminOverview() {
     endDate: endOfMonth(new Date()),
     rangeType: 'This Month',
   });
+  const [loading, setLoading] = useState(false);
 
   const predefinedRanges = [
     { label: 'This Month', start: startOfMonth(new Date()), end: endOfMonth(new Date()) },
@@ -43,6 +52,7 @@ export default function AdminOverview() {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const params = {
           startDate: format(dateRange.startDate, 'yyyy-MM-dd'),
@@ -99,6 +109,8 @@ export default function AdminOverview() {
         });
       } catch (error) {
         toast.error('Failed to fetch dashboard data: ' + error.message);
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
@@ -133,164 +145,391 @@ export default function AdminOverview() {
     }
   };
 
-  // Chart configurations
   const revenueChartOptions = {
     responsive: true,
-    plugins: { legend: { position: 'top' }, title: { display: true, text: 'Revenue Trend' } },
+    plugins: { 
+      legend: { 
+        position: 'top',
+        labels: {
+          usePointStyle: true,
+          padding: 20,
+        }
+      }, 
+      title: { 
+        display: true, 
+        text: 'Revenue Trend',
+        font: {
+          size: 16,
+          weight: '600'
+        },
+        padding: { bottom: 20 }
+      } 
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: {
+          color: 'rgba(0, 0, 0, 0.05)',
+        }
+      },
+      x: {
+        grid: {
+          display: false
+        }
+      }
+    },
+    elements: {
+      line: {
+        tension: 0.4
+      },
+      point: {
+        radius: 4,
+        hoverRadius: 6
+      }
+    }
   };
+
   const revenueChartData = {
     labels: data.revenueTrend.labels,
-    datasets: [{ label: 'Revenue ($)', data: data.revenueTrend.data, borderColor: '#FBAA99', backgroundColor: '#FBAA99' }],
+    datasets: [{ 
+      label: 'Revenue (LKR)', 
+      data: data.revenueTrend.data, 
+      borderColor: '#8B5CF6',
+      backgroundColor: 'rgba(139, 92, 246, 0.1)',
+      borderWidth: 3,
+      fill: true
+    }],
   };
 
   const appointmentChartOptions = {
     responsive: true,
-    plugins: { legend: { position: 'top' }, title: { display: true, text: 'Appointments by Day' } },
+    plugins: { 
+      legend: { 
+        position: 'top',
+        labels: {
+          usePointStyle: true,
+          padding: 20,
+        }
+      }, 
+      title: { 
+        display: true, 
+        text: 'Appointments by Day',
+        font: {
+          size: 16,
+          weight: '600'
+        },
+        padding: { bottom: 20 }
+      } 
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: {
+          color: 'rgba(0, 0, 0, 0.05)',
+        }
+      },
+      x: {
+        grid: {
+          display: false
+        }
+      }
+    }
   };
+
   const appointmentChartData = {
     labels: data.appointmentDistribution.labels,
-    datasets: [{ label: 'Appointments', data: data.appointmentDistribution.data, backgroundColor: '#FEF4F1' }],
+    datasets: [{ 
+      label: 'Appointments', 
+      data: data.appointmentDistribution.data, 
+      backgroundColor: [
+        'rgba(139, 92, 246, 0.7)',
+        'rgba(16, 185, 129, 0.7)',
+        'rgba(245, 158, 11, 0.7)',
+        'rgba(239, 68, 68, 0.7)',
+        'rgba(59, 130, 246, 0.7)',
+        'rgba(236, 72, 153, 0.7)',
+        'rgba(14, 165, 233, 0.7)'
+      ],
+      borderColor: [
+        '#8B5CF6',
+        '#10B981',
+        '#F59E0B',
+        '#EF4444',
+        '#3B82F6',
+        '#EC4899',
+        '#0EA5E9'
+      ],
+      borderWidth: 1,
+      borderRadius: 6
+    }],
   };
 
   const servicesChartOptions = {
     responsive: true,
-    plugins: { legend: { position: 'right' }, title: { display: true, text: 'Top Services' } },
+    plugins: { 
+      legend: { 
+        position: 'right',
+        labels: {
+          usePointStyle: true,
+          padding: 15,
+          font: {
+            size: 12
+          }
+        }
+      }, 
+      title: { 
+        display: true, 
+        text: 'Top Services',
+        font: {
+          size: 16,
+          weight: '600'
+        },
+        padding: { bottom: 20 }
+      } 
+    },
   };
+
   const servicesChartData = {
     labels: data.topServices.labels,
-    datasets: [{ data: data.topServices.data, backgroundColor: ['#FBAA99', '#FFD1C7', '#FEF4F1', '#D9E8F5'] }],
+    datasets: [{ 
+      data: data.topServices.data, 
+      backgroundColor: [
+        '#8B5CF6', '#10B981', '#F59E0B', '#EF4444', '#3B82F6', 
+        '#EC4899', '#0EA5E9', '#84CC16', '#F97316', '#6EE7B7'
+      ],
+      borderWidth: 0
+    }],
+  };
+
+  const getActivityIcon = (type) => {
+    switch(type) {
+      case 'booking': return '📋';
+      case 'payment': return '💳';
+      case 'cancellation': return '❌';
+      default: return '🔔';
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch(status) {
+      case 'Available': return 'text-green-600 bg-green-50';
+      case 'Busy': return 'text-amber-600 bg-amber-50';
+      default: return 'text-gray-600 bg-gray-50';
+    }
   };
 
   return (
-    <div className="space-y-6">
-      {/* Date Range Selector */}
-      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-        <div className="flex gap-2">
-          {predefinedRanges.map(range => (
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Header with Date Range Selector */}
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Dashboard Overview</h1>
+            <p className="text-gray-600 mt-1">Monitor your business performance and key metrics</p>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+            <div className="flex flex-wrap gap-2">
+              {predefinedRanges.map(range => (
+                <button
+                  key={range.label}
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                    dateRange.rangeType === range.label 
+                      ? 'bg-purple-600 text-white shadow-sm' 
+                      : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'
+                  }`}
+                  onClick={() => handleRangeChange(range.label)}
+                >
+                  {range.label}
+                </button>
+              ))}
+            </div>
+            
+            {dateRange.rangeType === 'Custom' && (
+              <div className="flex gap-2 bg-white p-2 rounded-lg border border-gray-200">
+                <DatePicker
+                  selected={dateRange.startDate}
+                  onChange={date => setDateRange({ ...dateRange, startDate: date })}
+                  selectsStart
+                  startDate={dateRange.startDate}
+                  endDate={dateRange.endDate}
+                  className="p-2 border-0 text-sm w-32 focus:ring-0"
+                  placeholderText="Start Date"
+                />
+                <span className="text-gray-400 self-center">→</span>
+                <DatePicker
+                  selected={dateRange.endDate}
+                  onChange={date => setDateRange({ ...dateRange, endDate: date })}
+                  selectsEnd
+                  startDate={dateRange.startDate}
+                  endDate={dateRange.endDate}
+                  minDate={dateRange.startDate}
+                  className="p-2 border-0 text-sm w-32 focus:ring-0"
+                  placeholderText="End Date"
+                />
+              </div>
+            )}
+            
             <button
-              key={range.label}
-              className={`px-3 py-1 rounded-md text-sm ${dateRange.rangeType === range.label ? 'bg-[#FBAA99] text-white' : 'bg-gray-200 text-gray-700'}`}
-              onClick={() => handleRangeChange(range.label)}
+              className="flex items-center gap-2 px-4 py-2 bg-pink-200 text-pink-800 border border-pink-600 rounded-lg shadow-sm font-medium hover:bg-pink-300 transition-all"
+
+              onClick={handleDownloadReport}
             >
-              {range.label}
+              <DownloadIcon />
+              Export Report
             </button>
-          ))}
-        </div>
-        {dateRange.rangeType === 'Custom' && (
-          <div className="flex gap-2">
-            <DatePicker
-              selected={dateRange.startDate}
-              onChange={date => setDateRange({ ...dateRange, startDate: date })}
-              selectsStart
-              startDate={dateRange.startDate}
-              endDate={dateRange.endDate}
-              className="p-2 border rounded-md"
-              placeholderText="Start Date"
-            />
-            <DatePicker
-              selected={dateRange.endDate}
-              onChange={date => setDateRange({ ...dateRange, endDate: date })}
-              selectsEnd
-              startDate={dateRange.startDate}
-              endDate={dateRange.endDate}
-              minDate={dateRange.startDate}
-              className="p-2 border rounded-md"
-              placeholderText="End Date"
-            />
-          </div>
-        )}
-        <button
-          className="px-4 py-2 bg-[#4D423A] text-white rounded-md hover:bg-[#3B322D]"
-          onClick={handleDownloadReport}
-        >
-          Download Report
-        </button>
-      </div>
-
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div className="p-4 rounded-xl border bg-pink-50 shadow-sm hover:shadow-md transition-shadow">
-          <h3 className="text-sm font-medium text-gray-600">Appointments</h3>
-          <p className="text-2xl font-bold text-[#4D423A]">{data.appointmentsToday}</p>
-          <p className="text-xs text-green-600">For selected range</p>
-        </div>
-        <div className="p-4 rounded-xl border bg-pink-50 shadow-sm hover:shadow-md transition-shadow">
-          <h3 className="text-sm font-medium text-gray-600">Revenue</h3>
-          <p className="text-2xl font-bold text-[#4D423A]">${data.revenueThisMonth.toLocaleString()}</p>
-          <p className="text-xs text-gray-600">For selected range</p>
-        </div>
-        <div className="p-4 rounded-xl border bg-pink-50 shadow-sm hover:shadow-md transition-shadow">
-          <h3 className="text-sm font-medium text-gray-600">Active Clients</h3>
-          <p className="text-2xl font-bold text-[#4D423A]">{data.activeClients}</p>
-          <p className="text-xs text-green-600">For selected range</p>
-        </div>
-        <div className="p-4 rounded-xl border bg-pink-50 shadow-sm hover:shadow-md transition-shadow">
-          <h3 className="text-sm font-medium text-gray-600">Staff Utilization</h3>
-          <p className="text-2xl font-bold text-[#4D423A]">{data.staffUtilization}%</p>
-          <p className="text-xs text-gray-600">Based on bookings</p>
-        </div>
-        <div className="p-4 rounded-xl border bg-pink-50 shadow-sm hover:shadow-md transition-shadow">
-          <h3 className="text-sm font-medium text-gray-600">Inventory Alerts</h3>
-          <p className="text-2xl font-bold text-[#4D423A]">{data.inventoryAlerts}</p>
-          <p className="text-xs text-red-600">Low stock or expiring items</p>
-        </div>
-        <div className="p-4 rounded-xl border bg-pink-50 shadow-sm hover:shadow-md transition-shadow">
-          <h3 className="text-sm font-medium text-gray-600">Customer Satisfaction</h3>
-          <p className="text-2xl font-bold text-[#4D423A]">{data.customerSatisfaction}/5</p>
-          <p className="text-xs text-green-600">Based on recent reviews</p>
-        </div>
-      </div>
-
-      {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="p-6 rounded-xl border bg-white shadow-sm">
-          <Line options={revenueChartOptions} data={revenueChartData} />
-        </div>
-        <div className="p-6 rounded-xl border bg-white shadow-sm">
-          <Bar options={appointmentChartOptions} data={appointmentChartData} />
-        </div>
-        <div className="p-6 rounded-xl border bg-white shadow-sm lg:col-span-2">
-          <div className="max-w-md mx-auto">
-            <Pie options={servicesChartOptions} data={servicesChartData} />
           </div>
         </div>
-      </div>
 
-      {/* Recent Activity and Staff Overview */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="p-6 rounded-xl border bg-white shadow-sm">
-          <h2 className="text-lg font-semibold text-[#4D423A] mb-4">Recent Activity</h2>
-          <ul className="space-y-3 max-h-96 overflow-y-auto">
-            {data.recentActivities.map(activity => (
-              <li key={activity.id} className="flex items-center gap-3 text-sm text-gray-600">
-                <span className={`w-2 h-2 rounded-full ${activity.type === 'booking' ? 'bg-green-500' : activity.type === 'payment' ? 'bg-blue-500' : 'bg-red-500'}`} />
-                <div>
-                  <p>{activity.description}</p>
-                  <p className="text-xs text-gray-400">{activity.time}</p>
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+          </div>
+        ) : (
+          <>
+            {/* KPI Cards Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+              <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Appointments</p>
+                    <p className="text-2xl font-bold text-gray-900 mt-1">{data.appointmentsToday}</p>
+                  </div>
+                  <div className="p-3 bg-blue-50 rounded-lg">
+                    <CalendarIcon />
+                  </div>
                 </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="p-6 rounded-xl border bg-white shadow-sm">
-          <h2 className="text-lg font-semibold text-[#4D423A] mb-4">Staff Overview</h2>
-          <div className="space-y-3">
-            {data.staffOverview.map(staff => (
-              <div key={staff.id} className="flex items-center justify-between p-3 border rounded-lg">
-                <div>
-                  <p className="text-sm font-medium text-[#4D423A]">{staff.name}</p>
-                  <p className="text-xs text-gray-600">{staff.appointmentsToday} appointments</p>
+                <p className="text-xs text-green-600 mt-2 font-medium">For selected range</p>
+              </div>
+
+              <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Revenue</p>
+                    <p className="text-2xl font-bold text-gray-900 mt-1">LKR  {data.revenueThisMonth.toLocaleString()}</p>
+                  </div>
+                  <div className="p-3 bg-green-50 rounded-lg">
+                    <RevenueIcon />
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm text-[#4D423A]">{staff.rating}/5</p>
-                  <p className={`text-xs ${staff.status === 'Available' ? 'text-green-600' : staff.status === 'Busy' ? 'text-yellow-600' : 'text-gray-600'}`}>
-                    {staff.status}
-                  </p>
+                <p className="text-xs text-gray-500 mt-2">For selected range</p>
+              </div>
+
+              <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Active Clients</p>
+                    <p className="text-2xl font-bold text-gray-900 mt-1">{data.activeClients}</p>
+                  </div>
+                  <div className="p-3 bg-purple-50 rounded-lg">
+                    <UsersIcon />
+                  </div>
+                </div>
+                <p className="text-xs text-green-600 mt-2 font-medium">For selected range</p>
+              </div>
+
+              <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Staff Utilization</p>
+                    <p className="text-2xl font-bold text-gray-900 mt-1">{data.staffUtilization}%</p>
+                  </div>
+                  <div className="p-3 bg-amber-50 rounded-lg">
+                    <StaffIcon />
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500 mt-2">Based on bookings</p>
+              </div>
+
+              <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Inventory Alerts</p>
+                    <p className="text-2xl font-bold text-gray-900 mt-1">{data.inventoryAlerts}</p>
+                  </div>
+                  <div className="p-3 bg-red-50 rounded-lg">
+                    <AlertIcon />
+                  </div>
+                </div>
+                <p className="text-xs text-red-600 mt-2 font-medium">Low stock or expiring items</p>
+              </div>
+
+              <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600">Satisfaction</p>
+                    <p className="text-2xl font-bold text-gray-900 mt-1">{data.customerSatisfaction}/5</p>
+                  </div>
+                  <div className="p-3 bg-yellow-50 rounded-lg">
+                    <StarIcon />
+                  </div>
+                </div>
+                <p className="text-xs text-green-600 mt-2 font-medium">Based on recent reviews</p>
+              </div>
+            </div>
+
+            {/* Charts Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                <Line options={revenueChartOptions} data={revenueChartData} />
+              </div>
+              <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                <Bar options={appointmentChartOptions} data={appointmentChartData} />
+              </div>
+              <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm lg:col-span-2">
+                <div className="max-w-md mx-auto">
+                  <Pie options={servicesChartOptions} data={servicesChartData} />
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
+
+            {/* Recent Activity and Staff Overview */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h2>
+                <div className="space-y-3 max-h-96 overflow-y-auto">
+                  {data.recentActivities.map(activity => (
+                    <div key={activity.id} className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                      <span className="text-lg mt-1">{getActivityIcon(activity.type)}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-gray-900">{activity.description}</p>
+                        <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Staff Overview</h2>
+                <div className="space-y-3">
+                  {data.staffOverview.map(staff => (
+                    <div key={staff.id} className="flex items-center justify-between p-4 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full flex items-center justify-center text-white font-medium">
+                          {staff.name.charAt(0)}
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">{staff.name}</p>
+                          <p className="text-xs text-gray-600">{staff.appointmentsToday} appointments</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="flex items-center gap-1 justify-end">
+                          <StarIcon />
+                          <p className="text-sm font-medium text-gray-900">{staff.rating}/5</p>
+                        </div>
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(staff.status)}`}>
+                          {staff.status}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
