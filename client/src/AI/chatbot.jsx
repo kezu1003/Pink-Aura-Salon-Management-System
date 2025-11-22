@@ -98,7 +98,7 @@ function Chatbot() {
       <button
         id="chatbot-toggler"
         onClick={() => setShowChatbot((p) => !p)}
-        className="fixed bottom-7 right-8 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-[#FBAA99] text-white shadow-lg transition-transform duration-200 hover:scale-105 hover:bg-[#f68c7c] focus:outline-none"
+        className="fixed bottom-8 right-8 z-50 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#FBAA99] text-white shadow-2xl transition-all duration-300 hover:scale-110 hover:bg-[#f68c7c] hover:shadow-3xl focus:outline-none backdrop-blur-sm"
         aria-label={showChatbot ? 'Close chatbot' : 'Open chatbot'}
       >
         {showChatbot ? (
@@ -111,34 +111,42 @@ function Chatbot() {
       {/* Popup */}
       <div
         className={[
-          "fixed bottom-24 right-8 z-50 w-[420px] max-w-[92vw] overflow-hidden rounded-2xl bg-[#FEF4F1] shadow-2xl border border-[#FBAA99]/30 transition-all duration-200",
+          "fixed bottom-28 right-8 z-50 w-[440px] max-w-[90vw] overflow-hidden rounded-3xl bg-white shadow-2xl border border-[#FBAA99]/20 transition-all duration-300 backdrop-blur-md",
           showChatbot
-            ? "pointer-events-auto opacity-100 scale-100"
-            : "pointer-events-none opacity-0 scale-95",
+            ? "pointer-events-auto opacity-100 scale-100 translate-y-0"
+            : "pointer-events-none opacity-0 scale-95 translate-y-4",
           "origin-bottom-right",
         ].join(" ")}
       >
         {/* Header */}
-        <div className="flex items-center justify-between bg-[#FBAA99] px-5 py-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-sm">
-              <ChatbotIcon />
+        <div className="relative bg-gradient-to-r from-[#FBAA99] to-[#f68c7c] px-6 py-5 rounded-t-3xl">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm shadow-lg">
+                <ChatbotIcon />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-white">Pink Aura Assistant</h2>
+                <p className="text-white/90 text-sm">Online • Ready to help</p>
+              </div>
             </div>
-            <h2 className="text-lg font-semibold text-white">Pink Aura Chat</h2>
+            <button
+              onClick={() => setShowChatbot(false)}
+              className="rounded-xl p-2 text-white/90 transition-all duration-200 hover:bg-white/20 hover:scale-110"
+              aria-label="Minimize"
+            >
+              <IoChevronDown className="text-2xl" />
+            </button>
           </div>
-          <button
-            onClick={() => setShowChatbot(false)}
-            className="rounded-full p-2 text-white/90 transition-colors hover:bg-white/20"
-            aria-label="Minimize"
-          >
-            <IoChevronDown className="text-2xl" />
-          </button>
+          
+          {/* Decorative element */}
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
         </div>
 
         {/* Body */}
         <div
           ref={chatBodyRef}
-          className="flex h-[420px] flex-col gap-5 overflow-y-auto bg-[#FEFDFD] px-5 py-6 text-[#4D423A]"
+          className="flex h-[400px] flex-col gap-4 overflow-y-auto bg-gradient-to-b from-[#FEF4F1] to-white px-6 py-5 text-[#4D423A] scrollbar-thin scrollbar-thumb-[#FBAA99]/30 scrollbar-track-transparent"
         >
           {chatHistory.map((chat, index) => (
             <ChatMessage key={index} chat={chat} />
@@ -146,12 +154,15 @@ function Chatbot() {
         </div>
 
         {/* Footer */}
-        <div className="border-t border-[#FBAA99]/30 bg-[#FEF4F1] px-5 py-4">
+        <div className="bg-white/80 backdrop-blur-sm px-6 py-5 rounded-b-3xl border-t border-[#FBAA99]/10">
           <ChartForm
             chatHistory={chatHistory}
             setChatHistory={setChatHistory}
             generateBotResponse={generateBotResponse}
           />
+          <p className="text-center text-xs text-[#4D423A]/50 mt-3">
+            Powered by Pink Aura Salon • Your beauty companion
+          </p>
         </div>
       </div>
     </div>

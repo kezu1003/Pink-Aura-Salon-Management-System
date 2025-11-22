@@ -52,18 +52,18 @@ const ChartForm = ({ chatHistory, setChatHistory, generateBotResponse }) => {
   return (
     <form
       onSubmit={handleFormSubmit}
-      className="relative flex items-center gap-2 bg-[#FEF4F1] p-2 rounded-full shadow-inner"
+      className="relative flex items-center gap-3 bg-white p-3 rounded-2xl shadow-lg border border-[#FBAA99]/20"
     >
       <input
         ref={inputRef}
         type="text"
-        placeholder="Ask about services, products, or get skin type recommendations..."
+        placeholder="Ask about services, products, or skin recommendations..."
         required
-        className="w-full rounded-full border border-[#FBAA99]/50 bg-white px-4 py-2.5 text-sm text-[#4D423A] outline-none transition focus:border-[#FBAA99] focus:ring-1 focus:ring-[#FBAA99]"
+        className="flex-1 rounded-xl border-none bg-transparent px-4 py-3 text-sm text-[#4D423A] placeholder-[#4D423A]/60 outline-none transition-all focus:ring-2 focus:ring-[#FBAA99]/30"
       />
       <button
         type="submit"
-        className="flex h-10 w-10 items-center justify-center rounded-full bg-[#FBAA99] text-white shadow-md transition hover:-translate-y-0.5 hover:bg-[#f68c7c]"
+        className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#FBAA99] text-white shadow-lg transition-all duration-300 hover:bg-[#f68c7c] hover:shadow-xl hover:scale-105 active:scale-95"
         aria-label="Send message"
       >
         <IoSend className="text-lg" />
